@@ -5,7 +5,17 @@ from __future__ import absolute_import, print_function
 import signal, os, time, sys, subprocess, platform
 import ctypes, datetime, sqlite3, warnings, math, pickle
 
-#from six.moves import range
+from calendar import monthrange
+
+# Spec:
+
+'''MINYEAR <= year <= MAXYEAR,
+        1 <= month <= 12,
+        1 <= day <= number of days in the given month and year,
+        0 <= hour < 24,
+        0 <= minute < 60,
+        0 <= second < 60,
+        0 <= microsecond < 1000000,'''
 
 import gi; gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
@@ -17,11 +27,24 @@ from gi.repository import cairo
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import PangoCairo
 
+daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+            "Oct", "Nov", "Dec")
+
 class CalCanvas(Gtk.DrawingArea):
 
-    def __init__(self, statbox = None):
+    def __init__(self, xdate = None, statbox = None):
         Gtk.DrawingArea.__init__(self)
         self.statbox = statbox
+
+        if not xdate:
+            self.set_date(datetime.datetime.today())
+        else:
+            self.set_date(date)
+
+        tmp = datetime.datetime.today()
+        self.zdate = datetime.datetime(tmp.year, tmp.month, tmp.day)
+
         self.set_can_focus(True)
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
 
@@ -44,6 +67,28 @@ class CalCanvas(Gtk.DrawingArea):
         self.fd = Pango.FontDescription()
         self.pangolayout = self.create_pango_layout("a")
 
+    def _calc_curr(self):
+
+        print("show date:", self.xdate, daystr[self.xdate.weekday()])
+        ydate =  datetime.datetime(self.xdate.year, self.xdate.month, 1)
+        self.smonday = ydate.weekday()
+        print ("ydate", ydate, "Month starts: ", daystr[self.smonday])
+
+        self.mlen = monthrange(self.xdate.year, self.xdate.month)[1]
+        print ("mlen", self.mlen)
+
+        mmm  =  self.xdate.month-1; yyy  = self.xdate.year
+        if mmm == 0:
+            mmm = 12;  yyy -= 1
+        self.mlen2 = monthrange(yyy,mmm)[1]
+        print ("mlen2", self.mlen2)
+
+    def set_date(self, dt):
+        print("set_date", dt)
+        self.xdate = dt
+        self._calc_curr()
+        self.queue_draw()
+
     def show_status(self, strx):
         if self.statusbar:
             self.statusbar.set_text(strx)
@@ -61,7 +106,7 @@ class CalCanvas(Gtk.DrawingArea):
                 '''
 
     def area_button(self, area, event):
-        self.mouse = Rectangle(event.x, event.y, 4, 4)
+        #self.mouse = Rectangle(event.x, event.y, 4, 4)
         print( "Button", event.button, "state", event.state, " x =", event.x, "y =", event.y)
 
         mods = event.state & Gtk.accelerator_get_default_mod_mask()
@@ -82,8 +127,8 @@ class CalCanvas(Gtk.DrawingArea):
             self.get_root_window().set_cursor(self.arrow)
 
         if  event.type == Gdk.EventType.BUTTON_PRESS:
-            hit = Rectangle(event.x, event.y, 2, 2)
-            hitx = None
+            self.get_root_window().set_cursor(self.cross)
+            pass
 
     def draw_event(self, doc, cr):
 
@@ -106,10 +151,34 @@ class CalCanvas(Gtk.DrawingArea):
 
         head =  self.rect.height // 10
         newheight = self.rect.height - head
+        pitchx = (self.rect.width) // 7;
+        pitchy = newheight // 6;
+
+        # Month, year
+        cr.set_source_rgba(25/255, 55/255, 25/255)
+        self.fd.set_family("Arial")
+        self.fd.set_size(20 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+
+        mmm = self.xdate.month - 1
+        hhh = monstr[mmm] + ", " + str(self.xdate.year)
+        self.pangolayout.set_text(hhh, len(hhh))
+        txx, tyy = self.pangolayout.get_pixel_size()
+        cr.move_to(self.rect.width/2 - txx/2, border)
+        PangoCairo.show_layout(cr, self.pangolayout)
+
+        # Weekdays
+        cr.set_source_rgba(125/255, 125/255, 155/255)
+        self.fd.set_size(15 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+        for aa in range(7):
+            xx = aa * pitchx
+            self.pangolayout.set_text(daystr[aa], len(daystr[aa]))
+            txx, tyy = self.pangolayout.get_pixel_size()
+            cr.move_to(xx + border + (pitchx/2 - txx/2), head - tyy - border)
+            PangoCairo.show_layout(cr, self.pangolayout)
 
         # Horiz
-        pitchx = (self.rect.width) // 7;
-        pitchy = newheight // 7;
         cr.set_source_rgba(125/255, 125/255, 125/255)
         cr.set_line_width(1)
 
@@ -118,7 +187,8 @@ class CalCanvas(Gtk.DrawingArea):
             cr.move_to(xx, head)
             cr.line_to(xx, self.rect.height)
         cr.stroke()
-        for aa in range(7):
+        # Vert
+        for aa in range(6):
             yy = aa * pitchy
             cr.move_to(0, yy + head)
             cr.line_to(self.rect.width, yy + head)
@@ -130,13 +200,48 @@ class CalCanvas(Gtk.DrawingArea):
         self.pangolayout.set_font_description(self.fd)
 
         for aa in range(7):
-            for bb in range(7):
+            for bb in range(6):
+                pad = 0
                 xx = aa * pitchx;  yy = bb * pitchy + head
                 cr.move_to(xx + border, yy)
-                sss = str(aa  + (bb*7) + 1)
+
+                # Manipulate count as month parameters
+                nnn = aa  + (bb*7) - self.smonday
+                if nnn <  0:
+                    pad = 1
+                if nnn >= self.mlen:
+                    pad = 2
+
+                if pad == 1:
+                    nnn %= self.mlen2
+                else:
+                    nnn %= self.mlen
+
+                nnn += 1
+
+                if not pad:
+                    ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn)
+                    if self.zdate == ttt:
+                        print("Today", ttt)
+                        cr.set_source_rgba(240/255, 240/255, 240/255)
+                        cr.rectangle(xx + border/2, yy + border/2,
+                                        pitchx - border, pitchy - border)
+                        cr.fill()
+                        cr.set_source_rgba(0/255, 50/255, 255/255)
+                        cr.move_to(xx + border, yy)
+                    else:
+                        cr.set_source_rgba(88/255, 88/255, 100/255)
+                else:
+                    cr.set_source_rgba(255/255, 88/255, 100/255)
+
+                sss = str(nnn)
                 self.pangolayout.set_text(sss, len(sss))
                 txx, tyy = self.pangolayout.get_pixel_size()
                 PangoCairo.show_layout(cr, self.pangolayout)
+
+if __name__ == "__main__":
+
+    print("use pyalagui.py")
 
 
 

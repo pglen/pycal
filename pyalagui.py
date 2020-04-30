@@ -62,6 +62,24 @@ class MainWindow():
         self.populate()
         self.mywin.show_all()
 
+    def fwmonth(self, butt):
+        try:
+            startd = datetime.datetime(self.cal.xdate.year, (self.cal.xdate.month + 1), 1)
+        except:
+            startd = datetime.datetime(self.cal.xdate.year + 1, 1, 1)
+
+        print("startd", startd)
+        self.cal.set_date(startd)
+
+    def bwmonth(self, butt):
+        startd = datetime.datetime(self.cal.xdate.year, (self.cal.xdate.month - 1), 1)
+        print("startd", startd)
+        self.cal.set_date(startd)
+
+    def thismonth(self, butt):
+        startd = datetime.datetime.today()
+        self.cal.set_date(startd)
+
     def populate(self):
         self.vbox = Gtk.VBox()
 
@@ -69,11 +87,15 @@ class MainWindow():
         hbox.pack_start(Gtk.Label("    "), 1, 1, 0)
         hbox.pack_start(Gtk.Button(" <<<  "), 0, 0, 0)
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
-        hbox.pack_start(Gtk.Button(" <<  "), 0, 0, 0)
+        bbb2 = Gtk.Button(" <<  "); bbb2.connect("clicked", self.bwmonth)
+        hbox.pack_start(bbb2, 0, 0, 0)
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
-        hbox.pack_start(Gtk.Button(" Today "), 0, 0, 0)
+        bbb3 = Gtk.Button(" Today "); bbb3.connect("clicked", self.thismonth)
+        hbox.pack_start(bbb3, 0, 0, 0)
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
-        hbox.pack_start(Gtk.Button(" >>  "), 0, 0, 0)
+        bbb1 = Gtk.Button(" >>  "); bbb1.connect("clicked", self.fwmonth)
+        hbox.pack_start(bbb1, 0, 0, 0)
+
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
         hbox.pack_start(Gtk.Button(" >>>  "), 0, 0, 0)
         hbox.pack_start(Gtk.Label("    "), 1, 1, 0)
@@ -85,9 +107,8 @@ class MainWindow():
         self.vbox.pack_start(hbox, 0, 0, 0)
         self.cal = pycal.CalCanvas()
         self.vbox.pack_start(self.cal, 1, 1, 0)
-
+        #self.cal.calc_curr()
         self.mywin.add(self.vbox)
-
 
 def     OnExit(butt, arg = None, prompt = True):
 
@@ -138,5 +159,6 @@ if __name__ == "__main__":
     mainwin = MainWindow()
 
     Gtk.main()
+
 
 
