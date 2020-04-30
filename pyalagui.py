@@ -18,6 +18,10 @@ from gi.repository import Notify
 
 import pyala, pycal
 
+sys.path.append('../common')
+
+import pggui, pgutils
+
 # ------------------------------------------------------------------------
 #  Define Application Main Window claass
 
@@ -68,12 +72,12 @@ class MainWindow():
         except:
             startd = datetime.datetime(self.cal.xdate.year + 1, 1, 1)
 
-        print("startd", startd)
+        #print("startd", startd)
         self.cal.set_date(startd)
 
     def bwmonth(self, butt):
         startd = datetime.datetime(self.cal.xdate.year, (self.cal.xdate.month - 1), 1)
-        print("startd", startd)
+        #print("startd", startd)
         self.cal.set_date(startd)
 
     def thismonth(self, butt):
@@ -84,6 +88,11 @@ class MainWindow():
         self.vbox = Gtk.VBox()
 
         hbox = Gtk.HBox()
+
+        hbox.pack_start(Gtk.Label("  "), 0, 0, 0)
+        self.menu = pggui.MenuButt(("Open", "Close", "Exit"), self.menucom)
+        hbox.pack_start(self.menu, 0, 0, 0)
+
         hbox.pack_start(Gtk.Label("    "), 1, 1, 0)
         hbox.pack_start(Gtk.Button(" <<<  "), 0, 0, 0)
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
@@ -106,9 +115,17 @@ class MainWindow():
 
         self.vbox.pack_start(hbox, 0, 0, 0)
         self.cal = pycal.CalCanvas()
+        self.cal.mainwin = self
         self.vbox.pack_start(self.cal, 1, 1, 0)
         #self.cal.calc_curr()
         self.mywin.add(self.vbox)
+
+    def menucom(self, menu, item):
+        print("menu", menu, item)
+
+        if item == 2:
+            OnExit(self)
+
 
 def     OnExit(butt, arg = None, prompt = True):
 
@@ -154,11 +171,13 @@ if __name__ == "__main__":
         if aa[0] == "-t": show_timing = True
         if aa[0] == "-o": use_stdout = True
 
-    print("Started pyalagui")
+    #print("Started pyalagui")
 
     mainwin = MainWindow()
 
     Gtk.main()
+
+
 
 
 

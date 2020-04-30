@@ -2,10 +2,12 @@
 
 from __future__ import absolute_import, print_function
 
-import signal, os, time, sys, subprocess, platform
+import signal, os, time, sys, subprocess, platform, random
 import ctypes, datetime, sqlite3, warnings, math, pickle
-
 from calendar import monthrange
+
+sys.path.append('../common')
+import pggui, pgutils
 
 # Spec:
 
@@ -31,11 +33,34 @@ daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
             "Oct", "Nov", "Dec")
 
+class Popup(Gtk.Window):
+
+    def __init__(self, strx):
+        Gtk.Window.__init__(self)
+        self.set_accept_focus(False); self.set_decorated(False)
+        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
+        self.connect("button-press-event", self.area_button)
+
+        vbox = Gtk.VBox(); hbox = Gtk.HBox()
+        hbox.pack_start(Gtk.Label(strx), 0, 0, 4)
+        vbox.pack_start(hbox, 0, 0, 4)
+        self.add(vbox)
+
+    def area_button(self, butt, arg):
+        print("Button press in toottip")
+        pass
+
+
 class CalCanvas(Gtk.DrawingArea):
 
     def __init__(self, xdate = None, statbox = None):
         Gtk.DrawingArea.__init__(self)
         self.statbox = statbox
+        self.mouevent = None
+        self.xtext = []
+
+        for aa in range(6*7):
+            self.xtext.append("")
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -45,6 +70,8 @@ class CalCanvas(Gtk.DrawingArea):
         tmp = datetime.datetime.today()
         self.zdate = datetime.datetime(tmp.year, tmp.month, tmp.day)
 
+        self.fired = 0
+        self.popped = 0
         self.set_can_focus(True)
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
 
@@ -67,35 +94,79 @@ class CalCanvas(Gtk.DrawingArea):
         self.fd = Pango.FontDescription()
         self.pangolayout = self.create_pango_layout("a")
 
+
     def _calc_curr(self):
 
-        print("show date:", self.xdate, daystr[self.xdate.weekday()])
+        #print("show date:", self.xdate, daystr[self.xdate.weekday()])
         ydate =  datetime.datetime(self.xdate.year, self.xdate.month, 1)
         self.smonday = ydate.weekday()
-        print ("ydate", ydate, "Month starts: ", daystr[self.smonday])
+        #print ("ydate", ydate, "Month starts: ", daystr[self.smonday])
 
         self.mlen = monthrange(self.xdate.year, self.xdate.month)[1]
-        print ("mlen", self.mlen)
+        #print ("mlen", self.mlen)
 
         mmm  =  self.xdate.month-1; yyy  = self.xdate.year
         if mmm == 0:
             mmm = 12;  yyy -= 1
         self.mlen2 = monthrange(yyy,mmm)[1]
-        print ("mlen2", self.mlen2)
+        #print ("mlen2", self.mlen2)
 
     def set_date(self, dt):
         print("set_date", dt)
+
+        # Simulate new data
+        self.xtext = []
+        for aa in range(6*7):
+            self.xtext.append(pgutils.randstr(random.randint(5,14)))
+
         self.xdate = dt
         self._calc_curr()
         self.queue_draw()
+
+    # Return where the hit is
+    def hit_test(self, px, py):
+        newheight = self.rect.height - self.head
+        pitchx = (self.rect.width) // 7;
+        pitchy = newheight // 6;
+        py2 = py - self.head
+        return  px // pitchx, py2 // pitchy
 
     def show_status(self, strx):
         if self.statusbar:
             self.statusbar.set_text(strx)
 
+    def keytime(self):
+        #print( "keytime raw", time.time(), self.fired)
+        if self.fired ==  1:
+            print( "keytime", time.time(), self.fired)
+            if not self.popped:
+                mx, my = self.get_pointer()
+                print("mx, my ", mx, my)
+
+                # Is mouse in cal?
+                if mx > 0 and my > self.head and mx < self.rect.width and my < self.rect.height:
+                    self.popped = True
+                    strx = "Tool Tip Window\n\n" \
+                            "More Lines...\nMore Lines...\nMore Lines...\nMore Lines..."
+
+                    self.tt = Popup(strx)
+
+                    # Calculate self absolute (screen) position
+                    posx, posy = self.mainwin.mywin.get_position()
+                    #print("posx, posy", posx, posy)
+
+                    self.tt.move(posx + mx, posy + my + self.head)
+
+                    #self.tt.move(posx + mx - 12, posy + my + self.head - 12)
+                    self.tt.show_all()
+
+            #pedspell.spell(self, self.spellmode)
+            #self.walk_func()
+        self.fired -= 1
+
     def area_motion(self, area, event):
         #print ("motion event", event.state, event.x, event.y)
-        pass
+        self.mouevent = event
 
         '''if event.state & Gdk.ModifierType.SHIFT_MASK:
                     print( "Shift ButPress x =", event.x, "y =", event.y)
@@ -105,7 +176,19 @@ class CalCanvas(Gtk.DrawingArea):
                     print( "Alt ButPress x =", event.x, "y =", event.y)
                 '''
 
+        if self.popped:
+            self.tt.destroy()
+            self.popped = False
+        else:
+            self.fired += 1
+            GLib.timeout_add(600, self.keytime)
+
+        hx, hy = self.hit_test(int(event.x), int(event.y))
+
+        print("Hit", hx, hy, self.xtext[hx + 7 * hy])
+
     def area_button(self, area, event):
+        self.mouevent = event
         #self.mouse = Rectangle(event.x, event.y, 4, 4)
         print( "Button", event.button, "state", event.state, " x =", event.x, "y =", event.y)
 
@@ -142,8 +225,8 @@ class CalCanvas(Gtk.DrawingArea):
         self.pangolayout.set_font_description(self.fd)
         prog = yyy
 
-        for aa in range(4):
-            sss = "12345678 ABCD efghij"
+        for aa in range(8):
+            sss = self.xtext[nnn + aa]
             self.pangolayout.set_text(sss, len(sss))
             txx, tyy = self.pangolayout.get_pixel_size()
             self.cr.move_to(xxx, prog)
@@ -164,20 +247,20 @@ class CalCanvas(Gtk.DrawingArea):
         self.layout = PangoCairo.create_layout(cr)
         self.rect = self.get_allocation()
 
-
         self.cr = cr
-        #self.crh = CairoHelper(cr)
 
         # Paint white, ignore system BG
         cr.set_source_rgba(255/255, 255/255, 255/255)
         cr.rectangle( border, border, self.rect.width - border * 2, self.rect.height - border * 2);
         cr.fill()
 
-        self.rect.x += border
-        self.rect.y += border
+        #self.rect.x += 2 * border
+        #self.rect.y += 2 * border
+        #self.rect.width -= 2 * border
+        #self.rect.height -= 2 * border
 
-        head =  self.rect.height // 10
-        newheight = self.rect.height - head
+        self.head =  self.rect.height // 10
+        newheight = self.rect.height - self.head
         pitchx = (self.rect.width) // 7;
         pitchy = newheight // 6;
 
@@ -202,7 +285,7 @@ class CalCanvas(Gtk.DrawingArea):
             xx = aa * pitchx
             self.pangolayout.set_text(daystr[aa], len(daystr[aa]))
             txx, tyy = self.pangolayout.get_pixel_size()
-            cr.move_to(xx + border + (pitchx/2 - txx/2), head - tyy - border)
+            cr.move_to(xx + border + (pitchx/2 - txx/2), self.head - tyy - border)
             PangoCairo.show_layout(cr, self.pangolayout)
 
         # Horiz
@@ -210,15 +293,15 @@ class CalCanvas(Gtk.DrawingArea):
         cr.set_line_width(1)
 
         for aa in range(7):
-            xx = aa * pitchx
-            cr.move_to(xx, head)
+            xx = aa * pitchx + self.rect.x
+            cr.move_to(xx, self.head)
             cr.line_to(xx, self.rect.height)
         cr.stroke()
         # Vert
         for aa in range(6):
             yy = aa * pitchy
-            cr.move_to(0, yy + head)
-            cr.line_to(self.rect.width, yy + head)
+            cr.move_to(self.rect.x, yy + self.head)
+            cr.line_to(self.rect.width, yy + self.head)
         cr.stroke()
 
         cr.set_source_rgba(88/255, 88/255, 100/255)
@@ -226,7 +309,7 @@ class CalCanvas(Gtk.DrawingArea):
         for aa in range(7):
             for bb in range(6):
                 pad = 0
-                xx = aa * pitchx;  yy = bb * pitchy + head
+                xx = aa * pitchx;  yy = bb * pitchy + self.head
                 #cr.move_to(xx + border, yy)
 
                 # Manipulate count as month parameters
@@ -243,7 +326,7 @@ class CalCanvas(Gtk.DrawingArea):
                 if not pad:
                     ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn)
                     if self.zdate == ttt:
-                        print("Today", ttt)
+                        #print("Today", ttt)
                         cr.set_source_rgba(240/255, 240/255, 240/255)
                         cr.rectangle(xx + border/2, yy + border/2,
                                         pitchx - border, pitchy - border)
@@ -267,13 +350,8 @@ class CalCanvas(Gtk.DrawingArea):
                 self.fill_day(nnn, xx + border, yy + border + tyy,
                                         pitchx - 2*border, pitchy - 2*border - tyy)
 
-
 if __name__ == "__main__":
 
     print("use pyalagui.py")
 
-
-
-
-
-
+# EOF
