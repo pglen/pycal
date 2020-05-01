@@ -55,6 +55,8 @@ class MainWindow():
         # Create the toplevel window
         self.mywin = Gtk.Window()
 
+        self.mywin.set_icon_from_file("pycal.png")
+
         #self.mywin.set_title("Calendar Alarm Monitor")
         self.mywin.set_title("Python Calendar")
 
@@ -176,6 +178,7 @@ if __name__ == "__main__":
     mainwin = MainWindow()
 
     Gtk.main()
+
 
 
 

@@ -41,8 +41,13 @@ class Popup(Gtk.Window):
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.connect("button-press-event", self.area_button)
 
+        self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#efefef"))
+
         vbox = Gtk.VBox(); hbox = Gtk.HBox()
-        hbox.pack_start(Gtk.Label(strx), 0, 0, 4)
+        lab = Gtk.Label(strx)
+        lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
+        hbox.pack_start(lab, 0, 0, 4)
+
         vbox.pack_start(hbox, 0, 0, 4)
         self.add(vbox)
 
@@ -116,8 +121,8 @@ class CalCanvas(Gtk.DrawingArea):
 
         # Simulate new data
         self.xtext = []
-        for aa in range(6*7):
-            self.xtext.append(pgutils.randstr(random.randint(5,14)))
+        for aa in range(6*7*6):
+            self.xtext.append(pgutils.randstr(random.randint(5,140)))
 
         self.xdate = dt
         self._calc_curr()
@@ -138,16 +143,24 @@ class CalCanvas(Gtk.DrawingArea):
     def keytime(self):
         #print( "keytime raw", time.time(), self.fired)
         if self.fired ==  1:
-            print( "keytime", time.time(), self.fired)
+            #print( "keytime", time.time(), self.fired)
             if not self.popped:
                 mx, my = self.get_pointer()
-                print("mx, my ", mx, my)
+                #print("mx, my ", mx, my)
 
                 # Is mouse in cal?
                 if mx > 0 and my > self.head and mx < self.rect.width and my < self.rect.height:
                     self.popped = True
-                    strx = "Tool Tip Window\n\n" \
-                            "More Lines...\nMore Lines...\nMore Lines...\nMore Lines..."
+                    #strx = "Tool Tip Window\n\n" \
+                    #        "More Lines...\nMore Lines...\nMore Lines...\nMore Lines..."
+
+                    hx, hy = self.hit_test(mx, my)
+                    strx = "DDD\n"
+                    for aa in range(5):
+                        sss = self.xtext[aa + hx + 6 * hy]
+                        if len(sss) > 36:
+                            sss = sss[:34] + " ... "
+                        strx += sss + "\n"
 
                     self.tt = Popup(strx)
 
@@ -156,12 +169,8 @@ class CalCanvas(Gtk.DrawingArea):
                     #print("posx, posy", posx, posy)
 
                     self.tt.move(posx + mx, posy + my + self.head)
-
                     #self.tt.move(posx + mx - 12, posy + my + self.head - 12)
                     self.tt.show_all()
-
-            #pedspell.spell(self, self.spellmode)
-            #self.walk_func()
         self.fired -= 1
 
     def area_motion(self, area, event):
@@ -184,8 +193,7 @@ class CalCanvas(Gtk.DrawingArea):
             GLib.timeout_add(600, self.keytime)
 
         hx, hy = self.hit_test(int(event.x), int(event.y))
-
-        print("Hit", hx, hy, self.xtext[hx + 7 * hy])
+        #print("Hit", hx, hy, self.xtext[hx + 7 * hy])
 
     def area_button(self, area, event):
         self.mouevent = event
@@ -225,7 +233,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.pangolayout.set_font_description(self.fd)
         prog = yyy
 
-        for aa in range(8):
+        for aa in range(6):
             sss = self.xtext[nnn + aa]
             self.pangolayout.set_text(sss, len(sss))
             txx, tyy = self.pangolayout.get_pixel_size()
@@ -355,3 +363,4 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
