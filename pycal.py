@@ -63,9 +63,10 @@ class CalCanvas(Gtk.DrawingArea):
         self.statbox = statbox
         self.mouevent = None
         self.xtext = []
+        self.old_hx = 0; self.old_hy = 0
 
         for aa in range(6*7):
-            self.xtext.append("")
+            self.xtext.append([])
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -113,16 +114,18 @@ class CalCanvas(Gtk.DrawingArea):
         mmm  =  self.xdate.month-1; yyy  = self.xdate.year
         if mmm == 0:
             mmm = 12;  yyy -= 1
-        self.mlen2 = monthrange(yyy,mmm)[1]
-        #print ("mlen2", self.mlen2)
+        self.mlen2 = monthrange(yyy, mmm)[1]
+        print ("mlen", self.mlen, "mlen2", self.mlen2)
 
     def set_date(self, dt):
         print("set_date", dt)
 
         # Simulate new data
         self.xtext = []
-        for aa in range(6*7*6):
-            self.xtext.append(pgutils.randstr(random.randint(5,140)))
+        for aa in range(6*7):
+                self.xtext.append( [] )
+                for aa in range(8):
+                    self.xtext[len(self.xtext)-1].append(pgutils.randstr(random.randint(5,140)))
 
         self.xdate = dt
         self._calc_curr()
@@ -156,8 +159,8 @@ class CalCanvas(Gtk.DrawingArea):
 
                     hx, hy = self.hit_test(mx, my)
                     strx = "DDD\n"
-                    for aa in range(5):
-                        sss = self.xtext[aa + hx + 6 * hy]
+                    arr = self.xtext[hx +  hy * 7]
+                    for sss in arr:
                         if len(sss) > 36:
                             sss = sss[:34] + " ... "
                         strx += sss + "\n"
@@ -193,7 +196,13 @@ class CalCanvas(Gtk.DrawingArea):
             GLib.timeout_add(600, self.keytime)
 
         hx, hy = self.hit_test(int(event.x), int(event.y))
+        #print("hx", hx, self.old_hx, "hy", hy,self.old_hy)
         #print("Hit", hx, hy, self.xtext[hx + 7 * hy])
+
+        if (self.old_hx != hx or self.old_hy != hy):
+            #print("Delta", hx, hy)
+            self.queue_draw()
+        self.old_hx = hx; self.old_hy = hy
 
     def area_button(self, area, event):
         self.mouevent = event
@@ -223,18 +232,19 @@ class CalCanvas(Gtk.DrawingArea):
 
     def fill_day(self, nnn, xxx, yyy, www, hhh):
 
-        self.cr.set_source_rgba(255/255, 255/255, 255/255)
+
         self.cr.rectangle(xxx, yyy, www, hhh)
         self.cr.clip()
 
         self.cr.set_source_rgba(25/255, 55/255, 25/255)
         self.fd.set_family("Arial")
-        self.fd.set_size(self.rect.height / 60 * Pango.SCALE);
+
+        hhh = self.rect.height / 60
+        hhh = min(hhh, 12)
+        self.fd.set_size(hhh * Pango.SCALE);
         self.pangolayout.set_font_description(self.fd)
         prog = yyy
-
-        for aa in range(6):
-            sss = self.xtext[nnn + aa]
+        for sss in self.xtext[nnn]:
             self.pangolayout.set_text(sss, len(sss))
             txx, tyy = self.pangolayout.get_pixel_size()
             self.cr.move_to(xxx, prog)
@@ -300,12 +310,13 @@ class CalCanvas(Gtk.DrawingArea):
         cr.set_source_rgba(125/255, 125/255, 125/255)
         cr.set_line_width(1)
 
-        for aa in range(7):
+        for aa in range(8):
             xx = aa * pitchx + self.rect.x
             cr.move_to(xx, self.head)
             cr.line_to(xx, self.rect.height)
         cr.stroke()
         # Vert
+
         for aa in range(6):
             yy = aa * pitchy
             cr.move_to(self.rect.x, yy + self.head)
@@ -333,20 +344,26 @@ class CalCanvas(Gtk.DrawingArea):
 
                 if not pad:
                     ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn)
-                    if self.zdate == ttt:
+                    xx2, yy2 = self.get_pointer()
+                    mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
+                    if hx == mx and hy == my:
+                        #print("Mouse over day:", xxx, yyy)
+                        self.cr.set_source_rgba(210/255, 210/255, 210/255)
+                    elif self.zdate == ttt:
                         #print("Today", ttt)
-                        cr.set_source_rgba(240/255, 240/255, 240/255)
-                        cr.rectangle(xx + border/2, yy + border/2,
-                                        pitchx - border, pitchy - border)
-                        cr.fill()
-                        cr.set_source_rgba(0/255, 50/255, 255/255)
+                        cr.set_source_rgba(230/255, 255/255, 230/255)
                     else:
-                        cr.set_source_rgba(88/255, 88/255, 100/255)
+                        self.cr.set_source_rgba(255/255, 255/255, 255/255)
                 else:
-                    cr.set_source_rgba(255/255, 88/255, 100/255)
+                    cr.set_source_rgba(240/255, 240/255, 255/255)
+
+                cr.rectangle(xx + border/2, yy + border/2,
+                                    pitchx - border, pitchy - border)
+                cr.fill()
 
                 cr.move_to(xx + border, yy)
                 sss = str(nnn)
+                cr.set_source_rgba(100/255, 100/255, 255/255)
                 self.fd.set_family("Arial")
                 self.fd.set_size(11 * Pango.SCALE);
                 #self.fd.set_size(self.rect.height / 50 * Pango.SCALE);
@@ -363,4 +380,6 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
+
 
