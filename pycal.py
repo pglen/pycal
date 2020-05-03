@@ -33,6 +33,68 @@ daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
             "Oct", "Nov", "Dec")
 
+class CalEntry(Gtk.Window):
+
+    def __init__(self, strx, callb = None):
+        Gtk.Window.__init__(self)
+        self.callb = callb
+        self.set_accept_focus(True);
+        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
+
+        self.connect("button-press-event", self.area_button)
+        #self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#efefef"))
+
+        vbox = Gtk.VBox(); hbox = Gtk.HBox()
+        lab = Gtk.Label(strx)
+
+        lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
+        hbox.pack_start(lab, 0, 0, 4)
+
+        '''self.tr1 = pggui.TextRow("Subject:       ", "None", vbox)
+        self.tr2 = pggui.TextRow("Dessription: ", "No Description", vbox)
+        self.tr3 = pggui.TextRow("Notes:          ", "", vbox)
+        '''
+        arr = (("Sub:", "aa"), ("Desc", "hello"), ("Notes:", "notes"))
+        self.table = pggui.TextTable(arr)
+
+        hbox2 = Gtk.HBox()
+        bbb1 = Gtk.Button(" Cancel  "); bbb1.connect("clicked", self.cancel)
+        bbb2 = Gtk.Button("    OK     "); bbb2.connect("clicked", self.ok)
+
+        hbox2.pack_start(Gtk.Label(" "), 1, 1, 0)
+        hbox2.pack_start(bbb1, 0, 0, 2);   hbox2.pack_start(bbb2, 0, 0, 2)
+        vbox.pack_start(hbox, 0, 0, 2)
+
+        hbox3 = Gtk.HBox()
+        hbox3.pack_start(Gtk.Label(" "), 0, 0, 0)
+        hbox3.pack_start(self.table, 0, 0, 4)
+        hbox3.pack_start(Gtk.Label(" "), 0, 0, 0)
+
+        vbox.pack_start(hbox3, 0, 0, 4)
+        vbox.pack_start(hbox2, 0, 0, 4)
+
+        self.add(vbox)
+        self.show_all()
+        self.set_modal(True)
+        self.set_keep_above(True)
+
+    def ok(self, buff):
+        print("OK")
+        if self.callb:
+            self.callb("OK", self)
+        self.destroy()
+        pass
+
+    def cancel(self, buff):
+        if self.callb:
+            self.callb("CANCEL", self)
+        self.destroy()
+        pass
+
+    def area_button(self, butt, arg):
+        #print("Button press in CalEntry")
+        pass
+
 class Popup(Gtk.Window):
 
     def __init__(self, strx):
@@ -52,8 +114,9 @@ class Popup(Gtk.Window):
         self.add(vbox)
 
     def area_button(self, butt, arg):
-        print("Button press in toottip")
+        print("Button press in tooltip")
         pass
+
 
 
 class CalCanvas(Gtk.DrawingArea):
@@ -64,6 +127,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.mouevent = None
         self.xtext = []
         self.old_hx = 0; self.old_hy = 0
+        self.dlg = None
 
         for aa in range(6*7):
             self.xtext.append([])
@@ -152,6 +216,9 @@ class CalCanvas(Gtk.DrawingArea):
 
     def keytime(self):
         #print( "keytime raw", time.time(), self.fired)
+        if self.dlg:
+            return
+
         if self.fired ==  1:
             if not self.popped:
                 mx, my = self.get_pointer()
@@ -238,9 +305,22 @@ class CalCanvas(Gtk.DrawingArea):
 
         hx, hy = self.hit_test(int(event.x), int(event.y))
         arr = self.xtext[hx][hy]
-        for sss in arr:
-            print(sss)
 
+        #for sss in arr:
+        #    print(sss)
+
+        if self.popped:
+            try:
+             self.tt.destroy()
+            except:
+             pass
+        self.popped = False
+        self.dlg = CalEntry(arr[0], self.done_dlg)
+
+    def done_dlg(self, res, dlg):
+        print("Done_dlg", res)
+        for bb in dlg.table.texts:
+            print("got data", bb.get_text())
 
     def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
@@ -263,6 +343,7 @@ class CalCanvas(Gtk.DrawingArea):
             prog += tyy
         self.cr.new_path()
         self.cr.reset_clip()
+
 
     def draw_event(self, doc, cr):
 
@@ -341,13 +422,17 @@ class CalCanvas(Gtk.DrawingArea):
 
                 nnn = aa  + (bb*7) - self.smonday
                 if nnn <  0:
-                    pad = 1
+                    pad = True
                     nnn = self.mlen2 + nnn
-                    ttt = datetime.datetime(self.xdate.year, self.xdate.month-1, nnn+1)
+                    m2 = self.xdate.month - 1; y2 = self.xdate.year
+                    if m2 < 1: y2 -= 1; m2 = 12
+                    ttt = datetime.datetime(y2, m2, nnn+1)
                 elif nnn >= self.mlen:
-                    pad = 2
+                    pad = True
                     nnn %= self.mlen
-                    ttt = datetime.datetime(self.xdate.year, self.xdate.month+1, nnn+1)
+                    m2 = self.xdate.month + 1; y2 = self.xdate.year
+                    if m2 > 12: y2 += 1; m2 = 1
+                    ttt = datetime.datetime(y2, m2, nnn+1)
                 else:
                     ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn+1)
 
@@ -389,6 +474,7 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
 
 
 

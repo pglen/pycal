@@ -69,21 +69,31 @@ class MainWindow():
         self.mywin.show_all()
 
     def fwmonth(self, butt):
-        try:
-            startd = datetime.datetime(self.cal.xdate.year, (self.cal.xdate.month + 1), 1)
-        except:
-            startd = datetime.datetime(self.cal.xdate.year + 1, 1, 1)
-
-        #print("startd", startd)
+        m2 = self.cal.xdate.month + 1; y2 = self.cal.xdate.year
+        if m2 > 12: y2 += 1; m2 = 12
+        startd = datetime.datetime(y2, m2, 1)
+        #print("startd fw", startd)
         self.cal.set_date(startd)
 
     def bwmonth(self, butt):
-        startd = datetime.datetime(self.cal.xdate.year, (self.cal.xdate.month - 1), 1)
-        #print("startd", startd)
+        m2 = self.cal.xdate.month - 1; y2 = self.cal.xdate.year
+        if m2 < 1: y2 -= 1; m2 = 12
+        startd = datetime.datetime(y2, m2, 1)
+        #print("startd bw", startd)
         self.cal.set_date(startd)
 
     def thismonth(self, butt):
         startd = datetime.datetime.today()
+        self.cal.set_date(startd)
+
+    def bwyear(self, butt):
+        m2 = self.cal.xdate.month; y2 = self.cal.xdate.year - 1
+        startd = datetime.datetime(y2, m2, 1)
+        self.cal.set_date(startd)
+
+    def fwyear(self, butt):
+        m2 = self.cal.xdate.month; y2 = self.cal.xdate.year + 1
+        startd = datetime.datetime(y2, m2, 1)
         self.cal.set_date(startd)
 
     def populate(self):
@@ -96,7 +106,8 @@ class MainWindow():
         hbox.pack_start(self.menu, 0, 0, 0)
 
         hbox.pack_start(Gtk.Label("    "), 1, 1, 0)
-        hbox.pack_start(Gtk.Button(" <<<  "), 0, 0, 0)
+        bbb5 = Gtk.Button(" <<<  "); bbb5.connect("clicked", self.bwyear)
+        hbox.pack_start(bbb5, 0, 0, 0)
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
         bbb2 = Gtk.Button(" <<  "); bbb2.connect("clicked", self.bwmonth)
         hbox.pack_start(bbb2, 0, 0, 0)
@@ -108,7 +119,8 @@ class MainWindow():
         hbox.pack_start(bbb1, 0, 0, 0)
 
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
-        hbox.pack_start(Gtk.Button(" >>>  "), 0, 0, 0)
+        bbb4 = Gtk.Button(" >>>  "); bbb4.connect("clicked", self.fwyear)
+        hbox.pack_start(bbb4, 0, 0, 0)
         hbox.pack_start(Gtk.Label("    "), 1, 1, 0)
         xxx = Gtk.Button.new_with_mnemonic(" E_xit ")
         xxx.connect("clicked", OnExit, self)
@@ -178,6 +190,7 @@ if __name__ == "__main__":
     mainwin = MainWindow()
 
     Gtk.main()
+
 
 
 
