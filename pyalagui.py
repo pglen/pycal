@@ -87,8 +87,8 @@ class MainWindow():
         self.cal.set_date(startd)
 
     def populate(self):
-        self.vbox = Gtk.VBox()
 
+        self.vbox = Gtk.VBox(); #self.vbox.set_spacing(4)
         hbox = Gtk.HBox()
 
         hbox.pack_start(Gtk.Label("  "), 0, 0, 0)
@@ -178,6 +178,7 @@ if __name__ == "__main__":
     mainwin = MainWindow()
 
     Gtk.main()
+
 
 
 
