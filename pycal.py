@@ -100,8 +100,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.fd = Pango.FontDescription()
         self.pangolayout = self.create_pango_layout("a")
 
-
-    def _calc_curr(self):
+    def __calc_curr(self):
 
         #print("show date:", self.xdate, daystr[self.xdate.weekday()])
         ydate =  datetime.datetime(self.xdate.year, self.xdate.month, 1)
@@ -136,7 +135,7 @@ class CalCanvas(Gtk.DrawingArea):
         #print(self.xtext)
 
         self.xdate = dt
-        self._calc_curr()
+        self.__calc_curr()
         self.queue_draw()
 
     # Return where the hit is
@@ -318,7 +317,7 @@ class CalCanvas(Gtk.DrawingArea):
             cr.move_to(xx + border + (pitchx/2 - txx/2), self.head - tyy - border)
             PangoCairo.show_layout(cr, self.pangolayout)
 
-        # Horiz
+        # Horiz grid
         cr.set_source_rgba(125/255, 125/255, 125/255)
         cr.set_line_width(1)
 
@@ -327,8 +326,8 @@ class CalCanvas(Gtk.DrawingArea):
             cr.move_to(xx, self.head)
             cr.line_to(xx, self.rect.height)
         cr.stroke()
-        # Vert
 
+        # Vert grid
         for aa in range(6):
             yy = aa * pitchy
             cr.move_to(self.rect.x, yy + self.head)
@@ -342,12 +341,13 @@ class CalCanvas(Gtk.DrawingArea):
                 pad = 0
                 xx = aa * pitchx;  yy = bb * pitchy + self.head
                 # Manipulate count as month parameters
+
                 nnn = aa  + (bb*7) - self.smonday
                 if nnn <  0:
                     pad = 1
                     nnn = self.mlen2 + nnn
                 elif nnn >= self.mlen:
-                    pad = 1
+                    pad = 2
                     nnn %= self.mlen
                 nnn += 1
 
@@ -374,8 +374,7 @@ class CalCanvas(Gtk.DrawingArea):
                 sss = str(nnn)
                 cr.set_source_rgba(100/255, 100/255, 255/255)
                 self.fd.set_family("Arial")
-                self.fd.set_size(11 * Pango.SCALE);
-                #self.fd.set_size(self.rect.height / 50 * Pango.SCALE);
+                self.fd.set_size(12 * Pango.SCALE);
                 self.pangolayout.set_font_description(self.fd)
                 self.pangolayout.set_text(sss, len(sss))
                 txx, tyy = self.pangolayout.get_pixel_size()
