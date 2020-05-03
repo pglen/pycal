@@ -50,6 +50,9 @@ class CalEntry(Gtk.Window):
         lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
         hbox.pack_start(lab, 0, 0, 4)
 
+        spin = Gtk.SpinButton()
+        hbox2.pack_start(spin, 0, 0, 0)
+
         '''self.tr1 = pggui.TextRow("Subject:       ", "None", vbox)
         self.tr2 = pggui.TextRow("Dessription: ", "No Description", vbox)
         self.tr3 = pggui.TextRow("Notes:          ", "", vbox)
