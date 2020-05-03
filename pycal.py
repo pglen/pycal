@@ -242,7 +242,7 @@ class CalCanvas(Gtk.DrawingArea):
             print(sss)
 
 
-    def fill_day(self, aa, bb, xxx, yyy, www, hhh):
+    def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
         self.cr.rectangle(xxx, yyy, www, hhh)
         self.cr.clip()
@@ -275,11 +275,6 @@ class CalCanvas(Gtk.DrawingArea):
 
         self.layout = PangoCairo.create_layout(cr)
         self.rect = self.get_allocation()
-        #self.rect.x += 2 * border
-        #self.rect.y += 2 * border
-        #self.rect.width -= 4 * border
-        #self.rect.height -= 4 * border
-
         self.cr = cr
 
         # Paint white, ignore system BG
@@ -336,6 +331,8 @@ class CalCanvas(Gtk.DrawingArea):
 
         cr.set_source_rgba(88/255, 88/255, 100/255)
 
+        ttt = datetime.datetime.today()
+
         for aa in range(7):
             for bb in range(6):
                 pad = 0
@@ -346,13 +343,17 @@ class CalCanvas(Gtk.DrawingArea):
                 if nnn <  0:
                     pad = 1
                     nnn = self.mlen2 + nnn
+                    ttt = datetime.datetime(self.xdate.year, self.xdate.month-1, nnn+1)
                 elif nnn >= self.mlen:
                     pad = 2
                     nnn %= self.mlen
+                    ttt = datetime.datetime(self.xdate.year, self.xdate.month+1, nnn+1)
+                else:
+                    ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn+1)
+
                 nnn += 1
 
                 if not pad:
-                    ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn)
                     xx2, yy2 = self.get_pointer()
                     mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
                     if hx == mx and hy == my:
@@ -371,7 +372,7 @@ class CalCanvas(Gtk.DrawingArea):
                 cr.fill()
 
                 cr.move_to(xx + border, yy)
-                sss = str(nnn)
+                sss = str(nnn)  + "  " + ttt.strftime("%m-%d-%y")
                 cr.set_source_rgba(100/255, 100/255, 255/255)
                 self.fd.set_family("Arial")
                 self.fd.set_size(12 * Pango.SCALE);
@@ -380,7 +381,7 @@ class CalCanvas(Gtk.DrawingArea):
                 txx, tyy = self.pangolayout.get_pixel_size()
                 PangoCairo.show_layout(cr, self.pangolayout)
 
-                self.fill_day(aa, bb, xx + border, yy + border + tyy,
+                self.fill_day(aa, bb, ttt, xx + border, yy + border + tyy,
                                         pitchx - 2*border, pitchy - 2*border - tyy)
 
 if __name__ == "__main__":
