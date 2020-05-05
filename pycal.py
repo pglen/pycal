@@ -33,6 +33,16 @@ daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
             "Oct", "Nov", "Dec")
 
+
+def spinner(startx, endx, default = 1):
+
+    adj2 = Gtk.Adjustment(startx, 1.0, endx, 1.0, 5.0, 0.0)
+    spin2 = Gtk.SpinButton.new(adj2, 0, 0)
+    spin2.set_value(default)
+    spin2.set_wrap(True)
+    return spin2
+
+
 class CalEntry(Gtk.Window):
 
     def __init__(self, strx, callb = None):
@@ -40,32 +50,57 @@ class CalEntry(Gtk.Window):
         self.callb = callb
         self.set_accept_focus(True);
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
+        self.set_title("Calendar Item Entry")
+        self.alt = False
 
+        row = 0
         self.connect("button-press-event", self.area_button)
+        self.connect("key-press-event", self.area_key)
+        self.connect("key-release-event", self.area_key)
+
         #self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#efefef"))
 
-        vbox = Gtk.VBox(); hbox = Gtk.HBox()
-        lab = Gtk.Label(strx)
+        vbox = Gtk.VBox();
+        self.dtab = Gtk.Table()
 
+        # ----------------------------------------------------------------
+
+        self.dtab.attach_defaults(Gtk.Label(" Day: "), 0, 1, row, row + 1)
+        self.dtab.attach_defaults(spinner(1, 31), 1, 2, row, row + 1)
+
+        self.dtab.attach_defaults(Gtk.Label(" Month: "), 2, 3, row, row + 1)
+        self.dtab.attach_defaults(spinner(1, 12), 3, 4, row, row + 1)
+
+        self.dtab.attach_defaults(Gtk.Label(" Year: "), 4, 5, row, row + 1)
+        self.dtab.attach_defaults(spinner(1995, 2100, 2020), 5, 6, row, row + 1)
+
+        # ----------------------------------------------------------------
+        row += 1
+
+        self.dtab.attach_defaults(Gtk.Label(" Hour: "), 0, 1, row, row + 1)
+        self.dtab.attach_defaults(spinner(0, 23), 1, 2, row, row + 1)
+
+        self.dtab.attach_defaults(Gtk.Label(" Minute: "), 2, 3, row, row + 1)
+        self.dtab.attach_defaults(spinner(0, 59), 3, 4, row, row + 1)
+
+        self.dtab.attach_defaults(Gtk.Label(" Seconds: "), 4, 5, row, row + 1)
+        self.dtab.attach_defaults(spinner(0, 59), 5, 6, row, row + 1)
+
+        # ----------------------------------------------------------------
+
+        hbox = Gtk.HBox(); lab = Gtk.Label(strx)
         lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
-        hbox.pack_start(lab, 0, 0, 4)
 
-        spin = Gtk.SpinButton()
-        hbox2.pack_start(spin, 0, 0, 0)
+        hbox.pack_start(Gtk.Label(" "), 0, 0, 4)
+        hbox.pack_start(lab, 1, 1, 4)
+        hbox.pack_start(Gtk.Label(" "), 0, 0, 4)
 
-        '''self.tr1 = pggui.TextRow("Subject:       ", "None", vbox)
-        self.tr2 = pggui.TextRow("Dessription: ", "No Description", vbox)
-        self.tr3 = pggui.TextRow("Notes:          ", "", vbox)
-        '''
-        arr = (("Sub:", "aa"), ("Desc", "hello"), ("Notes:", "notes"))
+        arr = ((" Subject: ", "aa"), (" Description: ", "hello"), (" Notes: ", "notes"))
         self.table = pggui.TextTable(arr)
 
-        hbox2 = Gtk.HBox()
-        bbb1 = Gtk.Button(" Cancel  "); bbb1.connect("clicked", self.cancel)
-        bbb2 = Gtk.Button("    OK     "); bbb2.connect("clicked", self.ok)
+        self.edit = pggui.SimpleEdit()
+        self.edit.set_size_request(100, 100)
 
-        hbox2.pack_start(Gtk.Label(" "), 1, 1, 0)
-        hbox2.pack_start(bbb1, 0, 0, 2);   hbox2.pack_start(bbb2, 0, 0, 2)
         vbox.pack_start(hbox, 0, 0, 2)
 
         hbox3 = Gtk.HBox()
@@ -73,13 +108,54 @@ class CalEntry(Gtk.Window):
         hbox3.pack_start(self.table, 0, 0, 4)
         hbox3.pack_start(Gtk.Label(" "), 0, 0, 0)
 
+        hbox4 = Gtk.HBox()
+        hbox4.pack_start(Gtk.Label(" "), 0, 0, 0)
+        hbox4.pack_start(self.edit, 1, 1, 4)
+        hbox4.pack_start(Gtk.Label(" "), 0, 0, 0)
+
+        vbox.pack_start(self.dtab, 0, 0, 4)
         vbox.pack_start(hbox3, 0, 0, 4)
-        vbox.pack_start(hbox2, 0, 0, 4)
+        vbox.pack_start(hbox4, 0, 0, 4)
+
+        hbox6 = Gtk.HBox()
+        bbb1 = pggui.WideButt("_Cancel", self.cancel)
+        bbb2 = pggui.WideButt(" OK (E_xit)  ", self.ok)
+        hbox6.pack_start(Gtk.Label(" "), 1, 1, 0)
+        hbox6.pack_start(bbb1, 0, 0, 2);   hbox6.pack_start(bbb2, 0, 0, 2)
+
+        vbox.pack_start(hbox6, 0, 0, 4)
 
         self.add(vbox)
+
         self.show_all()
         self.set_modal(True)
         self.set_keep_above(True)
+
+    def area_key(self, area, event):
+
+        print("Keyval: ", event.keyval)
+
+        if  event.type == Gdk.EventType.KEY_PRESS:
+            if event.keyval == Gdk.KEY_Alt_L or \
+                    event.keyval == Gdk.KEY_Alt_R:
+                self.alt = True;
+
+        if event.keyval == Gdk.KEY_Tab:
+            #print ("pedwin TREE TAB", event.keyval)
+            pass
+
+        if event.keyval == Gdk.KEY_Escape:
+            #print (" ESC ", event.keyval)
+            self.cancel(None)
+
+        if event.keyval >= Gdk.KEY_1 and event.keyval <= Gdk.KEY_9:
+            #print ("pedwin Alt num", event.keyval - Gdk.KEY_1)
+            pass
+
+        elif  event.type == Gdk.EventType.KEY_RELEASE:
+            if event.keyval == Gdk.KEY_Alt_L or \
+                  event.keyval == Gdk.KEY_Alt_R:
+                self.alt = False;
 
     def ok(self, buff):
         print("OK")
@@ -119,7 +195,6 @@ class Popup(Gtk.Window):
     def area_button(self, butt, arg):
         print("Button press in tooltip")
         pass
-
 
 
 class CalCanvas(Gtk.DrawingArea):
@@ -318,12 +393,13 @@ class CalCanvas(Gtk.DrawingArea):
             except:
              pass
         self.popped = False
-        self.dlg = CalEntry(arr[0], self.done_dlg)
+        self.dlg = CalEntry(arr[0][:12], self.done_dlg)
 
     def done_dlg(self, res, dlg):
         print("Done_dlg", res)
-        for bb in dlg.table.texts:
-            print("got data", bb.get_text())
+        if res == "OK":
+            for bb in dlg.table.texts:
+                print("got data", bb.get_text())
 
     def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
@@ -477,6 +553,8 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
+
 
 
 
