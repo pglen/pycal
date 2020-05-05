@@ -45,7 +45,7 @@ def spinner(startx, endx, default = 1):
 
 class CalEntry(Gtk.Window):
 
-    def __init__(self, strx, callb = None):
+    def __init__(self, hx, hy, self2, callb = None):
         Gtk.Window.__init__(self)
         self.callb = callb
         self.set_accept_focus(True);
@@ -53,7 +53,10 @@ class CalEntry(Gtk.Window):
         self.set_title("Calendar Item Entry")
         self.alt = False
 
-        row = 0
+        arr = self2.xtext[hx][hy]
+        strx = arr[0][:24]
+
+        row = 0; col = 0
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
         self.connect("key-release-event", self.area_key)
@@ -63,28 +66,36 @@ class CalEntry(Gtk.Window):
         vbox = Gtk.VBox();
         self.dtab = Gtk.Table()
 
-        # ----------------------------------------------------------------
-
-        self.dtab.attach_defaults(Gtk.Label(" Day: "), 0, 1, row, row + 1)
-        self.dtab.attach_defaults(spinner(1, 31), 1, 2, row, row + 1)
-
-        self.dtab.attach_defaults(Gtk.Label(" Month: "), 2, 3, row, row + 1)
-        self.dtab.attach_defaults(spinner(1, 12), 3, 4, row, row + 1)
-
-        self.dtab.attach_defaults(Gtk.Label(" Year: "), 4, 5, row, row + 1)
-        self.dtab.attach_defaults(spinner(1995, 2100, 2020), 5, 6, row, row + 1)
+        self.dtab.attach_defaults(Gtk.Label(" a "), col, col+1, row, row + 1); col += 1
 
         # ----------------------------------------------------------------
-        row += 1
 
-        self.dtab.attach_defaults(Gtk.Label(" Hour: "), 0, 1, row, row + 1)
-        self.dtab.attach_defaults(spinner(0, 23), 1, 2, row, row + 1)
+        self.dtab.attach_defaults(Gtk.Label(" Day: "), col, col+1, row, row + 1); col += 1
+        self.dtab.attach_defaults(spinner(1, 31), col, col+1,row, row + 1)  ; col += 1
 
-        self.dtab.attach_defaults(Gtk.Label(" Minute: "), 2, 3, row, row + 1)
-        self.dtab.attach_defaults(spinner(0, 59), 3, 4, row, row + 1)
+        self.dtab.attach_defaults(Gtk.Label(" Month: "), col, col+1, row, row + 1) ; col += 1
+        self.dtab.attach_defaults(spinner(1, 12), col, col+1, row, row + 1)        ; col += 1
 
-        self.dtab.attach_defaults(Gtk.Label(" Seconds: "), 4, 5, row, row + 1)
-        self.dtab.attach_defaults(spinner(0, 59), 5, 6, row, row + 1)
+        self.dtab.attach_defaults(Gtk.Label(" Year: "), col, col+1, row, row + 1)  ; col += 1
+        self.dtab.attach_defaults(spinner(1995, 2100, 2020), col, col+1, row, row + 1) ; col += 1
+
+        self.dtab.attach_defaults(Gtk.Label(" a "), col, col+1,row, row + 1)
+
+        # ----------------------------------------------------------------
+        row += 1; col = 0
+
+        self.dtab.attach_defaults(Gtk.Label(" b "), col, col+1, row, row + 1); col += 1
+
+        self.dtab.attach_defaults(Gtk.Label(" Hour: "), col, col+1,  row, row + 1)  ; col += 1
+        self.dtab.attach_defaults(spinner(0, 23), col, col+1,  row, row + 1)            ; col += 1
+
+        self.dtab.attach_defaults(Gtk.Label(" Minute: "), col, col+1,  row, row + 1)     ; col += 1
+        self.dtab.attach_defaults(spinner(0, 59),  col, col+1,  row, row + 1)              ; col += 1
+
+        self.dtab.attach_defaults(Gtk.Label(" Seconds: "),  col, col+1,  row, row + 1)     ; col += 1
+        self.dtab.attach_defaults(spinner(0, 59),  col, col+1,  row, row + 1)              ; col += 1
+
+        self.dtab.attach_defaults(Gtk.Label(" b "), col, col+1, row, row + 1); col += 1
 
         # ----------------------------------------------------------------
 
@@ -196,6 +207,14 @@ class Popup(Gtk.Window):
         print("Button press in tooltip")
         pass
 
+class   Struct():
+    def __init__(self, nnn = None, ttt = None, pad = None):
+        self.nnn = nnn
+        self.ttt = ttt
+        self.pad = pad
+
+    def __str__(self):
+        return "%d %s %d", (self.nnn, str(self.ttt), self.pad)
 
 class CalCanvas(Gtk.DrawingArea):
 
@@ -204,11 +223,9 @@ class CalCanvas(Gtk.DrawingArea):
         self.statbox = statbox
         self.mouevent = None
         self.xtext = []
+        self.darr = []
         self.old_hx = 0; self.old_hy = 0
         self.dlg = None
-
-        for aa in range(6*7):
-            self.xtext.append([])
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -218,8 +235,7 @@ class CalCanvas(Gtk.DrawingArea):
         tmp = datetime.datetime.today()
         self.zdate = datetime.datetime(tmp.year, tmp.month, tmp.day)
 
-        self.fired = 0
-        self.popped = 0
+        self.fired = 0;  self.popped = 0
         self.set_can_focus(True)
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
 
@@ -259,14 +275,22 @@ class CalCanvas(Gtk.DrawingArea):
         #print ("mlen", self.mlen, "mlen2", self.mlen2)
 
     def set_date(self, dt):
+
         print("set_date", dt)
 
+        self.xdate = dt
+        self.__calc_curr()
+
         # Simulate new data
+        self.darr = []
         self.xtext = []
         for aa in range(7):
             self.xtext.append( [] )
+            self.darr.append( [] )
             for bb in range(6):
                 last = self.xtext[len(self.xtext)-1]
+                lastd = self.darr[len(self.darr)-1]
+
                 last.append( [] )
                 for cc in range(5):
                     last2 = last[len(last)-1]
@@ -274,10 +298,34 @@ class CalCanvas(Gtk.DrawingArea):
                     xstr += pgutils.randstr(random.randint(5,140))
                     last2.append(xstr)
 
-        #print(self.xtext)
+                ttt = None
+                # Manipulate count as month parameters
+                nnn = aa  + (bb*7) - self.smonday
+                if nnn <  0:
+                    pad = True
+                    nnn = self.mlen2 + nnn
+                    m2 = self.xdate.month - 1; y2 = self.xdate.year
+                    if m2 < 1: y2 -= 1; m2 = 12
+                    ttt = datetime.datetime(y2, m2, nnn+1)
 
-        self.xdate = dt
-        self.__calc_curr()
+                elif nnn >= self.mlen:
+                    pad = True
+                    nnn %= self.mlen
+                    m2 = self.xdate.month + 1; y2 = self.xdate.year
+                    if m2 > 12: y2 += 1; m2 = 1
+                    ttt = datetime.datetime(y2, m2, nnn+1)
+                else:
+                    ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn+1)
+
+                sss = Struct(nnn, ttt, pad)
+                lastd.append(sss)
+                nnn += 1
+
+        #print(self.xtext)
+        for aa in self.darr:
+            for bb in aa:
+                print(str(bb))
+
         self.queue_draw()
 
     # Return where the hit is
@@ -382,7 +430,6 @@ class CalCanvas(Gtk.DrawingArea):
             pass
 
         hx, hy = self.hit_test(int(event.x), int(event.y))
-        arr = self.xtext[hx][hy]
 
         #for sss in arr:
         #    print(sss)
@@ -393,7 +440,8 @@ class CalCanvas(Gtk.DrawingArea):
             except:
              pass
         self.popped = False
-        self.dlg = CalEntry(arr[0][:12], self.done_dlg)
+
+        self.dlg = CalEntry(hx, hy, self, self.done_dlg)
 
     def done_dlg(self, res, dlg):
         print("Done_dlg", res)
@@ -496,9 +544,7 @@ class CalCanvas(Gtk.DrawingArea):
         for aa in range(7):
             for bb in range(6):
                 pad = 0
-                xx = aa * pitchx;  yy = bb * pitchy + self.head
                 # Manipulate count as month parameters
-
                 nnn = aa  + (bb*7) - self.smonday
                 if nnn <  0:
                     pad = True
@@ -506,6 +552,7 @@ class CalCanvas(Gtk.DrawingArea):
                     m2 = self.xdate.month - 1; y2 = self.xdate.year
                     if m2 < 1: y2 -= 1; m2 = 12
                     ttt = datetime.datetime(y2, m2, nnn+1)
+
                 elif nnn >= self.mlen:
                     pad = True
                     nnn %= self.mlen
@@ -515,8 +562,11 @@ class CalCanvas(Gtk.DrawingArea):
                 else:
                     ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn+1)
 
+                sss = Struct(nnn, ttt, pad)
+
                 nnn += 1
 
+                xx = aa * pitchx;  yy = bb * pitchy + self.head
                 if not pad:
                     xx2, yy2 = self.get_pointer()
                     mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
@@ -553,6 +603,7 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
 
 
 
