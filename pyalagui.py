@@ -112,7 +112,7 @@ class MainWindow():
         bbb2 = Gtk.Button(" <<  "); bbb2.connect("clicked", self.bwmonth)
         hbox.pack_start(bbb2, 0, 0, 0)
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
-        bbb3 = Gtk.Button(" Today "); bbb3.connect("clicked", self.thismonth)
+        bbb3 = Gtk.Button(" This Month "); bbb3.connect("clicked", self.thismonth)
         hbox.pack_start(bbb3, 0, 0, 0)
         hbox.pack_start(Gtk.Label(" "), 0, 0, 0)
         bbb1 = Gtk.Button(" >>  "); bbb1.connect("clicked", self.fwmonth)
@@ -140,10 +140,13 @@ class MainWindow():
         if item == 2:
             OnExit(self)
 
-
 def     OnExit(butt, arg = None, prompt = True):
 
-    #butt.mywin.set_title("Exiting ...")
+    global mained
+    mained.mywin.set_title("Exiting ...")
+    pgutils.usleep(100)
+    mained.mywin.get_root_window().set_cursor(Gdk.Cursor(Gdk.CursorType.ARROW))
+    #print("Exited")
     Gtk.main_quit()
 
 # ------------------------------------------------------------------------
@@ -190,6 +193,7 @@ if __name__ == "__main__":
     mainwin = MainWindow()
 
     Gtk.main()
+
 
 
 
