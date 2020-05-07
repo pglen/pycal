@@ -76,52 +76,50 @@ class CalEntry(Gtk.Window):
         #self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#efefef"))
 
         vbox = Gtk.VBox();
-        self.dtab = Gtk.Table();
-        self.dtab.set_col_spacings(4)
-        self.dtab.set_row_spacings(4)
+        self.ptab = Gtk.Table(); self.ptab.set_homogeneous(False)
+        self.ptab.set_col_spacings(4)
+        self.ptab.set_row_spacings(4)
 
         ds = spinner(0, 31, ttt.day)
         mms = spinner(1, 12, ttt.month)
         ys = spinner(1995, 2100, ttt.year)
 
-        ds.set_sensitive(False);
-        mms.set_sensitive(False);
-        ys.set_sensitive(False);
+        ds.set_sensitive(False); mms.set_sensitive(False); ys.set_sensitive(False);
 
-        self.dtab.attach_defaults(pggui.Label(""), col, col+1,  row, row + 1)  ; col += 1
-        self.dtab.attach_defaults(pggui.Label(""), col, col+1,  row, row + 1)  ; col += 1
-        self.dtab.attach_defaults(pggui.Label(""), col, col+1,  row, row + 1)  ; col += 1
-        self.dtab.attach_defaults(pggui.Label(""), col, col+1,  row, row + 1)  ; col += 1
+        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
 
-        self.dtab.attach_defaults(pggui.Label(" D_ay: ", ds), col, col+1,  row, row + 1)  ; col += 1
-        self.dtab.attach_defaults(ds, col, col+1,  row, row + 1)            ; col += 1
+        self.ptab.attach_defaults(pggui.Label(" D_ay: ", ds), col, col+1,  row, row + 1)  ; col += 1
+        self.ptab.attach_defaults(ds, col, col+1,  row, row + 1)            ; col += 1
 
-        self.dtab.attach_defaults(pggui.Label(" Mon_th: ", mms), col, col+1,  row, row + 1)     ; col += 1
-        self.dtab.attach_defaults(mms,  col, col+1,  row, row + 1)              ; col += 1
+        self.ptab.attach_defaults(pggui.Label(" Mon_th: ", mms), col, col+1,  row, row + 1)     ; col += 1
+        self.ptab.attach_defaults(mms,  col, col+1,  row, row + 1)              ; col += 1
 
-        self.dtab.attach_defaults(pggui.Label(" Y_ear: ", ys),  col, col+1,  row, row + 1)     ; col += 1
-        self.dtab.attach_defaults(ys,  col, col+1,  row, row + 1)              ; col += 1
+        self.ptab.attach_defaults(pggui.Label(" Y_ear: ", ys),  col, col+1,  row, row + 1)     ; col += 1
+        self.ptab.attach_defaults(ys,  col, col+1,  row, row + 1)              ; col += 1
+        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
+                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
 
-        row +- 1;
-        self.dtab.attach_defaults(pggui.Label(""), col, col+1,  row, row + 1)  ; col += 1
+        row += 1; col = 0
+        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
+                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
 
         # ----------------------------------------------------------------
 
-        combo_fill = ("Sound", "Beep + Sound",  "Email", "Email + Sound", "Notify Only", "All", )
+        self.dtab = Gtk.Table(); self.dtab.set_homogeneous(False)
+        self.dtab.set_col_spacings(4); self.dtab.set_row_spacings(4)
+
+        check_fill = ("Notify", "Sound ", "Popup ", "Beep  ",  "Email ")
         self.alarr = []
-        for aa in range(6):
+        for aa in range(3):
             row += 1; col = 0
-            self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-
             cb = Gtk.CheckButton()
-            hs = spinner(0, 23)
-            ms = spinner(0, 59)
-            rs = spinner(0, 59)
-            ac = pgbox.ComboBox(combo_fill) ; ac.set_active(0)
-            self.alarr.append([cb, hs, ms, rs, ac])
+            hs = spinner(0, 23);ms = spinner(0, 59); rs = spinner(0, 59)
 
+            self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
+                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
+
+            self.dtab.attach_defaults(pggui.Label(" Alarm _%d Enabled: " % (aa+1), cb, "Enable / Disable"), col, col+1, row, row + 1); col += 1
             self.dtab.attach_defaults(cb, col, col+1, row, row + 1); col += 1
-            self.dtab.attach_defaults(pggui.Label(" Alarm _%d: " % (aa+1), cb, "Enable / Disable"), col, col+1, row, row + 1); col += 1
 
             self.dtab.attach_defaults(pggui.Label(" _Hour: "), col, col+1,  row, row + 1)  ; col += 1
             self.dtab.attach_defaults(hs, col, col+1,  row, row + 1)            ; col += 1
@@ -129,13 +127,25 @@ class CalEntry(Gtk.Window):
             self.dtab.attach_defaults(pggui.Label(" Minute: "), col, col+1,  row, row + 1)     ; col += 1
             self.dtab.attach_defaults(ms,  col, col+1,  row, row + 1)              ; col += 1
 
-            self.dtab.attach_defaults(pggui.Label(" Reminder: ", None, "Minutes before"),  col, col+1,  row, row + 1)     ; col += 1
-            self.dtab.attach_defaults(rs,  col, col+1,  row, row + 1)              ; col += 1
+            self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
+                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
 
-            self.dtab.attach_defaults(pggui.Label(" Action: ", None, "Notify is always on"),  col, col+1,  row, row + 1)     ; col += 1
-            self.dtab.attach_defaults(ac,  col, col+1,  row, row + 1)              ; col += 1
+            row += 1  ; col = 0
 
             self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+
+            hbox = Gtk.HBox(); cccarr = []
+            for aa in check_fill:
+                ccc = Gtk.CheckButton(aa)
+                cccarr.append(ccc)
+                hbox.pack_start(ccc, 0, 0, 0)
+
+            self.dtab.attach_defaults(hbox,  col+3, col+6,  row, row + 1)              ; col += 6
+            self.alarr.append([cb, hs, ms, rs, cccarr])
+
+            row += 1  ; col = 0
+            self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+
 
         # ----------------------------------------------------------------
 
@@ -165,6 +175,7 @@ class CalEntry(Gtk.Window):
         hbox4.pack_start(self.edit, 1, 1, 4)
         hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
 
+        vbox.pack_start(self.ptab, 0, 0, 4)
         vbox.pack_start(self.dtab, 0, 0, 4)
         vbox.pack_start(hbox3, 0, 0, 4)
 
@@ -512,6 +523,7 @@ class CalCanvas(Gtk.DrawingArea):
 
     def done_dlg(self, res, dlg):
         print("Done_dlg", res)
+        '''
         if res == "OK":
             for bb in dlg.table.texts:
                 print("got data", bb.get_text())
@@ -521,6 +533,7 @@ class CalCanvas(Gtk.DrawingArea):
             for cc in dlg.alarr:
                 print("cc", cc[0].get_active(), cc[1].get_value(), \
                 cc[2].get_value(),cc[3].get_value(), cc[4].get_active())
+         '''
 
     def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
@@ -675,6 +688,8 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
+
 
 
 
