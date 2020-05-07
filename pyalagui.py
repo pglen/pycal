@@ -195,10 +195,4 @@ if __name__ == "__main__":
     Gtk.main()
 
 
-
-
-
-
-
-
-
+# EOF
