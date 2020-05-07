@@ -71,14 +71,13 @@ class CalEntry(Gtk.Window):
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
         self.connect("key-release-event", self.area_key)
-        #self.connect("unrealize", self.dest_me)
 
+        #self.connect("unrealize", self.dest_me)
         #self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#efefef"))
 
         vbox = Gtk.VBox();
         self.ptab = Gtk.Table(); self.ptab.set_homogeneous(False)
-        self.ptab.set_col_spacings(4)
-        self.ptab.set_row_spacings(4)
+        self.ptab.set_col_spacings(4); self.ptab.set_row_spacings(4)
 
         ds = spinner(0, 31, ttt.day)
         mms = spinner(1, 12, ttt.month)
@@ -100,6 +99,26 @@ class CalEntry(Gtk.Window):
                             Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
 
         row += 1; col = 0
+        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+
+        nowh = ttt.hour; nowm = ttt.minute
+        if ttt.hour == 0 and ttt.minute == 0:
+            tnow = datetime.datetime.today()
+            nowh = tnow.hour; nowm = tnow.minute
+
+        hs = spinner(0, 24, nowh);  ms = spinner(0, 31, nowm)
+
+        self.ptab.attach_defaults(pggui.Label(" Hour: ", hs), col, col+1,  row, row + 1)  ; col += 1
+        self.ptab.attach_defaults(hs, col, col+1,  row, row + 1)            ; col += 1
+
+        self.ptab.attach_defaults(pggui.Label(" Minute: ", ms), col, col+1,  row, row + 1)     ; col += 1
+        self.ptab.attach_defaults(ms,  col, col+1,  row, row + 1)              ; col += 1
+
+        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
+                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
+
+        row += 1; col = 0
         self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
                             Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
 
@@ -113,7 +132,7 @@ class CalEntry(Gtk.Window):
         for aa in range(3):
             row += 1; col = 0
             cb = Gtk.CheckButton()
-            hs = spinner(0, 23);ms = spinner(0, 59); rs = spinner(0, 59)
+            hs = spinner(0, 23); ms = spinner(0, 59); rs = spinner(0, 59)
 
             self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
                             Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
@@ -146,10 +165,9 @@ class CalEntry(Gtk.Window):
             row += 1  ; col = 0
             self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
 
-
         # ----------------------------------------------------------------
 
-        hbox = Gtk.HBox(); lab = pggui.Label(ttt.ctime(), font = "Sans 13")
+        hbox = Gtk.HBox(); lab = pggui.Label(ttt.ctime(), font = "Sans 16")
         lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
 
         hbox.pack_start(pggui.Label(" "), 0, 0, 4)
@@ -408,8 +426,8 @@ class CalCanvas(Gtk.DrawingArea):
         newheight = self.rect.height - self.head
         pitchx = (self.rect.width) // 7;
         pitchy = newheight // 6;
-        py2 = py - self.head
-        return  px // pitchx, py2 // pitchy
+        py2 = int(py) - self.head
+        return  int(px) // pitchx, py2 // pitchy
 
     def dest_me(self):
         print("Destroying ...")
@@ -505,18 +523,38 @@ class CalCanvas(Gtk.DrawingArea):
             self.noop_down = False
             #self.get_root_window().set_cursor(self.arrow)
 
-        if  event.type == Gdk.EventType.BUTTON_PRESS:
-            #self.get_root_window().set_cursor(self.cross)
-            pass
-            hx, hy = self.hit_test(int(event.x), int(event.y))
-            #for sss in arr:
-            #    print(sss)
+        elif  event.type == Gdk.EventType.BUTTON_PRESS:
 
+            if event.button == 1:
+                hx, hy = self.hit_test(event.x, event.y)
+                if self.popped:
+                    try:    self.tt.destroy()
+                    except: pass
+                    self.popped = False
+                (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+                if not pad:
+                    self.dlg = CalEntry(hx, hy, self, self.done_dlg)
+
+            if event.button == 3:
+                if self.popped:
+                    try:    self.tt.destroy()
+                    except: pass
+                hx, hy = self.hit_test(event.x, event.y)
+                (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+                sdd = ttt.strftime("%a %d-%b-%y")
+                self.menu = pggui.Menu(("Selection: %s" % sdd, "New Calendar Entry",
+                                            "Edit Day"),
+                                self.menucb, event)
+
+    def menucb(self, txt, cnt):
+        #print ("aa bb", aa, bb)
+        if cnt == 1:
+            xx, yy = self.get_pointer()
+            hx, hy = self.hit_test(xx, yy)
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
                 self.popped = False
-
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
                 self.dlg = CalEntry(hx, hy, self, self.done_dlg)
@@ -688,6 +726,7 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
 
 
 

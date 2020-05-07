@@ -98,7 +98,7 @@ class MainWindow():
 
     def populate(self):
 
-        self.vbox = Gtk.VBox(); #self.vbox.set_spacing(4)
+        self.vbox = Gtk.VBox(); self.vbox.set_spacing(4)
         hbox = Gtk.HBox()
 
         hbox.pack_start(Gtk.Label("  "), 0, 0, 0)
@@ -143,8 +143,8 @@ class MainWindow():
 def     OnExit(butt, arg = None, prompt = True):
 
     global mained
-    mained.mywin.set_title("Exiting ...")
-    pgutils.usleep(100)
+    #mained.mywin.set_title("Exiting ...")
+    #pgutils.usleep(100)
     mained.mywin.get_root_window().set_cursor(Gdk.Cursor(Gdk.CursorType.ARROW))
     #print("Exited")
     Gtk.main_quit()
@@ -196,3 +196,4 @@ if __name__ == "__main__":
 
 
 # EOF
+
