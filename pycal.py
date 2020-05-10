@@ -6,6 +6,8 @@ import signal, os, time, sys, subprocess, platform, random
 import ctypes, datetime, sqlite3, warnings, math, pickle
 from calendar import monthrange
 
+import pycalent
+
 sys.path.append('../common')
 import pggui, pgutils, pgsimp, pgbox
 
@@ -33,241 +35,6 @@ daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
             "Oct", "Nov", "Dec")
 
-check_fill = ("Notify", "Sound ", "Popup ", "Beep  ",  "Email ")
-
-def spinner(startx, endx, default = 1):
-
-    adj2 = Gtk.Adjustment(startx, 1.0, endx, 1.0, 5.0, 0.0)
-    spin2 = Gtk.SpinButton.new(adj2, 0, 0)
-    spin2.set_value(default)
-    spin2.set_wrap(True)
-    return spin2
-
-
-class CalEntry(Gtk.Window):
-
-    def __init__(self, hx, hy, self2, callb = None):
-
-        #print("CalEntry init", hx, hy)
-
-        Gtk.Window.__init__(self)
-        self.callb = callb
-        self.set_accept_focus(True);
-        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
-        self.alt = False
-        self.uuid = pgutils.randstr(12)
-
-        mx2, my2 = self2.get_pointer()
-        hhh2 = self2.rect.height / 60
-        hhh2 = min(hhh2, 12) + 6
-        (nnn, ttt, pad, xx, yy) = self2.darr[hx][hy]
-
-        arr = []
-        try:
-            arr = self2.xtext[hx][hy]
-            idx = int(((my2 - (hhh2 + 6)) - yy) // hhh2)
-            idx = min(idx, len(arr)-1)
-        except:
-            pass
-
-        #strx = arr[idx]
-
-        sss = ttt.strftime("%m-%d-%y")
-        self.set_title("Calendar Item Entry for " + sss)
-
-        row = 0; col = 0
-        self.connect("button-press-event", self.area_button)
-        self.connect("key-press-event", self.area_key)
-        self.connect("key-release-event", self.area_key)
-
-        vbox = Gtk.VBox();
-        self.ptab = Gtk.Table(); self.ptab.set_homogeneous(False)
-        self.ptab.set_col_spacings(4); self.ptab.set_row_spacings(4)
-
-        ds = spinner(0, 31, ttt.day)
-        mms = spinner(1, 12, ttt.month)
-        ys = spinner(1995, 2100, ttt.year)
-
-        ds.set_sensitive(False); mms.set_sensitive(False); ys.set_sensitive(False);
-
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-
-        self.ptab.attach_defaults(pggui.Label(" D_ay: ", ds), col, col+1,  row, row + 1)  ; col += 1
-        self.ptab.attach_defaults(ds, col, col+1,  row, row + 1)            ; col += 1
-
-        self.ptab.attach_defaults(pggui.Label(" Mon_th: ", mms), col, col+1,  row, row + 1)     ; col += 1
-        self.ptab.attach_defaults(mms,  col, col+1,  row, row + 1)              ; col += 1
-
-        self.ptab.attach_defaults(pggui.Label(" Y_ear: ", ys),  col, col+1,  row, row + 1)     ; col += 1
-        self.ptab.attach_defaults(ys,  col, col+1,  row, row + 1)              ; col += 1
-        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
-
-        row += 1; col = 0
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-
-        nowh = ttt.hour; nowm = ttt.minute
-        if ttt.hour == 0 and ttt.minute == 0:
-            tnow = datetime.datetime.today()
-            nowh = tnow.hour; nowm = tnow.minute
-
-        hs = spinner(0, 24, nowh);  ms = spinner(0, 31, nowm)
-
-        self.ptab.attach_defaults(pggui.Label(" Hour: ", hs), col, col+1,  row, row + 1)  ; col += 1
-        self.ptab.attach_defaults(hs, col, col+1,  row, row + 1)            ; col += 1
-
-        self.ptab.attach_defaults(pggui.Label(" Minute: ", ms), col, col+1,  row, row + 1)     ; col += 1
-        self.ptab.attach_defaults(ms,  col, col+1,  row, row + 1)              ; col += 1
-
-        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
-
-        row += 1; col = 0
-        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
-
-        self.nowarr = ((ds, mms, ys, hs, ms))
-
-        # ----------------------------------------------------------------
-
-        self.dtab = Gtk.Table(); self.dtab.set_homogeneous(False)
-        self.dtab.set_col_spacings(4); self.dtab.set_row_spacings(4)
-
-        self.alarr = []
-        for aa in range(3):
-            row += 1; col = 0
-            cb = Gtk.CheckButton()
-            hs = spinner(0, 23); ms = spinner(0, 59); rs = spinner(0, 59)
-
-            self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
-
-            self.dtab.attach_defaults(pggui.Label(" Alarm _%d Enabled: " % (aa+1), cb, "Enable / Disable"), col, col+1, row, row + 1); col += 1
-            self.dtab.attach_defaults(cb, col, col+1, row, row + 1); col += 1
-
-            self.dtab.attach_defaults(pggui.Label(" _Hour: "), col, col+1,  row, row + 1)  ; col += 1
-            self.dtab.attach_defaults(hs, col, col+1,  row, row + 1)            ; col += 1
-
-            self.dtab.attach_defaults(pggui.Label(" Minute: "), col, col+1,  row, row + 1)     ; col += 1
-            self.dtab.attach_defaults(ms,  col, col+1,  row, row + 1)              ; col += 1
-
-            self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
-
-            row += 1  ; col = 0
-
-            self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-
-            hbox = Gtk.HBox(); cccarr = []
-            for aa in check_fill:
-                ccc = Gtk.CheckButton(aa)
-                cccarr.append(ccc)
-                hbox.pack_start(ccc, 0, 0, 0)
-
-            self.dtab.attach_defaults(hbox,  col+3, col+6,  row, row + 1)              ; col += 6
-            self.alarr.append([cb, hs, ms, rs, cccarr])
-
-            row += 1  ; col = 0
-            self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-
-        # ----------------------------------------------------------------
-
-        hbox = Gtk.HBox(); lab = pggui.Label(ttt.ctime(), font = "Sans 16")
-        lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
-
-        hbox.pack_start(pggui.Label(" "), 0, 0, 4)
-        hbox.pack_start(lab, 1, 1, 4)
-        hbox.pack_start(pggui.Label(" "), 0, 0, 4)
-
-        arrt = ((" _Subject: ", "aa"), (" _Description: ", "hello"), (" _Notes: ", "notes"))
-        self.table = pggui.TextTable(arrt, textwidth=85)
-        if len(arr):
-            self.table.texts[0].set_text(arr[idx])
-
-        self.edit = pgsimp.SimpleEdit()
-        self.edit.set_size_request(100, 100)
-
-        vbox.pack_start(hbox, 0, 0, 2)
-
-        hbox3 = Gtk.HBox()
-        hbox3.pack_start(pggui.Label(" "), 0, 0, 0)
-        hbox3.pack_start(self.table, 0, 0, 4)
-        hbox3.pack_start(pggui.Label(" "), 0, 0, 0)
-
-        hbox4 = Gtk.HBox()
-        hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
-        hbox4.pack_start(self.edit, 1, 1, 4)
-        hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
-
-        vbox.pack_start(self.ptab, 0, 0, 4)
-        vbox.pack_start(self.dtab, 0, 0, 4)
-        vbox.pack_start(hbox3, 0, 0, 4)
-
-        hbox7 = Gtk.HBox()
-        hbox7.pack_start(pggui.Label(" "), 0, 0, 4)
-        hbox7.pack_start(pggui.Label("_Free form text:", self.edit), 0, 0, 4)
-        hbox7.pack_start(pggui.Label(" "), 1, 1, 4)
-        vbox.pack_start(hbox7, 0, 0, 4)
-
-        vbox.pack_start(hbox4, 0, 0, 4)
-
-        hbox6 = Gtk.HBox()
-        bbb1 = pggui.WideButt("_Cancel", self.cancel)
-        bbb2 = pggui.WideButt(" OK (E_xit)  ", self.ok)
-        hbox6.pack_start(pggui.Label(" "), 1, 1, 0)
-        hbox6.pack_start(bbb1, 0, 0, 2);   hbox6.pack_start(bbb2, 0, 0, 2)
-
-        vbox.pack_start(hbox6, 0, 0, 4)
-
-        self.add(vbox)
-
-        self.show_all()
-        self.set_modal(True)
-        self.set_keep_above(True)
-
-    def area_key(self, area, event):
-
-        #print("Keyval: ", event.keyval)
-
-        if  event.type == Gdk.EventType.KEY_PRESS:
-            if event.keyval == Gdk.KEY_Alt_L or \
-                    event.keyval == Gdk.KEY_Alt_R:
-                self.alt = True;
-
-        if event.keyval == Gdk.KEY_Tab:
-            #print ("pedwin TREE TAB", event.keyval)
-            pass
-
-        if event.keyval == Gdk.KEY_Escape:
-            #print (" ESC ", event.keyval)
-            self.cancel(None)
-
-        if event.keyval >= Gdk.KEY_1 and event.keyval <= Gdk.KEY_9:
-            #print ("pedwin Alt num", event.keyval - Gdk.KEY_1)
-            pass
-
-        elif  event.type == Gdk.EventType.KEY_RELEASE:
-            if event.keyval == Gdk.KEY_Alt_L or \
-                  event.keyval == Gdk.KEY_Alt_R:
-                self.alt = False;
-
-    def ok(self, buff):
-        if self.callb:
-            self.callb("OK", self)
-        self.destroy()
-        pass
-
-    def cancel(self, buff):
-        if self.callb:
-            self.callb("CANCEL", self)
-        self.destroy()
-        pass
-
-    def area_button(self, butt, arg):
-        #print("Button press in CalEntry")
-        pass
-
 class CalPopup(Gtk.Window):
 
     def __init__(self, strx):
@@ -289,15 +56,6 @@ class CalPopup(Gtk.Window):
     def area_button(self, butt, arg):
         print("Button press in tooltip")
         pass
-
-class   CalStruct():
-    def __init__(self, nnn = None, ttt = None, pad = None):
-        self.nnn = nnn
-        self.ttt = ttt
-        self.pad = pad
-
-    def __str__(self):
-        return "%d %s %d" % (self.nnn, str(self.ttt), self.pad)
 
 class CalCanvas(Gtk.DrawingArea):
 
@@ -409,14 +167,9 @@ class CalCanvas(Gtk.DrawingArea):
                     ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn+1)
 
                 xx = aa * pitchx;  yy = bb * pitchy + self.head
-                #sss = CalStruct(nnn, ttt, pad)
                 lastd.append((nnn, ttt, pad, xx, yy))
 
         #print(self.xtext)
-        #for aa in range(7):
-        #    for bb in range(6):
-        #        print("struct", aa, bb, str(self.darr[aa][bb]))
-        #    print("--")
 
 
     def set_date(self, dt):
@@ -478,6 +231,7 @@ class CalCanvas(Gtk.DrawingArea):
                         #self.tt.move(posx + mx - 12, posy + my + self.head - 12)
                         self.tt.show_all()
                     except:
+                        print(sys.exc_info())
                         pass
 
         self.fired -= 1
@@ -498,7 +252,9 @@ class CalCanvas(Gtk.DrawingArea):
             try:
                 self.tt.destroy()
             except:
+                print(sys.exc_info())
                 pass
+
             self.popped = False
         else:
             self.fired += 1
@@ -538,10 +294,10 @@ class CalCanvas(Gtk.DrawingArea):
                     except: pass
                 hx, hy = self.hit_test(event.x, event.y)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
-                sdd = ttt.strftime("%a %d-%b-%y")
+                sdd = ttt.strftime("%a %d-%b-%Y")
                 self.menu = pggui.Menu(("Selection: %s" % sdd, "New Calendar Entry",
-                                            "Edit Day"),
-                                self.menucb, event)
+                                            "Edit entry", "Edit Day"),
+                                                self.menucb, event)
             self.queue_draw()
 
         elif  event.type == Gdk.EventType.BUTTON_RELEASE:
@@ -560,7 +316,7 @@ class CalCanvas(Gtk.DrawingArea):
                     self.popped = False
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
                 if not pad:
-                    self.dlg = CalEntry(hx, hy, self, self.done_dlg)
+                    self.dlg = pycalent.CalEntry(hx, hy, self, self.done_dlg)
 
 
     def menucb(self, txt, cnt):
@@ -574,10 +330,12 @@ class CalCanvas(Gtk.DrawingArea):
                 self.popped = False
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
-                self.dlg = CalEntry(hx, hy, self, self.done_dlg)
+                self.dlg = pycalent.CalEntry(hx, hy, self, self.done_dlg)
 
         if cnt == 2:
-            print("Editing DAY")
+            print("Editing entry")
+        if cnt == 3:
+            print("Editing day")
 
     def done_dlg(self, res, dlg):
 
@@ -607,26 +365,38 @@ class CalCanvas(Gtk.DrawingArea):
         xalarr = []
         for cc in dlg.alarr:
             #print("cc", cc[0].get_active(), cc[1].get_value(), \
-            #cc[2].get_value(),cc[3].get_value(), end = " ")
+            #cc[2].get_value(),  end = " ")
 
             idx = 0; ddd = []
-            for dd in cc[4]:
+            # Last entry
+            for dd in cc[3]:
                 #print("%s=%d" % (check_fill[idx].strip(), dd.get_active()), end = " ")
                 ddd.append(dd.get_active())
                 idx += 1
+
+            # Assemble, append
             ccc = (cc[0].get_active(), cc[1].get_value(), \
-                        cc[2].get_value(), cc[3].get_value(), ddd)
+                        cc[2].get_value(),  ddd)
             xalarr.append(ccc)
             #print()
 
-        self.xarr.append((dlg.uuid, txtarr, xalarr, xnowarr))
+        arrx = (dlg.uuid, txtarr, xalarr, xnowarr)
+        self.xarr.append(arrx)
+        #print(arrx)
 
-        print(self.xarr)
+    # --------------------------------------------------------------------
 
+    def get_daydat(self, ddd):
+        arr = []
+        for aa in self.xarr:
+            last = aa[len(aa)-1]
+            if last[0] == ddd.day and last[1] == ddd.month and last[2] == ddd.year:
+                #print("Date match")
+                arr.append(aa)
+        return arr
 
     def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
-        #aa = int(aa); bb = int(bb)
         (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
 
         self.cr.rectangle(xxx, yyy, www, hhh)
@@ -635,12 +405,6 @@ class CalCanvas(Gtk.DrawingArea):
         hhh2 = self.rect.height / 60
         hhh2 = min(hhh2, 12)
 
-        #if not pad:
-        #    xx2, yy2 = self.get_pointer()
-        #    self.cr.set_source_rgba(255/255, 255/255, 255/255)
-        #    self.cr.rectangle(xxx, yy2, www, hhh2)
-        #    self.cr.fill()
-
         self.cr.set_source_rgba(25/255, 55/255, 25/255)
         self.fd.set_family("Arial")
 
@@ -648,15 +412,27 @@ class CalCanvas(Gtk.DrawingArea):
         self.pangolayout.set_font_description(self.fd)
         prog = yyy
 
-        try:
-            for sss in self.xtext[aa][bb]:
-                self.pangolayout.set_text(sss, len(sss))
-                txx, tyy = self.pangolayout.get_pixel_size()
-                self.cr.move_to(xxx, prog)
-                PangoCairo.show_layout(self.cr, self.pangolayout)
-                prog += tyy
-        except:
-            pass
+        arrd = self.get_daydat(ttt)
+        arrsd = sorted(arrd, key=lambda val: val[3][3] * 60 + val[3][4] )
+        if len(arrsd):
+            try:
+                for sss in arrsd:
+                    #print("sss", sss[3][3], sss[3][4])
+                    txt = "%02d:%02d " % (sss[3][3], sss[3][4])
+                    if sss[1][0]:
+                        txt += sss[1][0]
+                    else:
+                        txt += "Empty Subject"
+
+                    self.pangolayout.set_text(txt, len(txt))
+                    txx, tyy = self.pangolayout.get_pixel_size()
+                    self.cr.move_to(xxx, prog)
+                    prog += tyy
+                    PangoCairo.show_layout(self.cr, self.pangolayout)
+
+            except:
+                print(sys.exc_info())
+                pass
 
         self.cr.new_path()
         self.cr.reset_clip()
@@ -754,7 +530,7 @@ class CalCanvas(Gtk.DrawingArea):
                             rrr, ggg, bbb = (200/255, 230/255, 200/255)
                         elif self.shx == aa and self.shy == bb:
                             # Selected
-                            rrr, ggg, bbb = (230/255, 200/255, 200/255)
+                            rrr, ggg, bbb = (200/255, 220/255, 220/255)
                         else:
                             rrr, ggg, bbb = (210/255, 210/255, 210/255)
 
@@ -762,7 +538,7 @@ class CalCanvas(Gtk.DrawingArea):
                         #print("Today", ttt)
                         rrr, ggg, bbb = (230/255, 255/255, 220/255)
                     elif self.shx == aa and self.shy == bb:
-                        rrr, ggg, bbb = (255/255, 235/255, 235/255)
+                        rrr, ggg, bbb = (215/255, 235/255, 235/255)
                     else:
                         rrr, ggg, bbb = (255/255, 255/255, 255/255)
                 else:
@@ -789,7 +565,14 @@ class CalCanvas(Gtk.DrawingArea):
 
                 self.fill_day(aa, bb, ttt, xx + border, yy + border + tyy,
                                         pitchx - 2*border, pitchy - 2*border - tyy)
-
+                '''
+                # Draw quarter ticks
+                cr.set_source_rgba(10/255, 10/255, 125/255)
+                tth = (pitchy - 2*border) / 4
+                for aaa in range(4):
+                    cr.move_to(xx +2, yy + tth * (aaa + 1))
+                    cr.line_to(xx+10, yy + tth * (aaa + 1))
+                '''
                 ww = pitchx; hh = pitchy
 
                 if self.shx == aa and self.shy == bb:
@@ -815,6 +598,8 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
+
 
 
 

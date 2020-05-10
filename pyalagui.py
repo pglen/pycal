@@ -62,7 +62,7 @@ class MainWindow():
 
         self.mywin.set_position(Gtk.WindowPosition.CENTER)
         mwh = min(www, hhh)
-        self.mywin.set_default_size(7*mwh/8, 5*mwh/8)
+        self.mywin.set_default_size(3*www/4, 3*hhh/4)
         self.mywin.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
         self.mywin.connect("unmap", OnExit)
         self.populate()
@@ -102,7 +102,7 @@ class MainWindow():
         hbox = Gtk.HBox()
 
         hbox.pack_start(Gtk.Label("  "), 0, 0, 0)
-        self.menu = pggui.MenuButt(("Open", "Close", "Exit"), self.menucom)
+        self.menu = pggui.MenuButt(("Open", "Close", "Dump Cal", "Test item", "Exit"), self.menucom)
         hbox.pack_start(self.menu, 0, 0, 0)
 
         hbox.pack_start(Gtk.Label("    "), 1, 1, 0)
@@ -134,10 +134,19 @@ class MainWindow():
         #self.cal.calc_curr()
         self.mywin.add(self.vbox)
 
+    # --------------------------------------------------------------------
     def menucom(self, menu, item):
-        print("menu", menu, item)
+        #print("menu called", menu, item)
 
+        if item == 0:
+            print("Open")
+        if item == 1:
+            print("Save")
         if item == 2:
+            print("Cal dump",  mained.cal.xarr)
+        if item == 3:
+            print("Cal day",  mained.cal.get_daydat(datetime.datetime.today() ))
+        if "xit" in menu:
             OnExit(self)
 
 def     OnExit(butt, arg = None, prompt = True):
@@ -196,4 +205,5 @@ if __name__ == "__main__":
 
 
 # EOF
+
 
