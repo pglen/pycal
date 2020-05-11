@@ -16,7 +16,7 @@ from gi.repository import Gdk
 gi.require_version('Notify', '0.7')
 from gi.repository import Notify
 
-import pyala, pycal
+import pyala, pycal, pycallog
 
 sys.path.append('../common')
 
@@ -54,7 +54,7 @@ class MainWindow():
 
         # Create the toplevel window
         self.mywin = Gtk.Window()
-
+        self.logwin = pycallog.LogWin()
         self.mywin.set_icon_from_file("pycal.png")
 
         #self.mywin.set_title("Calendar Alarm Monitor")
@@ -102,7 +102,7 @@ class MainWindow():
         hbox = Gtk.HBox()
 
         hbox.pack_start(Gtk.Label("  "), 0, 0, 0)
-        self.menu = pggui.MenuButt(("Open", "Close", "Dump Cal", "Test item", "Exit"), self.menucom)
+        self.menu = pggui.MenuButt(("Open", "Close", "Dump Cal", "Show Log", "Exit"), self.menucom)
         hbox.pack_start(self.menu, 0, 0, 0)
 
         hbox.pack_start(Gtk.Label("    "), 1, 1, 0)
@@ -145,7 +145,9 @@ class MainWindow():
         if item == 2:
             print("Cal dump",  mained.cal.xarr)
         if item == 3:
-            print("Cal day",  mained.cal.get_daydat(datetime.datetime.today() ))
+            print("Showing log")    #,  mained.cal.get_daydat(datetime.datetime.today() ))
+            self.logwin.show_log()
+
         if "xit" in menu:
             OnExit(self)
 
@@ -155,6 +157,8 @@ def     OnExit(butt, arg = None, prompt = True):
     #mained.mywin.set_title("Exiting ...")
     #pgutils.usleep(100)
     mained.mywin.get_root_window().set_cursor(Gdk.Cursor(Gdk.CursorType.ARROW))
+
+    mainwin.logwin.append_logwin("Ended app: %s\r" % (datetime.datetime.today().ctime()) )
     #print("Exited")
     Gtk.main_quit()
 
@@ -197,12 +201,15 @@ if __name__ == "__main__":
         if aa[0] == "-t": show_timing = True
         if aa[0] == "-o": use_stdout = True
 
-    #print("Started pyalagui")
+    print("Started pyalagui")
 
     mainwin = MainWindow()
+    mainwin.logwin.append_logwin("Started app: %s\r" % (datetime.datetime.today().ctime()) )
 
     Gtk.main()
+    #print("After Gtk Main")
 
+    print("Ended pyalagui")
 
 # EOF
 

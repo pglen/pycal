@@ -23,14 +23,6 @@ from gi.repository import PangoCairo
 
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 
-def spinner(startx, endx, default = 1):
-
-    adj2 = Gtk.Adjustment(startx, 1.0, endx, 1.0, 5.0, 0.0)
-    spin2 = Gtk.SpinButton.new(adj2, 0, 0)
-    spin2.set_value(default)
-    spin2.set_wrap(True)
-    return spin2
-
 # ------------------------------------------------------------------------
 
 class CalEntry(Gtk.Window):
@@ -44,6 +36,7 @@ class CalEntry(Gtk.Window):
         self.set_accept_focus(True);
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.alt = False
+        self.alarr = []
         self.uuid = pgutils.randstr(12)
 
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -57,20 +50,16 @@ class CalEntry(Gtk.Window):
         xdarr = self2.get_daydat(ttt)
         xdarrs = sorted(xdarr, key=lambda val: val[3][3] * 60 + val[3][4] )
 
-        #print("xdarr", xdarr)
-        #for sss in xdarr:
-        #    if  sss[3][3] == ttt.hour and sss[3][4] == ttt.minute:
-        #        print("found me", sss[3][3], sss[3][4])
-        #try:
-        #    idx = min(idx, len(xdarrs)-1)
-        #    print("current",  xdarrs[idx])
-        #except:
-        #    pass
-
         idx = int(((yyyy - (hhh2 + 4)) - yy) // hhh2)
-        print("len", len(xdarrs), "idx", idx)
+        #print("len", len(xdarrs), "idx", idx)
 
-        self.set_title("Calendar Item Entry")
+        title = "Calendar Item Entry"
+        if idx >= len(xdarrs):
+            title += " (New) "
+        else:
+            title += " %02d:%02d " % (xdarrs[idx][3][3], xdarrs[idx][3][4])
+
+        self.set_title(title)
 
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
@@ -80,9 +69,9 @@ class CalEntry(Gtk.Window):
         self.ptab = Gtk.Table(); self.ptab.set_homogeneous(False)
         self.ptab.set_col_spacings(4); self.ptab.set_row_spacings(4)
 
-        ds = spinner(0, 31, ttt.day)
-        mms = spinner(1, 12, ttt.month)
-        ys = spinner(1995, 2100, ttt.year)
+        ds = pggui.Spinner(0, 31, ttt.day)
+        mms = pggui.Spinner(1, 12, ttt.month)
+        ys = pggui.Spinner(1995, 2100, ttt.year)
 
         row = 0; col = 0
         ds.set_sensitive(False); mms.set_sensitive(False); ys.set_sensitive(False);
@@ -100,12 +89,67 @@ class CalEntry(Gtk.Window):
         self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
                             Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
 
-        nowh = ttt.hour; nowm = ttt.minute
-        if ttt.hour == 0 and ttt.minute == 0:
+        #nowh = ttt.hour; nowm = ttt.minute
+        if idx >= len(xdarrs):
             tnow = datetime.datetime.today()
             nowh = tnow.hour; nowm = tnow.minute
+            # See if there is an entry, step forward
+            for ff in range(10):
+                got = False
+                for fff in xdarrs:
+                    if fff[3][3] == nowh:
+                        if fff[3][4] == nowm + ff:
+                            got = True
+                            break
 
-        hs = spinner(0, 23, nowh);  ms = spinner(0, 59, nowm);  dds = spinner(0, 1000, 60-nowm)
+                # Assign, contain
+                if not got:
+                    nowm += ff
+                    nowm = nowm % 59
+                    break
+            durm = 60-nowm
+        else:
+            nowh = xdarrs[idx][3][3]
+            nowm = xdarrs[idx][3][4]
+            durm = xdarrs[idx][3][5]
+
+        def change_hs(val):
+            #print("change_hs", val)
+            if self.alarr:
+                self.alarr[0][1].set_value(val)
+
+        def change_ms(val):
+            #print("change_ms", val)
+            if self.alarr:
+                self.alarr[0][2].set_value(val)
+
+        def change_dds(val):
+            print("change_dds", val)
+
+        hs  = pggui.Spinner(0, 23, nowh, change_hs);
+        ms  = pggui.Spinner(0, 59, nowm, change_ms);
+        dds = pggui.Spinner(0, 1000, durm, change_dds)
+
+        def set_hs(val):
+            #print("set_hs", val)
+            hs.set_value(int(val))
+
+        def set_ms(val):
+            #print("set_ms", val)
+            ms.set_value(int(val))
+
+        def set_dds(val):
+            #print("set_dds", val)
+            dds.set_value(int(val))
+
+        row += 1; col = 0
+        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+        self.ptab.attach_defaults(pgsimp.HourSel(set_hs), col, col+1,  row, row + 1) ; col += 1
+        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+        self.ptab.attach_defaults(pgsimp.MinSel(set_ms), col, col+1,  row, row + 1) ; col += 1
+        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+        self.ptab.attach_defaults(pgsimp.MinSel(set_dds), col, col+1,  row, row + 1) ; col += 1
 
         row += 1; col = 0
         self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
@@ -131,23 +175,25 @@ class CalEntry(Gtk.Window):
         self.dtab = Gtk.Table(); self.dtab.set_homogeneous(False)
         self.dtab.set_col_spacings(4); self.dtab.set_row_spacings(4)
 
-        self.alarr = []
         for aa in range(3):
             row += 1; col = 0
-            cb = Gtk.CheckButton()
-            hs = spinner(0, 23); ms = spinner(0, 59)
+            cb2 = Gtk.CheckButton()
+            hs2 = pggui.Spinner(0, 23, 0); ms2 = pggui.Spinner(0, 59, 0)
+            if aa == 0:
+                hs2.set_value(nowh)
+                ms2.set_value(nowm)
 
             self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
                             Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
 
-            self.dtab.attach_defaults(pggui.Label(" Alarm _%d:  Enabled: " % (aa+1), cb, "Enable / Disable"), col, col+1, row, row + 1); col += 1
-            self.dtab.attach_defaults(cb, col, col+1, row, row + 1); col += 1
+            self.dtab.attach_defaults(pggui.Label(" Alarm _%d:  Enabled: " % (aa+1), cb2, "Enable / Disable"), col, col+1, row, row + 1); col += 1
+            self.dtab.attach_defaults(cb2, col, col+1, row, row + 1); col += 1
 
             self.dtab.attach_defaults(pggui.Label(" _Hour: "), col, col+1,  row, row + 1)  ; col += 1
-            self.dtab.attach_defaults(hs, col, col+1,  row, row + 1)            ; col += 1
+            self.dtab.attach_defaults(hs2, col, col+1,  row, row + 1)            ; col += 1
 
             self.dtab.attach_defaults(pggui.Label(" Minute: "), col, col+1,  row, row + 1)     ; col += 1
-            self.dtab.attach_defaults(ms,  col, col+1,  row, row + 1)              ; col += 1
+            self.dtab.attach_defaults(ms2,  col, col+1,  row, row + 1)              ; col += 1
 
             hbox = Gtk.HBox(); cccarr = []
             for aa in check_fill:
@@ -156,14 +202,14 @@ class CalEntry(Gtk.Window):
                 hbox.pack_start(ccc, 0, 0, 0)
 
             self.dtab.attach_defaults(hbox,  col+3, col+6,  row, row + 1)              ; col += 6
-            self.alarr.append([cb, hs, ms,  cccarr])
+            self.alarr.append([cb2, hs2, ms2, cccarr])
 
             #row += 1  ; col = 0
         self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
 
         # ----------------------------------------------------------------
         #sss = ttt.strftime("%m-%d-%y")
-        sss = ttt.strftime("%a %d-%b-%Y")
+        sss = "%s %02d:%02d" % (ttt.strftime("%a %d-%b-%Y"), nowh, nowm )
 
         hbox = Gtk.HBox(); lab = pggui.Label(sss, font = "Sans 16")
         lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))

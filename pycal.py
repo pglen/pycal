@@ -6,7 +6,7 @@ import signal, os, time, sys, subprocess, platform, random
 import ctypes, datetime, sqlite3, warnings, math, pickle
 from calendar import monthrange
 
-import pycalent
+import pycalent, pycallog
 
 sys.path.append('../common')
 import pggui, pgutils, pgsimp, pgbox
@@ -175,6 +175,7 @@ class CalCanvas(Gtk.DrawingArea):
     def set_date(self, dt):
 
         #print("set_date", dt)
+        pycallog.logwin.append_logwin("Set new date on cal: %s\n" % dt.ctime())
 
         self.freeze = True
         self.xdate = dt
@@ -381,7 +382,17 @@ class CalCanvas(Gtk.DrawingArea):
             #print()
 
         arrx = (dlg.uuid, txtarr, xalarr, xnowarr)
-        self.xarr.append(arrx)
+
+        # See if append or ovewrite
+        done = False
+        for aa in range(len(self.xarr)):
+            if self.xarr[aa][3][3] ==  arrx[3][3] and self.xarr[aa][3][4] ==  arrx[3][4]:
+                done = True
+                self.xarr[aa] = arrx
+                #print ("saved", arrx)
+        if not done:
+            self.xarr.append(arrx)
+
         #print(arrx)
 
     # --------------------------------------------------------------------
@@ -422,7 +433,7 @@ class CalCanvas(Gtk.DrawingArea):
                     if sss[1][0]:
                         txt += sss[1][0]
                     else:
-                        txt += "Empty Subject"
+                        txt += "Empty Subject Line " # + sss[0]
 
                     self.pangolayout.set_text(txt, len(txt))
                     txx, tyy = self.pangolayout.get_pixel_size()
