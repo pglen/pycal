@@ -62,13 +62,15 @@ class CalCanvas(Gtk.DrawingArea):
     def __init__(self, xdate = None, statbox = None):
         Gtk.DrawingArea.__init__(self)
         self.statbox = statbox
-        self.mouevent = None
-        self.xtext = []
-        self.darr = []
-        self.old_hx = 0; self.old_hy = 0
-        self.dlg = None
-        self.xarr = []
+        self.mouevent = self.dlg = None
+        self.xtext = self.darr = self.xarr = self.coll = []
+        self.old_hx = 0; self.old_hy = 0; self.fired = 0;
+        self.popped = self.cnt = 0
         self.shx, self.shy = (-1, -1)
+        self.drag = self.resize = None
+        self.dragcoord = (0,0)
+        self.size2 = (0,0)
+        self.noop_down = False
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -78,7 +80,6 @@ class CalCanvas(Gtk.DrawingArea):
         tmp = datetime.datetime.today()
         self.zdate = datetime.datetime(tmp.year, tmp.month, tmp.day)
 
-        self.fired = 0;  self.popped = 0
         self.set_can_focus(True)
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
 
@@ -86,33 +87,28 @@ class CalCanvas(Gtk.DrawingArea):
         self.connect("motion-notify-event", self.area_motion)
         self.connect("button-press-event", self.area_button)
         self.connect("button-release-event", self.area_button)
-        self.coll = []
-        self.cnt = 0
-        self.drag = None
-        self.resize = None
-        self.dragcoord = (0,0)
-        self.size2 = (0,0)
-        self.noop_down = False
+        self.fd = Pango.FontDescription()
+        self.pangolayout = self.create_pango_layout("a")
+        self._cursors()
+
+    def _cursors(self):
         self.hand = Gdk.Cursor(Gdk.CursorType.HAND1)
         self.arrow = Gdk.Cursor(Gdk.CursorType.ARROW)
         self.sizing =  Gdk.Cursor(Gdk.CursorType.SIZING)
         self.cross =  Gdk.Cursor(Gdk.CursorType.TCROSS)
         self.hair =  Gdk.Cursor(Gdk.CursorType.CROSSHAIR)
-        self.fd = Pango.FontDescription()
-        self.pangolayout = self.create_pango_layout("a")
 
     # Internal function to set up current month
 
     def __calc_curr(self):
 
         # Pre-calculate stuff (will be updated on paint)
-        self.rect =   self.rect = self.get_allocation()
+        self.rect = self.get_allocation()
         self.head =  self.rect.height // 10
         newheight = self.rect.height - self.head
-        pitchx = (self.rect.width) // 7;
-        pitchy = newheight // 6;
-        newheight = self.rect.height - self.head
 
+        pitchx = (self.rect.width) // 7; pitchy = newheight // 6;
+        newheight = self.rect.height - self.head
 
         #print("show date:", self.xdate, daystr[self.xdate.weekday()])
         ydate =  datetime.datetime(self.xdate.year, self.xdate.month, 1)
@@ -338,6 +334,9 @@ class CalCanvas(Gtk.DrawingArea):
         if cnt == 3:
             print("Editing day")
 
+    # --------------------------------------------------------------------
+    # Got data
+
     def done_dlg(self, res, dlg):
 
         #print("Done_dlg", res)
@@ -386,10 +385,15 @@ class CalCanvas(Gtk.DrawingArea):
         # See if append or ovewrite
         done = False
         for aa in range(len(self.xarr)):
-            if self.xarr[aa][3][3] ==  arrx[3][3] and self.xarr[aa][3][4] ==  arrx[3][4]:
+            flag = True
+            for bb in range(len(self.xarr[aa][3])-1):
+                if self.xarr[aa][3][bb] !=  arrx[3][bb]:
+                    flag = False
+            if flag:
                 done = True
                 self.xarr[aa] = arrx
                 #print ("saved", arrx)
+
         if not done:
             self.xarr.append(arrx)
 
@@ -609,6 +613,8 @@ if __name__ == "__main__":
     print("use pyalagui.py")
 
 # EOF
+
+
 
 
 

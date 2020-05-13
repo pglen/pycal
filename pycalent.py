@@ -178,10 +178,22 @@ class CalEntry(Gtk.Window):
         for aa in range(3):
             row += 1; col = 0
             cb2 = Gtk.CheckButton()
-            hs2 = pggui.Spinner(0, 23, 0); ms2 = pggui.Spinner(0, 59, 0)
-            if aa == 0:
-                hs2.set_value(nowh)
-                ms2.set_value(nowm)
+            if len(xdarrs) > idx:
+                if xdarrs[idx][3][aa]:
+                    cb2.set_active(True)
+
+            hs2 = pggui.Spinner(0, 23, 0);
+            #if len(xdarrs) > idx:
+            #    hs2.set_value(xdarrs[idx][1])
+
+            ms2 = pggui.Spinner(0, 59, 0);
+            #if len(xdarrs) > idx:
+            #    ms2.set_value(xdarrs[idx][2])
+
+            #if aa == 0:
+            #    if xdarrs[idx][1] == 0 and xdarrs[idx][2] == 0:
+            #        hs2.set_value(nowh)
+            #        ms2.set_value(nowm)
 
             self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
                             Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
@@ -196,8 +208,10 @@ class CalEntry(Gtk.Window):
             self.dtab.attach_defaults(ms2,  col, col+1,  row, row + 1)              ; col += 1
 
             hbox = Gtk.HBox(); cccarr = []
-            for aa in check_fill:
-                ccc = Gtk.CheckButton(aa)
+            for bb in range(len(check_fill)):
+                ccc = Gtk.CheckButton(check_fill[bb])
+                #if xdarrs[aa][3][bb]:
+                #      ccc.set_active(True)
                 cccarr.append(ccc)
                 hbox.pack_start(ccc, 0, 0, 0)
 
@@ -275,6 +289,8 @@ class CalEntry(Gtk.Window):
         self.set_modal(True)
         self.set_keep_above(True)
 
+    # --------------------------------------------------------------------
+
     def area_key(self, area, event):
 
         #print("Keyval: ", event.keyval)
@@ -316,6 +332,8 @@ class CalEntry(Gtk.Window):
     def area_button(self, butt, arg):
         #print("Button press in CalEntry")
         pass
+
+
 
 
 

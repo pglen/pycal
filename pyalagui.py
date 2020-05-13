@@ -201,16 +201,13 @@ if __name__ == "__main__":
         if aa[0] == "-t": show_timing = True
         if aa[0] == "-o": use_stdout = True
 
-    print("Started pyalagui")
-
+    #print("Started pyalagui")
     mainwin = MainWindow()
     mainwin.logwin.append_logwin("Started app: %s\r" % (datetime.datetime.today().ctime()) )
-
     Gtk.main()
-    #print("After Gtk Main")
-
-    print("Ended pyalagui")
+    #print("Ended pyalagui")
 
 # EOF
+
 
 
