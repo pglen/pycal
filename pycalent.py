@@ -48,7 +48,7 @@ class CalEntry(Gtk.Window):
         hhh2 = self2.rect.height / 60; hhh2 = min(hhh2, 12) + 6
 
         xdarr = self2.get_daydat(ttt)
-        xdarrs = sorted(xdarr, key=lambda val: val[3][3] * 60 + val[3][4] )
+        xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
 
         idx = int(((yyyy - (hhh2 + 4)) - yy) // hhh2)
         #print("len", len(xdarrs), "idx", idx)
@@ -56,10 +56,14 @@ class CalEntry(Gtk.Window):
         title = "Calendar Item Entry"
         if idx >= len(xdarrs):
             title += " (New) "
+            xdat = []
         else:
-            title += " %02d:%02d " % (xdarrs[idx][3][3], xdarrs[idx][3][4])
+            xdat = xdarrs[idx]
+            title += " %02d:%02d " % (xdat[1][3], xdat[1][4])
 
         self.set_title(title)
+
+        print ("xdat load", xdat)
 
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
@@ -97,8 +101,8 @@ class CalEntry(Gtk.Window):
             for ff in range(10):
                 got = False
                 for fff in xdarrs:
-                    if fff[3][3] == nowh:
-                        if fff[3][4] == nowm + ff:
+                    if fff[1][3] == nowh:
+                        if fff[1][4] == nowm + ff:
                             got = True
                             break
 
@@ -109,9 +113,9 @@ class CalEntry(Gtk.Window):
                     break
             durm = 60-nowm
         else:
-            nowh = xdarrs[idx][3][3]
-            nowm = xdarrs[idx][3][4]
-            durm = xdarrs[idx][3][5]
+            nowh = xdarrs[idx][1][3]
+            nowm = xdarrs[idx][1][4]
+            durm = xdarrs[idx][1][5]
 
         def change_hs(val):
             #print("change_hs", val)
@@ -178,17 +182,14 @@ class CalEntry(Gtk.Window):
         for aa in range(3):
             row += 1; col = 0
             cb2 = Gtk.CheckButton()
-            if len(xdarrs) > idx:
-                if xdarrs[idx][3][aa]:
-                    cb2.set_active(True)
-
+            if xdat:
+                cb2.set_active(xdat[3][aa][0])
             hs2 = pggui.Spinner(0, 23, 0);
-            #if len(xdarrs) > idx:
-            #    hs2.set_value(xdarrs[idx][1])
-
+            if xdat:
+                hs2.set_value(xdat[3][aa][1])
             ms2 = pggui.Spinner(0, 59, 0);
-            #if len(xdarrs) > idx:
-            #    ms2.set_value(xdarrs[idx][2])
+            if xdat:
+                ms2.set_value(xdat[3][aa][2])
 
             #if aa == 0:
             #    if xdarrs[idx][1] == 0 and xdarrs[idx][2] == 0:
@@ -210,8 +211,10 @@ class CalEntry(Gtk.Window):
             hbox = Gtk.HBox(); cccarr = []
             for bb in range(len(check_fill)):
                 ccc = Gtk.CheckButton(check_fill[bb])
-                #if xdarrs[aa][3][bb]:
-                #      ccc.set_active(True)
+
+                if xdat:
+                      ccc.set_active(xdat[3][aa][3][bb])
+
                 cccarr.append(ccc)
                 hbox.pack_start(ccc, 0, 0, 0)
 
@@ -239,10 +242,10 @@ class CalEntry(Gtk.Window):
         self.edit.set_size_request(200, 200)
 
         if len(xdarrs) > idx:
-            self.table.texts[0].set_text(xdarrs[idx][1][0])
-            self.table.texts[1].set_text(xdarrs[idx][1][1])
-            self.table.texts[2].set_text(xdarrs[idx][1][2])
-            self.edit.set_text(xdarrs[idx][1][3])
+            self.table.texts[0].set_text(xdarrs[idx][2][0])
+            self.table.texts[1].set_text(xdarrs[idx][2][1])
+            self.table.texts[2].set_text(xdarrs[idx][2][2])
+            self.edit.set_text(xdarrs[idx][2][3])
 
         # ----------------------------------------------------------------
         # Assemble all of it
@@ -318,10 +321,48 @@ class CalEntry(Gtk.Window):
                 self.alt = False;
 
     def ok(self, buff):
-        if self.callb:
-            self.callb("OK", self)
+
+        if not self.callb:
+            self.destroy()
+            return
+
+        #print("UUID:", self.uuid)
+        txtarr = []
+        #print ("got data", end = " ")
+        for bb in self.table.texts:
+            #print(bb.get_text(), end = " ")
+            txtarr.append(bb.get_text())
+
+        txtarr.append(self.edit.get_text())
+        #print("Free form:", self.edit.get_text())
+
+        # Cleanse controls out of the data, assemble it
+        xnowarr = [];  xalarr = []
+        for cc in self.alarr:
+            #print("cc", cc[0].get_active(), cc[1].get_value(), \
+            #cc[2].get_value(),  end = " ")
+            idx = 0; ddd = []
+            # Last entry
+            for dd in cc[3]:
+                #print("%s=%d" % (check_fill[idx].strip(), dd.get_active()), end = " ")
+                ddd.append(dd.get_active())
+                idx += 1
+
+            # Assemble, append
+            ccc = (cc[0].get_active(), cc[1].get_value(), \
+                        cc[2].get_value(),  ddd)
+            xalarr.append(ccc)
+            #print()
+
+        #print("Now array:", end = " ")
+        for ww in self.nowarr:
+            #print(ww.get_value(), end = " ")
+            xnowarr.append(ww.get_value())
+        #print()
+
+        arrx = (self.uuid, xnowarr, txtarr, xalarr)
+        self.callb("OK", arrx)
         self.destroy()
-        pass
 
     def cancel(self, buff):
         if self.callb:
@@ -332,6 +373,7 @@ class CalEntry(Gtk.Window):
     def area_button(self, butt, arg):
         #print("Button press in CalEntry")
         pass
+
 
 
 

@@ -201,13 +201,26 @@ if __name__ == "__main__":
         if aa[0] == "-t": show_timing = True
         if aa[0] == "-o": use_stdout = True
 
+    data_dir = os.path.expanduser("~/.pycal")
+    try:
+        if not os.path.isdir(data_dir):
+            os.mkdir(data_dir)
+    except:
+        print("Cannot make calendar data dir.")
+        sys.exit(1)
+
+    calfile = data_dir + os.sep + "caldata.sql"
+
     #print("Started pyalagui")
     mainwin = MainWindow()
+    mainwin.cal.set_dbfile(calfile)
     mainwin.logwin.append_logwin("Started app: %s\r" % (datetime.datetime.today().ctime()) )
+
     Gtk.main()
     #print("Ended pyalagui")
 
 # EOF
+
 
 
 

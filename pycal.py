@@ -91,6 +91,16 @@ class CalCanvas(Gtk.DrawingArea):
         self.pangolayout = self.create_pango_layout("a")
         self._cursors()
 
+    # --------------------------------------------------------------------
+    def set_dbfile(self, dbfile):
+
+        self.dbfile = dbfile
+        try:
+            self.sql = calsql(self.dbfile)
+        except:
+            print("Cannot make calendar database.")
+
+
     def _cursors(self):
         self.hand = Gdk.Cursor(Gdk.CursorType.HAND1)
         self.arrow = Gdk.Cursor(Gdk.CursorType.ARROW)
@@ -337,74 +347,39 @@ class CalCanvas(Gtk.DrawingArea):
     # --------------------------------------------------------------------
     # Got data
 
-    def done_dlg(self, res, dlg):
+    def done_dlg(self, res, arrx):
 
-        #print("Done_dlg", res)
 
         if res != "OK":
             return
 
-        #print("UUID:", dlg.uuid)
-        txtarr = []
-        #print ("got data", end = " ")
-        for bb in dlg.table.texts:
-            #print(bb.get_text(), end = " ")
-            txtarr.append(bb.get_text())
-
-        txtarr.append(dlg.edit.get_text())
-        #print("Free form:", dlg.edit.get_text())
-
-        xnowarr = []
-        #print("Now array:", end = " ")
-        for ww in dlg.nowarr:
-            #print(ww.get_value(), end = " ")
-            xnowarr.append(ww.get_value())
-        #print()
-
-        # Cleanse controls out of it
-        xalarr = []
-        for cc in dlg.alarr:
-            #print("cc", cc[0].get_active(), cc[1].get_value(), \
-            #cc[2].get_value(),  end = " ")
-
-            idx = 0; ddd = []
-            # Last entry
-            for dd in cc[3]:
-                #print("%s=%d" % (check_fill[idx].strip(), dd.get_active()), end = " ")
-                ddd.append(dd.get_active())
-                idx += 1
-
-            # Assemble, append
-            ccc = (cc[0].get_active(), cc[1].get_value(), \
-                        cc[2].get_value(),  ddd)
-            xalarr.append(ccc)
-            #print()
-
-        arrx = (dlg.uuid, txtarr, xalarr, xnowarr)
-
         # See if append or ovewrite
         done = False
-        for aa in range(len(self.xarr)):
-            flag = True
-            for bb in range(len(self.xarr[aa][3])-1):
-                if self.xarr[aa][3][bb] !=  arrx[3][bb]:
-                    flag = False
-            if flag:
-                done = True
-                self.xarr[aa] = arrx
-                #print ("saved", arrx)
+        if self.xarr:
+            for aa in range(len(self.xarr)):
+                flag = True
+                curr = self.xarr[aa]
+                for bb in range(len(curr[1])-1):
+                    if curr[1][bb] !=  arrx[1][bb]:
+                        flag = False
+                if flag:
+                    done = True
+                    self.xarr[aa] = arrx
+                    #print("done_dlg: inserted", end = "")
 
         if not done:
             self.xarr.append(arrx)
+            #print("done_dlg: appended", end = "")
 
-        #print(arrx)
+        print(arrx)
 
     # --------------------------------------------------------------------
 
     def get_daydat(self, ddd):
         arr = []
         for aa in self.xarr:
-            last = aa[len(aa)-1]
+            #last = aa[len(aa)-1]
+            last = aa[1]
             if last[0] == ddd.day and last[1] == ddd.month and last[2] == ddd.year:
                 #print("Date match")
                 arr.append(aa)
@@ -428,14 +403,14 @@ class CalCanvas(Gtk.DrawingArea):
         prog = yyy
 
         arrd = self.get_daydat(ttt)
-        arrsd = sorted(arrd, key=lambda val: val[3][3] * 60 + val[3][4] )
+        arrsd = sorted(arrd, key=lambda val: val[1][3] * 60 + val[1][4] )
         if len(arrsd):
             try:
                 for sss in arrsd:
                     #print("sss", sss[3][3], sss[3][4])
-                    txt = "%02d:%02d " % (sss[3][3], sss[3][4])
-                    if sss[1][0]:
-                        txt += sss[1][0]
+                    txt = "%02d:%02d " % (sss[1][3], sss[1][4])
+                    if sss[2][0]:
+                        txt += str(sss[2][0])
                     else:
                         txt += "Empty Subject Line " # + sss[0]
 
@@ -446,7 +421,8 @@ class CalCanvas(Gtk.DrawingArea):
                     PangoCairo.show_layout(self.cr, self.pangolayout)
 
             except:
-                print(sys.exc_info())
+                #print("fill_day", sys.exc_info())
+                pgutils.put_exception("Fill_day")
                 pass
 
         self.cr.new_path()
@@ -604,15 +580,241 @@ class CalCanvas(Gtk.DrawingArea):
                     cr.move_to(xx+ww-2, yy + 2)
                     cr.line_to(xx+ww-ww/4, yy + 2)
 
-
                     cr.stroke()
 
 
-if __name__ == "__main__":
+# -------------------------------------------------------------------
 
-    print("use pyalagui.py")
+class calsql():
+
+    def __init__(self, file):
+
+        #self.take = 0
+        self.errstr = ""
+
+        try:
+            self.conn = sqlite3.connect(file)
+        except:
+            print("Cannot open/create db:", file, sys.exc_info())
+            return
+        try:
+            self.c = self.conn.cursor()
+            # Create table
+            self.c.execute("create table if not exists calendar \
+             (pri INTEGER PRIMARY KEY, key text, val text, val2 text, val3 text)")
+            self.c.execute("create index if not exists kcalendar on calendar (key)")
+            self.c.execute("create index if not exists pcalendar on calendar (pri)")
+            self.c.execute("create table if not exists caldata \
+             (pri INTEGER PRIMARY KEY, key text, val text, val2 text, val3 text)")
+            self.c.execute("create index if not exists kcaldata on caldata (key)")
+            self.c.execute("create index if not exists pcaldata on caldata (pri)")
+
+            self.c.execute("PRAGMA synchronous=OFF")
+            # Save (commit) the changes
+            self.conn.commit()
+        except:
+            print("Cannot insert sql data", sys.exc_info())
+            self.errstr = "Cannot insert sql data" + str(sys.exc_info())
+
+        finally:
+            # We close the cursor, we are done with it
+            #c.close()
+            pass
+
+    # --------------------------------------------------------------------
+    # Return None if no data
+
+    def   get(self, kkk):
+        try:
+            #c = self.conn.cursor()
+            if os.name == "nt":
+                self.c.execute("select * from calendar where key = ?", (kkk,))
+            else:
+                self.c.execute("select * from calendar indexed by kcalendar where key = ?", (kkk,))
+            rr = self.c.fetchone()
+        except:
+            print("Cannot get sql data", sys.exc_info())
+            rr = None
+            self.errstr = "Cannot get sql data" + str(sys.exc_info())
+
+        finally:
+            #c.close
+            pass
+        if rr:
+            return (rr[2], rr[3], rr[4])
+        else:
+            return None
+
+    def   getdata(self, kkk):
+        try:
+            #c = self.conn.cursor()
+            if os.name == "nt":
+                self.c.execute("select * from caldata where key = ?", (kkk,))
+            else:
+                self.c.execute("select * from caldata indexed by kcaldata where key = ?", (kkk,))
+            rr = self.c.fetchone()
+        except:
+            print("Cannot get sql data", sys.exc_info())
+            rr = None
+            self.errstr = "Cannot get sql data" + str(sys.exc_info())
+
+        finally:
+            #c.close
+            pass
+        if rr:
+            return (rr[2], rr[3], rr[4])
+        else:
+            return None
+
+
+    # --------------------------------------------------------------------
+    # Return False if cannot put data
+
+    def   put(self, key, val, val2, val3):
+
+        #got_clock = time.clock()
+
+        ret = True
+        try:
+            #c = self.conn.cursor()
+            if os.name == "nt":
+                self.c.execute("select * from calendar where key == ?", (key,))
+            else:
+                self.c.execute("select * from calendar indexed by kcalendar where key == ?", (key,))
+            rr = self.c.fetchall()
+            if rr == []:
+                #print "inserting"
+                self.c.execute("insert into calendar (key, val, val2, val3) \
+                    values (?, ?, ?, ?)", (key, val, val2, val3))
+            else:
+                #print "updating"
+                if os.name == "nt":
+                    self.c.execute("update calendar \
+                                set val = ? val2 = ?, val3 = ? where key = ?", \
+                                      (val, val2, val3, key))
+                else:
+                    self.c.execute("update calendar indexed by kcalendar \
+                                set val = ?, val2 = ?, val3 = ? where key = ?",\
+                                     (val, val2, val3, key))
+            self.conn.commit()
+        except:
+            print("Cannot put sql data", sys.exc_info())
+            self.errstr = "Cannot put sql data" + str(sys.exc_info())
+            ret = False
+        finally:
+            #c.close
+            pass
+
+        #self.take += time.clock() - got_clock
+
+        return ret
+
+    # --------------------------------------------------------------------
+    # Return False if cannot put data
+
+    def   putdata(self, key, val, val2, val3):
+
+        #got_clock = time.clock()
+
+        ret = True
+        try:
+            #c = self.conn.cursor()
+            if os.name == "nt":
+                self.c.execute("select * from caldata where key == ?", (key,))
+            else:
+                self.c.execute("select * from caldata indexed by kcaldata where key == ?", (key,))
+            rr = self.c.fetchall()
+            if rr == []:
+                #print "inserting"
+                self.c.execute("insert into caldata (key, val, val2, val3) \
+                    values (?, ?, ?, ?)", (key, val, val2, val3))
+            else:
+                #print "updating"
+                if os.name == "nt":
+                    self.c.execute("update caldata \
+                                set val = ? val2 = ?, val3 = ? where key = ?", \
+                                      (val, val2, val3, key))
+                else:
+                    self.c.execute("update caldata indexed by kcaldata \
+                                set val = ?, val2 = ?, val3 = ? where key = ?",\
+                                     (val, val2, val3, key))
+            self.conn.commit()
+        except:
+            print("Cannot put sql data", sys.exc_info())
+            self.errstr = "Cannot put sql data" + str(sys.exc_info())
+            ret = False
+        finally:
+            #c.close
+            pass
+
+        #self.take += time.clock() - got_clock
+
+        return ret
+
+    # --------------------------------------------------------------------
+    # Get All
+
+    def   getall(self, strx = "", limit = 1000):
+
+        #print("getall '" +  strx + "'")
+
+        try:
+            #c = self.conn.cursor()
+            self.c.execute("select * from calendar where val like ? or val2 like ? or val3 like ? limit  ?",
+                                            (strx, strx, strx, limit))
+            rr = self.c.fetchall()
+        except:
+            rr = []
+            print("Cannot get all sql data", sys.exc_info())
+            self.errstr = "Cannot get sql data" + str(sys.exc_info())
+        finally:
+            #c.close
+            pass
+
+        return rr
+
+    # --------------------------------------------------------------------
+    # Return None if no data
+
+    def   rmall(self):
+        print("removing all")
+        try:
+            #c = self.conn.cursor()
+            self.c.execute("delete from calendar")
+            rr = self.c.fetchone()
+        except:
+            print("Cannot delete sql data", sys.exc_info())
+            self.errstr = "Cannot delete sql data" + str(sys.exc_info())
+        finally:
+            #c.close
+            pass
+        if rr:
+            return rr[1]
+        else:
+            return None
+
+    def   rmalldata(self):
+        print("removing all")
+        try:
+            #c = self.conn.cursor()
+            self.c.execute("delete from caldata")
+            rr = self.c.fetchone()
+        except:
+            print("Cannot delete sql data", sys.exc_info())
+            self.errstr = "Cannot get sql data" + str(sys.exc_info())
+        finally:
+            #c.close
+            pass
+        if rr:
+            return rr[1]
+        else:
+            return None
+
+if __name__ == "__main__":
+    print("This is a module file, use pycalgui.py")
 
 # EOF
+
 
 
 
