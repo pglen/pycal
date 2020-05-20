@@ -143,7 +143,8 @@ class MainWindow():
         if item == 1:
             print("Save")
         if item == 2:
-            print("Cal dump",  mained.cal.xarr)
+            #print("Cal dump",  mained.cal.xarr)
+            print("SQL all\n", self.cal.sql.getall("%"))
         if item == 3:
             print("Showing log")    #,  mained.cal.get_daydat(datetime.datetime.today() ))
             self.logwin.show_log()
@@ -220,6 +221,7 @@ if __name__ == "__main__":
     #print("Ended pyalagui")
 
 # EOF
+
 
 
 

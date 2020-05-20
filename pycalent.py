@@ -349,18 +349,18 @@ class CalEntry(Gtk.Window):
                 idx += 1
 
             # Assemble, append
-            ccc = (cc[0].get_active(), cc[1].get_value(), \
-                        cc[2].get_value(),  ddd)
+            ccc = (cc[0].get_active(), int(cc[1].get_value()), \
+                        int(cc[2].get_value()),  ddd)
             xalarr.append(ccc)
             #print()
 
         #print("Now array:", end = " ")
         for ww in self.nowarr:
             #print(ww.get_value(), end = " ")
-            xnowarr.append(ww.get_value())
+            xnowarr.append(int(ww.get_value()))
         #print()
 
-        arrx = (self.uuid, xnowarr, txtarr, xalarr)
+        arrx = (self.uuid, tuple(xnowarr), txtarr, xalarr)
         self.callb("OK", arrx)
         self.destroy()
 
@@ -373,6 +373,8 @@ class CalEntry(Gtk.Window):
     def area_button(self, butt, arg):
         #print("Button press in CalEntry")
         pass
+
+
 
 
 
