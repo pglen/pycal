@@ -212,7 +212,8 @@ class CalCanvas(Gtk.DrawingArea):
 
     def get_month_data(self):
 
-        #self.xarr = []
+        self.xarr = []
+
         # Get padded (OK) days
         for aa in range(7):
             lastd = self.darr[aa]
@@ -227,7 +228,12 @@ class CalCanvas(Gtk.DrawingArea):
                             for aa in arr2:
                                 #print("key", key, "got sql", aa)
                                 ttt = aa[1].split(" ")
-                                carr = (aa[2], ttt[0].split("-") + ttt[1].split(":") + [ttt[2],],
+                                (dd, mm, yy) = ttt[0].split("-")
+                                (HH, MM) = ttt[1].split(":")
+                                dur = ttt[2]
+                                carr = (aa[2], [int(dd), int(mm),
+                                            int(yy), int(HH), int(MM),
+                                                int(dur)],
                                         [*aa[3:],], [], [] )
                                 print("carr", carr)
                                 self.xarr.append(carr)
@@ -426,10 +432,7 @@ class CalCanvas(Gtk.DrawingArea):
             self.xarr.append(arrx)
             #print("done_caldlg: appended", end = "")
 
-
-        printit(arrx)
-
-
+        #printit(arrx)
         print(arrx)
 
         # Save to SQLite database
@@ -453,17 +456,28 @@ class CalCanvas(Gtk.DrawingArea):
 
     def get_daydat(self, ddd):
         arr = []
+        #print ("get_daydat for", ddd)
         # Get it for arr
         for aa in self.xarr:
             last = aa[1]
-            if last[0] == ddd.day and last[1] == ddd.month and last[2] == ddd.year:
-                #print("Date match")
+            if int(last[0]) == ddd.day and \
+                int(last[1]) == ddd.month and \
+                    int(last[2]) == ddd.year:
+                #print("Date match", last)
                 arr.append(aa)
+            else:
+                pass
+                #print("no match", last[0], last[1], last[2])
+                #print("with", ddd.day, ddd.month, ddd.year)
+
         return arr
 
     def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
         (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
+
+        if pad:
+            return
 
         self.cr.rectangle(xxx, yyy, www, hhh)
         self.cr.clip()
@@ -485,7 +499,7 @@ class CalCanvas(Gtk.DrawingArea):
             try:
                 for sss in arrsd:
                     #print("sss", sss[3][3], sss[3][4])
-                    txt = "%02d:%02d " % (sss[1][3], sss[1][4])
+                    txt = "%02d:%02d " % (int(sss[1][3]), int(sss[1][4]))
                     if sss[2][0]:
                         txt += str(sss[2][0])
                     else:
@@ -663,6 +677,7 @@ if __name__ == "__main__":
     print("This is a module file, use pycalgui.py")
 
 # EOF
+
 
 
 
