@@ -374,7 +374,10 @@ class CalEntry(Gtk.Window):
         #print("Button press in CalEntry")
         pass
 
+if __name__ == "__main__":
+    print("This is a module file, use pycalgui.py")
 
+# EOF
 
 
 

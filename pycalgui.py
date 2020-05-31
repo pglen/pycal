@@ -16,7 +16,7 @@ from gi.repository import Gdk
 gi.require_version('Notify', '0.7')
 from gi.repository import Notify
 
-import pyala, pycal, pycallog
+import pyala, pycal, pycallog, calfile
 
 sys.path.append('../common')
 
@@ -210,17 +210,22 @@ if __name__ == "__main__":
         print("Cannot make calendar data dir.")
         sys.exit(1)
 
-    calfile = data_dir + os.sep + "caldata.sql"
+    calfname = data_dir + os.sep + "caldata.sql"
+    astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
+    #usafname = os.path.join(os.path.expanduser(calfile.locdir), "us_en.ics")
+    usafname = os.path.join(os.path.expanduser(calfile.locdir), "US_Holidays.ics")
 
     #print("Started pyalagui")
     mainwin = MainWindow()
-    mainwin.cal.set_dbfile(calfile)
+    mainwin.cal.set_dbfile(calfname)
+    #mainwin.cal.set_moonfile(astrofname)
+    mainwin.cal.set_usafile(usafname)
     mainwin.logwin.append_logwin("Started app: %s\r" % (datetime.datetime.today().ctime()) )
-
     Gtk.main()
     #print("Ended pyalagui")
 
 # EOF
+
 
 
 

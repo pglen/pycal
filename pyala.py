@@ -255,4 +255,8 @@ if __name__ == "__main__":
         #print("Now: ", now)
         time.sleep(60 - now.second)
 
+if __name__ == "__main__":
+    print("This is a module file, use pycalgui.py")
+
 # EOF
+

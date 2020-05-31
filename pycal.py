@@ -6,7 +6,7 @@ import signal, os, time, sys, subprocess, platform, random
 import ctypes, datetime, sqlite3, warnings, math, pickle
 from calendar import monthrange
 
-import pycalent, pycallog, pycalsql
+import pycalent, pycallog, pycalsql, calfile
 
 sys.path.append('../common')
 import pggui, pgutils, pgsimp, pgbox
@@ -34,6 +34,19 @@ from gi.repository import PangoCairo
 daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
             "Oct", "Nov", "Dec")
+
+def flatten(var):
+    strx = ""
+    try:
+        for aa in var:
+            strx += aa
+    except:
+        pass
+
+    strx = strx.replace("\\n", "\n")
+    strx = strx.replace("\\", "\n")
+
+    return strx
 
 def isiterable(p_object):
 
@@ -102,6 +115,8 @@ class CalCanvas(Gtk.DrawingArea):
         self.size2 = (0,0)
         self.noop_down = False
         self.sql = None
+        self.moonarr = []
+        self.usarr = []
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -130,9 +145,15 @@ class CalCanvas(Gtk.DrawingArea):
             self.sql = pycalsql.CalSQLite(self.dbfile)
         except:
             print("Cannot make calendar database.")
-
         self.get_month_data()
 
+    def set_moonfile(self, moonfile):
+        self.moonarr = calfile.eval_file(moonfile)
+        self.get_cal_data(self.moonarr )
+
+    def set_usafile(self, usafile):
+        self.usarr = calfile.eval_file(usafile)
+        self.get_cal_data(self.usarr )
 
     def _cursors(self):
         self.hand = Gdk.Cursor(Gdk.CursorType.HAND1)
@@ -231,13 +252,44 @@ class CalCanvas(Gtk.DrawingArea):
                                 (dd, mm, yy) = ttt[0].split("-")
                                 (HH, MM) = ttt[1].split(":")
                                 dur = ttt[2]
-                                carr = (aa[2], [int(dd), int(mm),
-                                            int(yy), int(HH), int(MM),
-                                                int(dur)],
-                                        [*aa[3:],], [], [] )
-                                print("carr", carr)
+                                arr3, arr4, arr5 = self.sql.getdata(key)
+                                if not arr3:
+                                    arr3 = [ False, 0, 0, [False, False, False, False, False]]
+                                if not arr4:
+                                    arr4 = [ False, 0, 0, [False, False, False, False, False]]
+                                if not arr5:
+                                    arr5 = [ False, 0, 0, [False, False, False, False, False]]
+
+                                carr = [aa[2],
+                                        [int(dd), int(mm),
+                                                int(yy), int(HH), int(MM), int(dur)],
+                                                        [*aa[3:]], [ arr3, arr4, arr5 ] ]
+                                #print("carr", carr)
                                 self.xarr.append(carr)
 
+
+    def get_cal_data(self, arrx):
+        for aa in arrx:
+            try:
+                if self.xdate.year == aa[1].year and \
+                        self.xdate.month == aa[1].month:
+
+                    print(aa[1].year, aa[1].month, aa[1].day, "\nsum:",
+                                    flatten(aa[0]), "\ndesc:", flatten(aa[5]) )
+
+                    arr3 = [ False, 0, 0, [False, False, False, False, False]]
+                    arr4 = [ False, 0, 0, [False, False, False, False, False]]
+                    arr5 = [ False, 0, 0, [False, False, False, False, False]]
+
+                    carr = ["", [ aa[1].day, aa[1].month, aa[1].year,
+                                            aa[1].hour, aa[1].minute, 0 ],
+                               [flatten(aa[0]), "", "", flatten(aa[5]) ],
+                               [ arr3, arr4, arr5 ]  ]
+                    self.xarr.append(carr)
+
+            except:
+                print("Cannot parse:", sys.exc_info())
+                print( "aa", aa)
 
     def set_date(self, dt):
 
@@ -250,6 +302,8 @@ class CalCanvas(Gtk.DrawingArea):
         self.freeze = False
 
         self.get_month_data()
+        self.get_cal_data(self.moonarr)
+        self.get_cal_data(self.usarr)
 
         self.queue_draw()
 
@@ -433,12 +487,14 @@ class CalCanvas(Gtk.DrawingArea):
             #print("done_caldlg: appended", end = "")
 
         #printit(arrx)
-        print(arrx)
+        #print(arrx)
 
         # Save to SQLite database
         key = self.make_key(arrx[1])
+        #print("put key", key, "val", *arrx[2])
         self.sql.put(key, arrx[0], *arrx[2])
-        print("put key", key, "val", *arrx[2])
+        #print("put data", key, "val", *arrx[3])
+        self.sql.putdata(key, *arrx[3])
 
     # --------------------------------------------------------------------
 
@@ -504,8 +560,8 @@ class CalCanvas(Gtk.DrawingArea):
                         txt += str(sss[2][0])
                     else:
                         txt += "Empty Subject Line " # + sss[0]
-
-                    self.pangolayout.set_text(txt, len(txt))
+                    #print("printing", txt, "len:", len(txt), "ulen", len(txt.encode("UTF8")) )
+                    self.pangolayout.set_text(txt, len(txt.encode("UTF8")) )
                     txx, tyy = self.pangolayout.get_pixel_size()
                     self.cr.move_to(xxx, prog)
                     prog += tyy
@@ -677,6 +733,8 @@ if __name__ == "__main__":
     print("This is a module file, use pycalgui.py")
 
 # EOF
+
+
 
 
 

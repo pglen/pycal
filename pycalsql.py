@@ -79,11 +79,16 @@ class CalSQLite():
                 self.c.execute("select * from calendar where keyx like ?", (kkk,))
             else:
                 self.c.execute("select * from calendar where keyx like ?", (kkk,))
+        except sqlite3.OperationalError:
+            pass
+        except:
+            print("Cannot get sql ", kkk, sys.exc_info())
+            self.errstr = "Cannot get sql data" + str(sys.exc_info())
+
+        try:
             rr = self.c.fetchall()
         except:
-            print("Cannot get sql data", sys.exc_info())
-            rr = None
-            self.errstr = "Cannot get sql data" + str(sys.exc_info())
+             rr = None
 
         finally:
             #c.close
@@ -100,11 +105,15 @@ class CalSQLite():
                 self.c.execute("select * from caldata where keyx like ?", (kkk,))
             else:
                 self.c.execute("select * from caldata indexed by kcaldata where keyx like ?", (kkk,))
+        except sqlite3.OperationalError:
+            pass
+        except:
+            print("Cannot get sql data for", kkk, sys.exc_info())
+            self.errstr = "Cannot get sql data" + str(sys.exc_info())
+        try:
             rr = self.c.fetchone()
         except:
-            print("Cannot get sql data", sys.exc_info())
             rr = None
-            self.errstr = "Cannot get sql data" + str(sys.exc_info())
 
         finally:
             #c.close
@@ -112,7 +121,7 @@ class CalSQLite():
         if rr:
             return (rr[2], rr[3], rr[4])
         else:
-            return None
+            return ([], [], [])
 
 
     # --------------------------------------------------------------------
@@ -299,4 +308,9 @@ class CalSQLite():
             return None
 
 
+if __name__ == "__main__":
+    print("This is a module file, use pycalgui.py")
+
 # EOF
+
+
