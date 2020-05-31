@@ -35,6 +35,8 @@ def eval_file(calfile):
 
     summ = None ;    startdt = None;    trig = None
     audio = None;    aluid = None;      desc = None
+    rrule = None
+
 
     fp = open(calfile, "rt")
 
@@ -72,8 +74,15 @@ def eval_file(calfile):
 
         if "END" in comp[0] and "VEVENT" in comp[1]:
             start = False
-            #print("Summ:", summ, "Alarm:", startdt, "Trig:", trig, "Action:", audio, "aluid", aluid, "desc", desc)
-            output.append((summ, startdt, trig, audio, aluid, desc))
+
+            #print("Summ:", summ, "Alarm:", startdt, "Trig:", trig,
+            #    "Action:", audio, "aluid", aluid, "desc", desc)
+
+            output.append((summ, startdt, trig, audio, aluid, desc, rrule))
+
+            summ = None ;    startdt = None;    trig = None
+            audio = None;    aluid = None;      desc = None
+            rrule = None
 
         if start:
 
@@ -82,25 +91,29 @@ def eval_file(calfile):
 
             try:
                 if "SUMMARY" in comp[0]:
-                    #print (line )
+                    #print ("Summary", line )
                     summ = comp[1:]
 
                 if "DESCRIPTION" in comp[0]:
                     #print ("desc", comp[1:] )
                     desc = comp[1:]
 
+                if "RRULE" in comp[0]:
+                    #print ("rrule", "summ", summ, comp[1:])
+                    rrule = comp[1:]
+
                 if "DTSTART;TZID" in comp[0]:
-                    #print ("dstart", line, comp )
+                    #print ("dstart tz", line, comp )
                     startdt = parsedatetime(comp[1])
                     #print (comp )
 
                 elif "DTSTART;VALUE" in comp[0]:
-                    #print (line )
+                    #print ("dstart val", line )
                     startdt = parsedate(comp[1])
                     #print (comp )
 
                 elif "DTSTART" in comp[0]:
-                    #print (line )
+                    #print ("dstart", line )
                     startdt = parsedate(comp[1])
                     #print (comp )
 
@@ -146,9 +159,8 @@ def is_time(td2, aa):
 def parsedatetime(strx):
     #print("Parser", strx,
     #    "%s %s %s   -- " % (strx[0:4], strx[4:6], strx[6:8]),
-    #    "%s %s %s" % (strx[9:11], strx[11:13], strx[13:15]))
+    #        "%s %s %s" % (strx[9:11], strx[11:13], strx[13:15]))
     try:
-
         dt = datetime.datetime(int(strx[0:4]), int(strx[4:6]), int(strx[6:8]),
                                 int(strx[9:11]), int(strx[11:13]), int(strx[13:15]) )
     except:
@@ -158,8 +170,10 @@ def parsedatetime(strx):
     return dt
 
 def parsedate(strx):
+
     #print("Parser", strx,
-    #    "%s %s %s   -- " % (strx[0:4], strx[4:6], strx[6:8])
+    #    "%s %s %s   -- " % (strx[0:4], strx[4:6], strx[6:8]))
+
     try:
 
         dt = datetime.datetime(int(strx[0:4]), int(strx[4:6]), int(strx[6:8]))
@@ -190,6 +204,7 @@ if __name__ == "__main__":
         raise
 
     #xstat = os.stat(calfile);
+
 
 
 

@@ -31,6 +31,7 @@ from gi.repository import cairo
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import PangoCairo
 
+dayidx = "MO", "TU", "WE", "TH", "FR", "SA", "SU"
 daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
             "Oct", "Nov", "Dec")
@@ -77,6 +78,24 @@ def printit(varx, sp = " "):
     else:
         print(sp, varx, end = " ")
 
+
+def get_rule_str(mmm, rr):
+
+    out = ""
+    mstr = "BYMONTH=" + mmm
+    if mstr in rr:
+        idx =  rr.find("BYDAY=")
+        if idx != -1:
+            idx += 6
+            #print("byday", rr[idx:])
+            idx2 =  rr[idx:].find(";")
+            if  idx2 == -1:
+                idx2 =  rr[idx:].find(";")
+            if  idx2 != -1:
+                out = rr[idx:idx+idx2]
+
+    #print("get_rule_str()", mmm, rr, "out=", out)
+    return out
 
 class CalPopup(Gtk.Window):
 
@@ -231,6 +250,7 @@ class CalCanvas(Gtk.DrawingArea):
 
         #print(self.xtext)
 
+    # --------------------------------------------------------------------
     def get_month_data(self):
 
         self.xarr = []
@@ -268,18 +288,70 @@ class CalCanvas(Gtk.DrawingArea):
                                 self.xarr.append(carr)
 
 
+    # --------------------------------------------------------------------
+
     def get_cal_data(self, arrx):
+        #print("arrx", arrx)
+
+        # Blank the alarm fields
+        arr3 = [ False, 0, 0, [False, False, False, False, False]]
+        arr4 = [ False, 0, 0, [False, False, False, False, False]]
+        arr5 = [ False, 0, 0, [False, False, False, False, False]]
+
+        # Process rules for the month
         for aa in arrx:
+            if aa[6]:
+                rr =  flatten(aa[6])
+                if "FREQ=YEARLY" in rr:
+                    rule = get_rule_str(str(self.xdate.month), rr)
+                    if rule:
+                        zdate = None
+                        #print("byday args:", rr, "'" + rule + "'")
+                        roffs = int(rule[:-2])
+                        dd = 0; cnt = 0
+                        for cc in dayidx:
+                            if cc == rule[-2:]:
+                                dd = cnt
+                                break
+                            cnt += 1
+                        #print("day", roffs, "num", rule[-2:], "dd", dd)
+                        mr = monthrange(self.xdate.year, self.xdate.month)[1]
+                        if roffs >= 0:
+                            for bb in range(1, mr + 1):
+                                zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                                #print("zdate", zdate, zdate.weekday())
+                                if zdate.weekday() == dd:
+                                    #print ("encountered", zdate, zdate.weekday())
+                                    roffs -= 1
+                                    if roffs == 0:
+                                        print ("Set", zdate, zdate.weekday(), aa[0])
+                                        break
+                        else:
+                            for bb in range(mr, 0, -1):
+                                zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                                #print("zdate", zdate, zdate.weekday())
+                                if zdate.weekday() == dd:
+                                    #print ("encountered", zdate, zdate.weekday())
+                                    roffs += 1
+                                    if roffs == 0:
+                                        print ("Set", zdate, zdate.weekday(), aa[0])
+                                        break
+
+                        if zdate:
+                            carr = ["", [ zdate.day, zdate.month, zdate.year,
+                                                zdate.hour, zdate.minute, 0 ],
+                                   [flatten(aa[0]), "", "", flatten(aa[5]) ],
+                                   [ arr3, arr4, arr5 ]  ]
+                            self.xarr.append(carr)
+
             try:
                 if self.xdate.year == aa[1].year and \
                         self.xdate.month == aa[1].month:
 
-                    print(aa[1].year, aa[1].month, aa[1].day, "\nsum:",
-                                    flatten(aa[0]), "\ndesc:", flatten(aa[5]) )
+                    #print("day arr", aa)
+                    #print(aa[1].year, aa[1].month, aa[1].day, "\nsum:",
+                    #                flatten(aa[0]), "\ndesc:", flatten(aa[5]) )
 
-                    arr3 = [ False, 0, 0, [False, False, False, False, False]]
-                    arr4 = [ False, 0, 0, [False, False, False, False, False]]
-                    arr5 = [ False, 0, 0, [False, False, False, False, False]]
 
                     carr = ["", [ aa[1].day, aa[1].month, aa[1].year,
                                             aa[1].hour, aa[1].minute, 0 ],
@@ -733,30 +805,4 @@ if __name__ == "__main__":
     print("This is a module file, use pycalgui.py")
 
 # EOF
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

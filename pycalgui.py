@@ -212,12 +212,12 @@ if __name__ == "__main__":
 
     calfname = data_dir + os.sep + "caldata.sql"
     astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
-    #usafname = os.path.join(os.path.expanduser(calfile.locdir), "us_en.ics")
-    usafname = os.path.join(os.path.expanduser(calfile.locdir), "US_Holidays.ics")
+    usafname = os.path.join(os.path.expanduser(calfile.locdir), "us_en.ics")
+    #usafname = os.path.join(os.path.expanduser(calfile.locdir), "US_Holidays.ics")
 
     #print("Started pyalagui")
     mainwin = MainWindow()
-    mainwin.cal.set_dbfile(calfname)
+    #mainwin.cal.set_dbfile(calfname)
     #mainwin.cal.set_moonfile(astrofname)
     mainwin.cal.set_usafile(usafname)
     mainwin.logwin.append_logwin("Started app: %s\r" % (datetime.datetime.today().ctime()) )
@@ -225,6 +225,7 @@ if __name__ == "__main__":
     #print("Ended pyalagui")
 
 # EOF
+
 
 
 
