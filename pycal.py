@@ -116,7 +116,7 @@ class CalPopup(Gtk.Window):
         self.add(vbox)
 
     def area_button(self, butt, arg):
-        print("Button press in tooltip")
+        #print("Button press in tooltip")
         pass
 
 class CalCanvas(Gtk.DrawingArea):
@@ -136,6 +136,8 @@ class CalCanvas(Gtk.DrawingArea):
         self.sql = None
         self.moonarr = []
         self.usarr = []
+        self.moon = True
+        self.holy = True
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -152,9 +154,43 @@ class CalCanvas(Gtk.DrawingArea):
         self.connect("motion-notify-event", self.area_motion)
         self.connect("button-press-event", self.area_button)
         self.connect("button-release-event", self.area_button)
+        self.connect("key-press-event", self.keypress)
+
         self.fd = Pango.FontDescription()
         self.pangolayout = self.create_pango_layout("a")
         self._cursors()
+
+    def keypress(self, win, event):
+
+        ret = False
+        print ("key", event.string, "val", event.keyval, "state", event.state)
+        #print("hw", event.hardware_keycode)
+
+        if  event.state & Gdk.ModifierType.SHIFT_MASK:
+            print("SHIFT")
+        if  event.state & Gdk.ModifierType.CONTROL_MASK:
+            print("CONTROL")
+        if  event.state & Gdk.ModifierType.MOD1_MASK:
+            print("ALT")
+
+        if event.keyval == Gdk.KEY_Up:
+            print("Up")
+            ret = True
+        if event.keyval == Gdk.KEY_Down:
+            print("Down")
+            ret = True
+        if event.keyval == Gdk.KEY_Left:
+            print("Left")
+            ret = True
+        if event.keyval == Gdk.KEY_Right:
+            print("Right")
+            ret = True
+
+        return ret
+
+    def invalidate(self):
+        #print("Invalidate calendar")
+        self.set_date(self.xdate)
 
     # --------------------------------------------------------------------
     def set_dbfile(self, dbfile):
@@ -324,7 +360,7 @@ class CalCanvas(Gtk.DrawingArea):
                                     #print ("encountered", zdate, zdate.weekday())
                                     roffs -= 1
                                     if roffs == 0:
-                                        print ("Set", zdate, zdate.weekday(), aa[0])
+                                        #print ("Set", zdate, zdate.weekday(), aa[0])
                                         break
                         else:
                             for bb in range(mr, 0, -1):
@@ -334,7 +370,7 @@ class CalCanvas(Gtk.DrawingArea):
                                     #print ("encountered", zdate, zdate.weekday())
                                     roffs += 1
                                     if roffs == 0:
-                                        print ("Set", zdate, zdate.weekday(), aa[0])
+                                        #print ("Set", zdate, zdate.weekday(), aa[0])
                                         break
 
                         if zdate:
@@ -374,8 +410,11 @@ class CalCanvas(Gtk.DrawingArea):
         self.freeze = False
 
         self.get_month_data()
-        self.get_cal_data(self.moonarr)
-        self.get_cal_data(self.usarr)
+        if self.moon:
+            self.get_cal_data(self.moonarr)
+
+        if self.holy:
+            self.get_cal_data(self.usarr)
 
         self.queue_draw()
 
