@@ -196,15 +196,30 @@ def eval_all():
 
 def help():
 
-    print("Helping")
+    print("pyala.py parse and intepret pycal alarm files")
+    print("  Options:")
+    print("      -f     show full screen")
+    print("      -v     verbose")
+    print("      -x     clear config")
+    print("      -c     show config")
+    print("      -t     show timing")
+    print("      -o     use stdout")
+    print("      -V     print Version")
+    print("      -h     print help")
+    print("      -?     print help")
 
 pgdebug = 0
 version = "1.0"
 
+class Config():
+    pass
+
 if __name__ == "__main__":
 
     #global pgdebug
+    global config
 
+    config = Config()
     opts = []; args = []
     try:
         opts, args = getopt.getopt(sys.argv[1:], "d:h?fvxctVo")
@@ -224,12 +239,12 @@ if __name__ == "__main__":
         if aa[0] == "-?": help();  exit(1)
         if aa[0] == "-V": print("Version", version); \
             exit(1)
-        if aa[0] == "-f": full_screen = True
-        if aa[0] == "-v": verbose = True
-        if aa[0] == "-x": clear_config = True
-        if aa[0] == "-c": show_config = True
-        if aa[0] == "-t": show_timing = True
-        if aa[0] == "-o": use_stdout = True
+        if aa[0] == "-f": config.full_screen = True
+        if aa[0] == "-v": config.verbose = True
+        if aa[0] == "-x": config.clear_config = True
+        if aa[0] == "-c": config.show_config = True
+        if aa[0] == "-t": config.show_timing = True
+        if aa[0] == "-o": config.use_stdout = True
 
     print("Started pyala ... CTRL-C to exit")
 
@@ -255,8 +270,4 @@ if __name__ == "__main__":
         #print("Now: ", now)
         time.sleep(60 - now.second)
 
-if __name__ == "__main__":
-    print("This is a module file, use pycalgui.py")
-
 # EOF
-

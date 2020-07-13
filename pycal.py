@@ -781,7 +781,7 @@ class CalCanvas(Gtk.DrawingArea):
                             # Selected
                             rrr, ggg, bbb = (200/255, 220/255, 220/255)
                         else:
-                            rrr, ggg, bbb = (210/255, 210/255, 210/255)
+                            rrr, ggg, bbb = (240/255, 240/255, 240/255)
 
                     elif self.zdate == ttt:
                         #print("Today", ttt)
