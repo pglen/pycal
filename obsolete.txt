@@ -1,0 +1,97 @@
+def eval_file(fname):
+
+    #global summ, startdt, trig, audio, aluid, desc, output
+
+    summ = None
+    startdt = None
+    trig = None
+    audio = None
+    aluid = None
+    desc = None
+
+    fname2 = os.path.expanduser(fname)
+
+    fp = open(fname2, "rt")
+
+    start = False
+    start2 = False
+    wastzname = False
+
+    line2 = ""
+    while True:
+        if line2 == "":
+            line = fp.readline()
+            if not line:
+                break
+            line = line.strip("\r\n")
+        else:
+            line = line2
+
+        # Slurp next
+        line2 = fp.readline()
+        if not line2:
+            break
+
+        line2 = line2.strip("\r\n")
+        if line2[0] == " ":
+            #print("slurp:", line2)
+            line += " " + line2
+            line2 = ""
+
+        #print("  ----- line", line, end = "\n")
+        comp = line.split()
+        #print("  --- data", comp, end = "\n")
+
+        if "TZNAME:" in comp[0]:
+            if not wastzname:
+                #print (line)
+                wastzname = True
+
+        if "END:VEVENT" in comp[0]:
+            start = False
+
+        if start:
+            #if "CREATED:" in comp[0]:
+            #    print (line)
+
+            if "SUMMARY:" in comp[0]:
+                #print (line )
+                summ = line.split(":")[1]
+
+            if "DESCRIPTION:" in comp[0]:
+                #print (line )
+                desc = line.split(":")[1]
+
+            if "DTSTART;TZID" in comp[0]:
+                #print (line )
+                startdt = parsedatetime(comp[1])
+                #print (comp )
+
+            if "DTSTART;VALUE" in comp[0]:
+                #print (line )
+                startdt = parsedate(line.split(":")[1])
+                #print (comp )
+
+            if "END:VALARM" in comp[0]:
+                start2 = False
+                #print("Summ:", summ, "Alarm:", startdt, "Trig:", trig, "Action:", audio)
+                output.append((summ, startdt, trig, audio, aluid, desc))
+
+            if start2:
+                #print("   Valarm", comp[0])
+                if "TRIGGER;" in comp[0]:
+                    trig = comp[0].split(":")[1]
+                    #print("Trigger", trig)
+                if "ACTION" in comp[0]:
+                    audio = comp[0].split(":")[1]
+                if  "ALARM-UID" in comp[0]:
+                    aluid = comp[0].split(":")[1]
+
+            if "BEGIN:VALARM" in comp[0]:
+                start2 = True
+
+        if "BEGIN:VEVENT" in comp[0]:
+            start = True
+    fp.close()
+
+

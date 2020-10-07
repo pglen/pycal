@@ -8,7 +8,7 @@ from calendar import monthrange
 
 import pycalent
 
-sys.path.append('../common')
+sys.path.append('../pycommon')
 import pggui, pgutils, pgsimp, pgbox
 
 import gi; gi.require_version("Gtk", "3.0")

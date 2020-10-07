@@ -23,22 +23,23 @@ locdir = "~/.pycal/"
 
 # ------------------------------------------------------------------------
 # This is a hacked version of the calendar file format parser.
-# Gets an array that contains most of the parst we are interested in
+# Gets an array that contains most of the parsed data we are interested in
 
-def eval_file(calfile):
+def eval_file(calfile, verbose = 0):
 
     output = []
 
-    print("Processing calfile", calfile)
+    #if verbose > 0:
+    #    print("Processing calfile", calfile)
 
-    #global summ, startdt, trig, audio, aluid, desc, output
+    summ = None ;   startdt = None;     trig = None;    audio = None;
+    aluid = None;   desc = None;        rrule = None
 
-    summ = None ;    startdt = None;    trig = None
-    audio = None;    aluid = None;      desc = None
-    rrule = None
-
-
-    fp = open(calfile, "rt")
+    try:
+        fp = open(calfile, "rt")
+    except:
+        print("Cannot open calfile", calfile)
+        return  output
 
     start = False ;     start2 = False;     wastzname = False
     line2 = ""
@@ -63,20 +64,24 @@ def eval_file(calfile):
             line += " " + line2
             line2 = ""
 
-        #print("----- line", line, end = "\n")
+        if verbose > 4:
+            print("----- line", line, end = "\n")
         comp = line.split(":")
-        #print("  --- data", comp, end = "\n")
+        if verbose > 3:
+            print("  --- data", comp, end = "\n")
 
         if "TZNAME" in comp[0]:
             if not wastzname:
-                #print (line)
+                if verbose > 2:
+                    print (line)
                 wastzname = True
 
         if "END" in comp[0] and "VEVENT" in comp[1]:
             start = False
 
-            #print("Summ:", summ, "Alarm:", startdt, "Trig:", trig,
-            #    "Action:", audio, "aluid", aluid, "desc", desc)
+            if verbose > 0:
+                print("Summ:", summ, "Alarm:", startdt, "Trig:", trig,
+                        "Action:", audio, "Alarmuid:", aluid, "Description:", desc)
 
             output.append((summ, startdt, trig, audio, aluid, desc, rrule))
 
@@ -91,24 +96,29 @@ def eval_file(calfile):
 
             try:
                 if "SUMMARY" in comp[0]:
-                    #print ("Summary", line )
-                    summ = comp[1:]
+                    if verbose > 2:
+                        print ("Summary", line )
+                    summ = comp[1]
 
                 if "DESCRIPTION" in comp[0]:
-                    #print ("desc", comp[1:] )
-                    desc = comp[1:]
+                    if verbose > 2:
+                        print ("desc", comp[1] )
+                    desc = comp[1]
 
                 if "RRULE" in comp[0]:
-                    #print ("rrule", "summ", summ, comp[1:])
+                    if verbose > 2:
+                        print ("rrule", "summ", summ, comp[1])
                     rrule = comp[1:]
 
                 if "DTSTART;TZID" in comp[0]:
-                    #print ("dstart tz", line, comp )
+                    if verbose > 2:
+                        print ("dstart tz", line, comp )
                     startdt = parsedatetime(comp[1])
                     #print (comp )
 
                 elif "DTSTART;VALUE" in comp[0]:
-                    #print ("dstart val", line )
+                    if verbose > 2:
+                        print ("dstart val", line )
                     startdt = parsedate(comp[1])
                     #print (comp )
 
@@ -118,7 +128,9 @@ def eval_file(calfile):
                     #print (comp )
 
             except:
-                print("Cannot parse", line)
+                print("Cannot parse line:", line)
+                print("Cannot parse arr:", comp)
+                print(sys.exc_info())
 
             if "END"  in comp[0] and "VALARM" in comp[1]:
                 start2 = False
@@ -126,12 +138,12 @@ def eval_file(calfile):
             if start2:
                 #print("   Valarm", comp[0])
                 if "TRIGGER;" in comp[0]:
-                    trig = comp[1:]
+                    trig = comp[1]
                     #print("Trigger", trig)
                 if "ACTION" in comp[0]:
                     audio = comp[1:]
                 if  "ALARM-UID" in comp[1]:
-                    aluid = comp[1:]
+                    aluid = comp[1]
 
             if "BEGIN" in comp[0] and "VALARM" in comp[1]:
                 start2 = True
@@ -156,15 +168,24 @@ def is_time(td2, aa):
         notify_sys(aa)
         play_sound()
 
+
+#           0123 45 67 8 90 12 34
+# Formats:  2020 04 30 T 18 45 00
+
 def parsedatetime(strx):
+
+    strx = strx.strip()
+
     #print("Parser", strx,
-    #    "%s %s %s   -- " % (strx[0:4], strx[4:6], strx[6:8]),
-    #        "%s %s %s" % (strx[9:11], strx[11:13], strx[13:15]))
+    #    "'%s' '%s' '%s'   -- " % (strx[0:4], strx[4:6], strx[6:8]),
+    #        "'%s' '%s' '%s'" % (strx[9:11], strx[11:13], strx[13:15]))
+
     try:
         dt = datetime.datetime(int(strx[0:4]), int(strx[4:6]), int(strx[6:8]),
                                 int(strx[9:11]), int(strx[11:13]), int(strx[13:15]) )
     except:
-        print("bad date:", strx)
+        print(sys.exc_info())
+        print("Bad date/time2:", "'" + strx + "'")
 
     #print(dt)
     return dt
@@ -174,11 +195,13 @@ def parsedate(strx):
     #print("Parser", strx,
     #    "%s %s %s   -- " % (strx[0:4], strx[4:6], strx[6:8]))
 
+    strx = strx.strip()
+
     try:
 
         dt = datetime.datetime(int(strx[0:4]), int(strx[4:6]), int(strx[6:8]))
     except:
-        print("bad date:", strx)
+        print("Bad date:", strx)
 
     #print(dt)
     return dt

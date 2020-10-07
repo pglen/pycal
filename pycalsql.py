@@ -156,8 +156,8 @@ class CalSQLite():
                                      (uid, val, val2, val3, val4, keyx))
             self.conn.commit()
         except:
-            print("Cannot put sql data", sys.exc_info())
-            self.errstr = "Cannot put sql data" + str(sys.exc_info())
+            print("Cannot put sql ", sys.exc_info())
+            self.errstr = "Cannot put sql " + str(sys.exc_info())
             ret = False
         finally:
             #c.close
@@ -237,8 +237,8 @@ class CalSQLite():
                                      (val, val2, val3, keyx))
             self.conn.commit()
         except:
-            print("Cannot put sql data", sys.exc_info())
-            self.errstr = "Cannot put sql data" + str(sys.exc_info())
+            print("Cannot put sql ala", sys.exc_info())
+            self.errstr = "Cannot put sql ala" + str(sys.exc_info())
             ret = False
         finally:
             #c.close
