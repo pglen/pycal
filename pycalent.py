@@ -3,7 +3,7 @@
 from __future__ import absolute_import, print_function
 
 import signal, os, time, sys, subprocess, platform, random
-import ctypes, datetime, sqlite3, warnings, math, pickle
+import ctypes, datetime, sqlite3, warnings, math, pickle, uuid
 from calendar import monthrange
 
 import pycalent
@@ -37,7 +37,9 @@ class CalEntry(Gtk.Window):
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.alt = False
         self.alarr = []
-        self.uuid = pgutils.randstr(12)
+
+        #self.uuid = pgutils.randstr(12)
+        self.uuid = uuid.uuid4()
 
         self.set_position(Gtk.WindowPosition.CENTER)
 
@@ -63,7 +65,7 @@ class CalEntry(Gtk.Window):
 
         self.set_title(title)
 
-        print ("xdat load", xdat)
+        print ("xdat loading", xdat)
 
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
@@ -326,7 +328,7 @@ class CalEntry(Gtk.Window):
             self.destroy()
             return
 
-        #print("UUID:", self.uuid)
+        print("UUID:", self.uuid)
         txtarr = []
         #print ("got data", end = " ")
         for bb in self.table.texts:
@@ -360,7 +362,7 @@ class CalEntry(Gtk.Window):
             xnowarr.append(int(ww.get_value()))
         #print()
 
-        arrx = (self.uuid, tuple(xnowarr), txtarr, xalarr)
+        arrx = (self.uuid.hex, tuple(xnowarr), txtarr, xalarr)
         self.callb("OK", arrx)
         self.destroy()
 

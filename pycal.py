@@ -598,14 +598,24 @@ class CalCanvas(Gtk.DrawingArea):
             #print("done_caldlg: appended", end = "")
 
         #printit(arrx)
-        #print(arrx)
+        print("arrx", arrx)
 
         # Save to SQLite database
         key = self.make_key(arrx[1])
+
         #print("put key", key, "val", *arrx[2])
         self.sql.put(key, arrx[0], *arrx[2])
-        #print("put data", key, "val", *arrx[3])
-        self.sql.putdata(key, *arrx[3])
+
+        arrz = []
+        for aa in arrx[3]:
+            arrz.append(str(aa))
+
+        #print("put data", key, "val", *arrz)
+        self.sql.putdata(key, *arrz)
+
+        # Save to SQLite alarms database
+        #print("put ala", arrx[3])
+        self.sql.putala(key, *arrz)
 
     # --------------------------------------------------------------------
 

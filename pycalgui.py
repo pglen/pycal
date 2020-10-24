@@ -298,7 +298,7 @@ if __name__ == "__main__":
         if aa[0] == "-t": show_timing = True
         if aa[0] == "-o": use_stdout = True
 
-    data_dir = os.path.expanduser("~/.pycal")
+    data_dir = os.path.expanduser("~" + os.sep + ".pycal")
     try:
         if not os.path.isdir(data_dir):
             os.mkdir(data_dir)
@@ -307,6 +307,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     calfname = data_dir + os.sep + "caldata.sql"
+    print("Using calfname:", calfname)
+
     astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
     usafname = os.path.join(os.path.expanduser(calfile.locdir), "us_en.ics")
     #usafname = os.path.join(os.path.expanduser(calfile.locdir), "US_Holidays.ics")

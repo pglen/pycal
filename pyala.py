@@ -23,7 +23,7 @@ gettext.bindtextdomain('pyala', './locale/')
 gettext.textdomain('pyala')
 _ = gettext.gettext
 
-import calfile
+import calfile, pycalsql
 
 #calfname = "~/.local/share/evolution/calendar/system/calendar.ics"
 calfname = "~/.pycal/caldata.sql"
@@ -118,6 +118,13 @@ def eval_all(output, verbose = 0):
 
     return res
 
+def dblist_all(arg1, arg2):
+    global pgdebug, config, sqldb
+
+    ret = sqldb.getala("%")
+
+    return ret
+
 # ------------------------------------------------------------------------
 
 def help():
@@ -130,27 +137,29 @@ def help():
     print("      -c         show config")
     print("      -t         show timing")
     print("      -o         use stdout")
+    print("      -g         test triggers")
     print("      -V         print Version")
     print("      -l         list pending alarms")
     print("      -h         print help")
     print("      -?         print help")
 
-pgdebug = 0
+#pgdebug = 0
 version = "1.0"
 
 class Config():
-    pass
+    def __init__(self):
+        self.test_trig = False
 
 if __name__ == "__main__":
 
-    #global pgdebug
-    global config
+    global pgdebug, config, sqldb
 
     config = Config()
+
     opts = []; args = []
     longopt = ["help", ]
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?fv:xctVol", longopt)
+        opts, args = getopt.getopt(sys.argv[1:], "d:h?fv:xctVolg", longopt)
     except getopt.GetoptError as err:
         print(("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -176,23 +185,42 @@ if __name__ == "__main__":
         if aa[0] == "-c": config.show_config = True
         if aa[0] == "-t": config.show_timing = True
         if aa[0] == "-o": config.use_stdout = True
+        if aa[0] == "-g": config.test_trig = True
 
-    print("Started pyala ... CTRL-C to exit. Verbose =", config.verbose)
+    if config.test_trig:
+        print("Testing pyala triggers. Verbose =", config.verbose)
+        play_sound()
+        notify_sys(["Testing Notification", "", "", "", "", "Hello"])
+        sys.exit(0)
 
     calfname2 = os.path.expanduser(calfname)
+
+    # Pre eval calfile
+    #try:
+    #    res = calfile.eval_file(calfname2, config.verbose)
+    #except:
+    #    print("Cannot open caledar file:", "'" + calfname2 + "'")
+    #    #print(sys.exc_info())
+    #    sys.exit(0)
+
+    try:
+        sqldb = pycalsql.CalSQLite(calfname2)
+    except:
+        print("Cannot open/create calendar database.", calfname2, sys.exc_info())
+        sys.exit(2)
+
+    print("Started pyala ... CTRL-C to exit. Verbose =", config.verbose)
+    print("Using calfname:", calfname2)
+
     xstat = os.stat(calfname2)
     res = []
     first = False
     while (True):
         if xstat.st_mtime != os.stat(calfname2).st_mtime or not first:
             first = True
-            try:
-                res = calfile.eval_file(calfname2, config.verbose)
-            except:
-                print("Cannot open / read caledar file.")
-                break
-
             xstat = os.stat(calfname2)
+            print("Calfile has changed, evaluating");
+
         else:
             #print("Calfile has not changed");
             pass
@@ -202,17 +230,18 @@ if __name__ == "__main__":
 
         if hasattr(config, "list"):
             print("Listing alarms:")
-            ret = list_all(res, 0)
+            ret = dblist_all(res, 0)
             print(ret)
             break
 
-        ala = eval_all(res)
+        #ala = eval_all(res)
         #print("Alarm on:", aa)
         #notify_sys(aa)
         #play_sound()
 
         now = datetime.datetime.today()
         #print("Now: ", now)
-        time.sleep(60 - now.second)
+        #time.sleep(60 - now.second)
+        time.sleep(10);
 
 # EOF

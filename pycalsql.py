@@ -18,9 +18,11 @@ from gi.repository import Notify
 
 import pyala, pycal, pycallog
 
-sys.path.append('../common')
+sys.path.append('../pycommon')
 
-import pggui, pgutils
+import pggui, pgutils, sutil
+
+debug = False
 
 # -------------------------------------------------------------------
 
@@ -123,14 +125,16 @@ class CalSQLite():
         else:
             return ([], [], [])
 
-
     # --------------------------------------------------------------------
     # Return False if cannot put data
 
     def   put(self, keyx, uid, val, val2, val3, val4):
 
         #got_clock = time.clock()
-        #print("put", keyx, uid, val, val2, val3, val4)
+        if debug:
+            print("putting data", keyx, uid, val, val2, val3, val4)
+
+        #print("types", type(keyx), type(uid), type(val), type(val2), type(val3), type(val4))
 
         ret = True
         try:
@@ -141,11 +145,11 @@ class CalSQLite():
                 self.c.execute("select * from calendar indexed by kcalendar where keyx == ?", (keyx,))
             rr = self.c.fetchall()
             if rr == []:
-                #print "inserting"
+                #print ("inserting")
                 self.c.execute("insert into calendar (keyx, uid, val, val2, val3, val4) \
                     values (?, ?, ?, ?, ?, ?)", (keyx, uid, val, val2, val3, val4))
             else:
-                #print "updating"
+                #print ("updating")
                 if os.name == "nt":
                     self.c.execute("update calendar \
                                 set uid = ? val = ? val2 = ?, val3 = ?, val4 = ? where keyx = ?", \
@@ -157,6 +161,7 @@ class CalSQLite():
             self.conn.commit()
         except:
             print("Cannot put sql ", sys.exc_info())
+            sutil.print_exception("put")
             self.errstr = "Cannot put sql " + str(sys.exc_info())
             ret = False
         finally:
@@ -173,6 +178,10 @@ class CalSQLite():
     def   putdata(self, keyx, val, val2, val3):
 
         #got_clock = time.clock()
+        if debug:
+            print("putting data", keyx, val, val2, val3)
+
+        #print("types", type(keyx), type(val), type(val2), type(val3))
 
         ret = True
         try:
@@ -209,9 +218,13 @@ class CalSQLite():
 
         return ret
 
+    # --------------------------------------------------------------------
+
     def   putala(self, keyx, val, val2, val3):
 
         #got_clock = time.clock()
+        if True: #debug:
+            print("putala", keyx, val, val2, val3)
 
         ret = True
         try:
@@ -245,6 +258,29 @@ class CalSQLite():
             pass
 
         #self.take += time.clock() - got_clock
+
+        return ret
+
+    def   getala(self, keyx):
+
+        #got_clock = time.clock()
+
+        ret = []
+        try:
+            #c = self.conn.cursor()
+            if os.name == "nt":
+                self.c.execute("select * from calala where keyx like ?", (keyx,))
+            else:
+                self.c.execute("select * from calala indexed by kcalala where keyx like ?", (keyx,))
+            ret = self.c.fetchall()
+        except:
+            print("Cannot get sql ala", sys.exc_info())
+            self.errstr = "Cannot get sql ala" + str(sys.exc_info())
+        finally:
+            #c.close
+            pass
+
+        #self.get += time.clock() - got_clock
 
         return ret
 
