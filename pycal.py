@@ -3,10 +3,11 @@
 from __future__ import absolute_import, print_function
 
 import signal, os, time, sys, subprocess, platform, random
-import ctypes, datetime, sqlite3, warnings, math, pickle
+import ctypes, datetime, sqlite3, warnings, math, pickle, warnings
+
 from calendar import monthrange
 
-import pycalent, pycallog, pycalsql, calfile
+import pycalent, pycallog, pycalsql, calfile, pyala
 
 sys.path.append('../common')
 import pggui, pgutils, pgsimp, pgbox
@@ -136,6 +137,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.sql = None
         self.moonarr = []
         self.usarr = []
+        self.donearr = []
         self.moon = True
         self.holy = True
 
@@ -159,6 +161,9 @@ class CalCanvas(Gtk.DrawingArea):
         self.fd = Pango.FontDescription()
         self.pangolayout = self.create_pango_layout("a")
         self._cursors()
+
+        global handler_tick
+        GLib.timeout_add(1000, handler_tick, self)
 
     def keypress(self, win, event):
 
@@ -199,7 +204,7 @@ class CalCanvas(Gtk.DrawingArea):
         try:
             self.sql = pycalsql.CalSQLite(self.dbfile)
         except:
-            print("Cannot make calendar database.")
+            print("Cannot make/open calendar database.")
         self.get_month_data()
 
     def set_moonfile(self, moonfile):
@@ -211,11 +216,12 @@ class CalCanvas(Gtk.DrawingArea):
         self.get_cal_data(self.usarr )
 
     def _cursors(self):
-        self.hand = Gdk.Cursor(Gdk.CursorType.HAND1)
-        self.arrow = Gdk.Cursor(Gdk.CursorType.ARROW)
-        self.sizing =  Gdk.Cursor(Gdk.CursorType.SIZING)
-        self.cross =  Gdk.Cursor(Gdk.CursorType.TCROSS)
-        self.hair =  Gdk.Cursor(Gdk.CursorType.CROSSHAIR)
+        disp =  self.get_display()
+        self.hand = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.HAND1)
+        self.arrow = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.ARROW)
+        self.sizing =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.SIZING)
+        self.cross =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.TCROSS)
+        self.hair =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.CROSSHAIR)
 
     # Internal function to set up current month
 
@@ -302,30 +308,39 @@ class CalCanvas(Gtk.DrawingArea):
                         # Get it from the DB
                         arr2 = self.sql.get(key)
                         if arr2:
+                            #print("sql.get key", key, "got sql", arr2)
                             for aa in arr2:
-                                #print("key", key, "got sql", aa)
                                 ttt = aa[1].split(" ")
                                 (dd, mm, yy) = ttt[0].split("-")
                                 (HH, MM) = ttt[1].split(":")
                                 dur = ttt[2]
                                 arr3, arr4, arr5 = self.sql.getdata(key)
-                                if not arr3:
-                                    arr3 = [ False, 0, 0, [False, False, False, False, False]]
-                                if not arr4:
-                                    arr4 = [ False, 0, 0, [False, False, False, False, False]]
-                                if not arr5:
-                                    arr5 = [ False, 0, 0, [False, False, False, False, False]]
+                                #print("sql get data arr3", arr3, "arr4", arr4, "arr5", arr5)
+
+                                defa = ( False, 0, 0, [False, False, False, False, False])
+                                #arr3x = eval(arr3); print("arr3 evaled", type(arr3x), arr3x)
+
+                                if arr3:
+                                    arr3 = eval(arr3)
+                                else:
+                                    arr3 = defa[:]
+                                if arr4:
+                                    arr4 = eval(arr4)
+                                else:
+                                    arr4 = defa[:]
+                                if arr5:
+                                    arr5 = eval(arr5)
+                                else:
+                                    arr5 = defa[:]
 
                                 carr = [aa[2],
                                         [int(dd), int(mm),
                                                 int(yy), int(HH), int(MM), int(dur)],
                                                         [*aa[3:]], [ arr3, arr4, arr5 ] ]
-                                #print("carr", carr)
+                                #print("reading carr", carr)
                                 self.xarr.append(carr)
 
-
     # --------------------------------------------------------------------
-
     def get_cal_data(self, arrx):
         #print("arrx", arrx)
 
@@ -404,6 +419,7 @@ class CalCanvas(Gtk.DrawingArea):
         #print("set_date", dt)
         pycallog.logwin.append_logwin("Set new date on cal: %s\n" % dt.ctime())
 
+        self.donearr = []
         self.freeze = True
         self.xdate = dt
         self.__calc_curr()
@@ -615,7 +631,7 @@ class CalCanvas(Gtk.DrawingArea):
 
         # Save to SQLite alarms database
         #print("put ala", arrx[3])
-        self.sql.putala(key, *arrz)
+        #self.sql.putala(key, *arrz)
 
     # --------------------------------------------------------------------
 
@@ -781,7 +797,11 @@ class CalCanvas(Gtk.DrawingArea):
                 rrr, ggg, bbb = (255., 255., 255.)
 
                 if not pad:
+
+                    warnings.simplefilter("ignore")
                     xx2, yy2 = self.get_pointer()
+                    warnings.simplefilter("default")
+
                     mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
                     if hx == mx and hy == my:
                         #print("Mouse over day:", xxx, yyy)
@@ -849,6 +869,59 @@ class CalCanvas(Gtk.DrawingArea):
                     cr.line_to(xx+ww-ww/4, yy + 2)
 
                     cr.stroke()
+
+    # Trigger alarms, if not done already
+
+    def pop_alarm(self, aa):
+        done = False
+        for dd in self.donearr:
+            if dd == aa[0]:
+                done = True
+
+        if not done:
+            self.donearr.append(aa[0])
+            print("Alarm triggered", aa[3][0][1], aa[3][0][2])
+            pyala.play_sound()
+            pyala.notify_sys(aa[2][0], aa[2][1])
+            pgutils.message(aa[2][0] + "\n" + aa[2][1])
+
+
+    def eval_alarm(self):
+        #print("eval_alarm")
+        flag = False
+        tmp = datetime.datetime.today()
+        #print("tmp", tmp)
+        for aa in self.xarr:
+            #print (aa[3][0][0])
+            if aa[3][0][0]:
+                # Is it today?
+                if aa[1][0] == tmp.day and aa[1][1] == tmp.month  \
+                        and aa[1][2] == tmp.year:
+                    #print("Today", aa)
+                    # Is it now?
+                    if aa[3][0][1] == tmp.hour:
+                        if aa[3][0][2] == tmp.minute:
+                            self.pop_alarm(aa)
+
+                    # Is it in the future?
+                    if aa[3][0][1] >= tmp.hour:
+                        if aa[3][0][2] > tmp.minute:
+                            pass
+                            #print("future", aa[3][0][1], aa[3][0][2])
+                            #print("future", aa)
+                            #self.set_text(str(aa))
+                            self.mainwin.mywin.set_title("Python Calendar -- next up: " \
+                                +  aa[2][0] + " at "  + str(aa[3][0][1]) + ":" + str(aa[3][0][2]))
+
+def handler_tick(main_class):
+
+    #print("handler_tick", main_class)
+    main_class.eval_alarm()
+
+    try:
+        GLib.timeout_add(1000, handler_tick, main_class)
+    except:
+        print("Exception in setting timer handler", sys.exc_info())
 
 if __name__ == "__main__":
     print("This is a module file, use pycalgui.py")

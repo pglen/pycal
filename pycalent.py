@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import, print_function
 
-import signal, os, time, sys, subprocess, platform, random
+import signal, os, time, sys, subprocess, platform, random, warnings
 import ctypes, datetime, sqlite3, warnings, math, pickle, uuid
 from calendar import monthrange
 
@@ -23,6 +23,7 @@ from gi.repository import PangoCairo
 
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 
+
 # ------------------------------------------------------------------------
 
 class CalEntry(Gtk.Window):
@@ -30,6 +31,8 @@ class CalEntry(Gtk.Window):
     def __init__(self, hx, hy, self2, callb = None):
 
         #print("CalEntry init", hx, hy)
+
+        warnings.simplefilter("ignore")
 
         Gtk.Window.__init__(self)
         self.callb = callb
@@ -72,7 +75,7 @@ class CalEntry(Gtk.Window):
         self.connect("key-release-event", self.area_key)
 
         vbox = Gtk.VBox();
-        self.ptab = Gtk.Table(); self.ptab.set_homogeneous(False)
+        self.ptab = Gtk.Table(); #self.ptab.set_column_homogeneous(False)
         self.ptab.set_col_spacings(4); self.ptab.set_row_spacings(4)
 
         ds = pggui.Spinner(0, 31, ttt.day)
@@ -178,7 +181,7 @@ class CalEntry(Gtk.Window):
 
         # ----------------------------------------------------------------
 
-        self.dtab = Gtk.Table(); self.dtab.set_homogeneous(False)
+        self.dtab = Gtk.Table(); #self.dtab.set_homogeneous(False)
         self.dtab.set_col_spacings(4); self.dtab.set_row_spacings(4)
 
         for aa in range(3):

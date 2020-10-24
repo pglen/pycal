@@ -77,12 +77,10 @@ class CalSQLite():
 
         try:
             #c = self.conn.cursor()
-            if os.name == "nt":
-                self.c.execute("select * from calendar where keyx like ?", (kkk,))
-            else:
-                self.c.execute("select * from calendar where keyx like ?", (kkk,))
-        except sqlite3.OperationalError:
-            pass
+            self.c.execute("select * from calendar where keyx like ?", (kkk,))
+
+        #except sqlite3.OperationalError:
+        #    pass
         except:
             print("Cannot get sql ", kkk, sys.exc_info())
             self.errstr = "Cannot get sql data" + str(sys.exc_info())
@@ -103,12 +101,9 @@ class CalSQLite():
     def   getdata(self, kkk):
         try:
             #c = self.conn.cursor()
-            if os.name == "nt":
-                self.c.execute("select * from caldata where keyx like ?", (kkk,))
-            else:
-                self.c.execute("select * from caldata indexed by kcaldata where keyx like ?", (kkk,))
-        except sqlite3.OperationalError:
-            pass
+            self.c.execute("select * from caldata where keyx like ?", (kkk,))
+        #except sqlite3.OperationalError:
+        #    pass
         except:
             print("Cannot get sql data for", kkk, sys.exc_info())
             self.errstr = "Cannot get sql data" + str(sys.exc_info())
@@ -120,6 +115,7 @@ class CalSQLite():
         finally:
             #c.close
             pass
+
         if rr:
             return (rr[2], rr[3], rr[4])
         else:
@@ -178,7 +174,7 @@ class CalSQLite():
     def   putdata(self, keyx, val, val2, val3):
 
         #got_clock = time.clock()
-        if debug:
+        if True or debug:
             print("putting data", keyx, val, val2, val3)
 
         #print("types", type(keyx), type(val), type(val2), type(val3))
@@ -223,7 +219,7 @@ class CalSQLite():
     def   putala(self, keyx, val, val2, val3):
 
         #got_clock = time.clock()
-        if True: #debug:
+        if debug:
             print("putala", keyx, val, val2, val3)
 
         ret = True

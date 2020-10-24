@@ -43,9 +43,9 @@ def _callback_func():
     pass
     print("Acknowledged")
 
-def notify_sys(aa):
+def notify_sys(alname, alsub):
     Notify.init("Calendar")
-    nnn = Notify.Notification.new("Calendar Alert", "Alarm: " + aa[0]  + " - " + str(aa[5]),  "dialog-information")
+    nnn = Notify.Notification.new("Calendar Alert", alname  + " - " + alsub,  "dialog-information")
     nnn.add_action("action_click", "Acknowledge Alarm", _callback_func, None)
     #nnn.set_urgency(0)
     nnn.show()
@@ -112,7 +112,7 @@ def eval_all(output, verbose = 0):
 
         if is_alarm_time(aa[1], aa):
             print("Alarm on:", aa)
-            notify_sys(aa)
+            notify_sys(aa[0], aa[5])
             play_sound()
             res.append(aa)
 
@@ -121,7 +121,7 @@ def eval_all(output, verbose = 0):
 def dblist_all(arg1, arg2):
     global pgdebug, config, sqldb
 
-    ret = sqldb.getala("%")
+    ret = sqldb.getdata("%")
 
     return ret
 
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     if config.test_trig:
         print("Testing pyala triggers. Verbose =", config.verbose)
         play_sound()
-        notify_sys(["Testing Notification", "", "", "", "", "Hello"])
+        notify_sys("Testing Notification", "Hello Sub")
         sys.exit(0)
 
     calfname2 = os.path.expanduser(calfname)

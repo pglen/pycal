@@ -6,7 +6,7 @@ from __future__ import print_function
 # Test client for the pyserv project. Encrypt test.
 
 import  os, sys, getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading
+import  random, stat, os.path, datetime, threading, warnings
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -53,20 +53,26 @@ class MainWindow():
         self.fullscreen = False
         self.got_warn = False
 
-        #register_stock_icons()
+        pgutils.register_stock_icons()
 
         global mained
         mained = self
+
+        warnings.simplefilter("ignore")
 
         disp2 = Gdk.Display()
         disp = disp2.get_default()
         #print disp
         scr = disp.get_default_screen()
         ptr = disp.get_pointer()
+        #ptr = disp2.get_position()
         mon = scr.get_monitor_at_point(ptr[1], ptr[2])
+        #mon = disp.get_monitor_at_point(ptr[1], ptr[2])
         geo = scr.get_monitor_geometry(mon)
         www = geo.width; hhh = geo.height
         xxx = geo.x;     yyy = geo.y
+
+        warnings.simplefilter("default")
 
         # Resort to old means of getting screen w / h
         if www == 0 or hhh == 0:
@@ -253,7 +259,11 @@ def     OnExit(butt, arg = None, prompt = True):
     global mained
     #mained.mywin.set_title("Exiting ...")
     #pgutils.usleep(100)
-    mained.mywin.get_root_window().set_cursor(Gdk.Cursor(Gdk.CursorType.ARROW))
+
+    rootwin = mained.mywin.get_screen().get_root_window()
+    disp =  mained.mywin.get_display()
+    cur = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.ARROW)
+    rootwin.set_cursor(cur)
 
     mainwin.logwin.append_logwin("Ended app: %s\r" % (datetime.datetime.today().ctime()) )
     #print("Exited")
@@ -325,10 +335,3 @@ if __name__ == "__main__":
     #print("Ended pyalagui")
 
 # EOF
-
-
-
-
-
-
-
