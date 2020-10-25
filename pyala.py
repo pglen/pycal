@@ -46,18 +46,16 @@ def _callback_func():
     pass
     print("Acknowledged")
 
-def notify_sys(alname, alsub):
+def notify_sys(alname, alsub, ddd = ""):
     try:
         Notify.init("Calendar")
     except:
-        print("No notify subsys")
+        print("Notify subsystem is not installed")
         return
-
-    nnn = Notify.Notification.new("Calendar Alert", alname  + " - " + alsub,  "dialog-information")
+    sss = "at" + ddd + "\n" + alname  + " \n" + alsub
+    nnn = Notify.Notification.new("Calendar Alert", sss, "dialog-information")
     nnn.add_action("action_click", "Acknowledge Alarm", _callback_func, None)
-    #nnn.set_urgency(0)
     nnn.show()
-    #nnn.uninit()
 
 def is_alarm_time(td2, aa):
 

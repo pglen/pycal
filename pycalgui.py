@@ -169,7 +169,7 @@ class MainWindow():
         hbox = Gtk.HBox()
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.menu = pggui.MenuButt(("Open", "Close", "Dump Cal", "Show Log", "Exit"), self.menucom)
+        self.menu = pggui.MenuButt(("Open", "Close", "Dump Cal", "Show Log", "Test alarms", "Exit"), self.menucom)
         hbox.pack_start(self.menu, 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
@@ -253,6 +253,13 @@ class MainWindow():
         if item == 3:
             print("Showing log")    #,  mained.cal.get_daydat(datetime.datetime.today() ))
             self.logwin.show_log()
+        if item == 4:
+            pyala.play_sound()
+            ddd = datetime.datetime.today()
+            dddd = str(ddd.hour) + ":" + str(ddd.minute)
+            pyala.notify_sys("Test alarm notifyer", "Test description appears here.", dddd)
+            pgutils.message("\nTesting Popup Dialog\n" + "Test dialog description would appear here.",
+                                title =  "Alarm at " + dddd )
 
         if "xit" in menu:
             OnExit(self)

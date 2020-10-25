@@ -547,9 +547,12 @@ class CalCanvas(Gtk.DrawingArea):
                     except: pass
                 hx, hy = self.hit_test(event.x, event.y)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+
+                #print(nnn, ttt, xx, yy, "--", hx, hy)
+
                 sdd = ttt.strftime("%a %d-%b-%Y")
                 self.menu = pggui.Menu(("Selection: %s" % sdd, "New Calendar Entry",
-                                            "Edit entry", "Edit Day"),
+                                            "Edit entry", "Delete Entry", "Edit Day"),
                                                 self.menucb, event)
             self.queue_draw()
 
@@ -571,9 +574,12 @@ class CalCanvas(Gtk.DrawingArea):
                 if not pad:
                     self.dlg = pycalent.CalEntry(hx, hy, self, self.done_caldlg)
 
+
     def menucb(self, txt, cnt):
-        #print ("aa bb", aa, bb)
+        #print (" txt cnt", txt, txt)
+
         if cnt == 1:
+            print("New entry")
             xx, yy = self.get_pointer()
             hx, hy = self.hit_test(xx, yy)
             if self.popped:
@@ -585,8 +591,19 @@ class CalCanvas(Gtk.DrawingArea):
                 self.dlg = pycalent.CalEntry(hx, hy, self, self.done_caldlg)
 
         if cnt == 2:
-            print("Editing entry")
+            print("Editing entry", self.menu.event.x, self.menu.event.y)
+            hx, hy = self.hit_test(self.menu.event.x, self.menu.event.y)
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+                self.popped = False
+            (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+            if not pad:
+                self.dlg = pycalent.CalEntry(hx, hy, self, self.done_caldlg)
+
         if cnt == 3:
+            print("Deleting entry")
+        if cnt == 4:
             print("Editing day")
 
     # --------------------------------------------------------------------
@@ -880,10 +897,17 @@ class CalCanvas(Gtk.DrawingArea):
 
         if not done:
             self.donearr.append(aa[0])
-            print("Alarm triggered", aa[3][0][1], aa[3][0][2])
+            dddd = str(aa[3][0][1]) + ":" + str(aa[3][0][2])
+            self.mainwin.logwin.append_logwin("Alarm at: %s %s %s\r" %
+                                    (dddd, aa[2][0], datetime.datetime.today().ctime()) )
+
+            print("Alarm triggered", dddd)
             pyala.play_sound()
-            pyala.notify_sys(aa[2][0], aa[2][1])
-            pgutils.message(aa[2][0] + "\n" + aa[2][1])
+            pyala.notify_sys(aa[2][0], aa[2][1], dddd)
+            pgutils.message("\n" + aa[2][0] + "\n" + aa[2][1], title =  "Alarm at " + dddd)
+
+            sys.stdout.write('\a')
+            sys.stdout.flush()
 
 
     def eval_alarm(self):

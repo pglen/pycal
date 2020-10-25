@@ -23,7 +23,6 @@ from gi.repository import PangoCairo
 
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 
-
 # ------------------------------------------------------------------------
 
 class CalEntry(Gtk.Window):
@@ -43,6 +42,10 @@ class CalEntry(Gtk.Window):
 
         #self.uuid = pgutils.randstr(12)
         self.uuid = uuid.uuid4()
+        self.self2 = self2
+
+        self.self2.mainwin.logwin.append_logwin(
+                            "Popup: %s\r" % (datetime.datetime.today().ctime()) )
 
         self.set_position(Gtk.WindowPosition.CENTER)
 
@@ -331,7 +334,9 @@ class CalEntry(Gtk.Window):
             self.destroy()
             return
 
-        print("UUID:", self.uuid)
+        self.self2.mainwin.logwin.append_logwin(
+                                "Saved: %s %s\r" % (self.uuid, datetime.datetime.today().ctime()) )
+        #print("UUID:", self.uuid)
         txtarr = []
         #print ("got data", end = " ")
         for bb in self.table.texts:
