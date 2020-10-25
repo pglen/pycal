@@ -15,8 +15,13 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify
+'''
+try:
+    gi.require_version('Notify', '0.7')
+    from gi.repository import Notify
+except:
+    print("No notify subsystem")
+'''
 
 import pyala, pycal, pycallog, calfile
 

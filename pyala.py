@@ -13,8 +13,11 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify
+try:
+    gi.require_version('Notify', '0.7')
+    from gi.repository import Notify
+except:
+    print("No notify subsystem")
 
 from playsound import playsound
 
@@ -44,7 +47,12 @@ def _callback_func():
     print("Acknowledged")
 
 def notify_sys(alname, alsub):
-    Notify.init("Calendar")
+    try:
+        Notify.init("Calendar")
+    except:
+        print("No notify subsys")
+        return
+
     nnn = Notify.Notification.new("Calendar Alert", alname  + " - " + alsub,  "dialog-information")
     nnn.add_action("action_click", "Acknowledge Alarm", _callback_func, None)
     #nnn.set_urgency(0)
