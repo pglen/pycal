@@ -27,9 +27,9 @@ check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 
 class CalEntry(Gtk.Window):
 
-    def __init__(self, hx, hy, xxxx, yyyy, self2, callb = None):
+    def __init__(self, xxxx, yyyy, self2, callb = None):
 
-        print("CalEntry init", hx, hy)
+        #print("CalEntry init", hx, hy)
 
         warnings.simplefilter("ignore")
 
@@ -39,6 +39,8 @@ class CalEntry(Gtk.Window):
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.alt = False
         self.alarr = []
+
+        hx, hy = self2.hit_test(xxxx, yyyy)
 
         #self.uuid = pgutils.randstr(12)
         self.uuid = uuid.uuid4()

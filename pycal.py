@@ -564,41 +564,42 @@ class CalCanvas(Gtk.DrawingArea):
         elif  event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
             print("DBL click", event.x, event.y)
             if event.button == 1:
-                hx, hy = self.hit_test(event.x, event.y)
                 if self.popped:
                     try:    self.tt.destroy()
                     except: pass
                     self.popped = False
+
+                hx, hy = self.hit_test(event.x, event.y)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
                 if not pad:
-                    self.dlg = pycalent.CalEntry(hx, hy, event.x, event.y, self, self.done_caldlg)
+                    self.dlg = pycalent.CalEntry(event.x, event.y, self, self.done_caldlg)
 
 
     def menucb(self, txt, cnt):
         #print (" txt cnt", txt, txt)
         xxx = self.menu.event.x;  yyy = self.menu.event.y
-
         if cnt == 1:
-            print("New entry")
-            hx, hy = self.hit_test(xxx, yyy)
+            #print("New entry")
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
                 self.popped = False
+            hx, hy = self.hit_test(xxx, yyy)
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
-                self.dlg = pycalent.CalEntry(hx, hy, xx, yy, self, self.done_caldlg)
+                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
         if cnt == 2:
-            print("Editing entry", xxx, yyy)
-            hx, hy = self.hit_test(xxx, yyy)
+            #print("Editing entry", xxx, yyy)
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
                 self.popped = False
+
+            hx, hy = self.hit_test(xxx, yyy)
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
-                self.dlg = pycalent.CalEntry(hx, hy, xxx, yyy, self, self.done_caldlg)
+                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
         if cnt == 3:
             print("Deleting entry")
