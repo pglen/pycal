@@ -6,9 +6,14 @@ In (under) development
 
 ![Screen shot o pycal](pycal_screen.png "PyCal Screen Shot")
 
+INSTALL
+
+# Usual gi installs plus:
+
+sudo apt-get install gir1.2-notify-0.7
 
 
-
+# EOF
 
 
 
