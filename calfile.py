@@ -13,8 +13,8 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify
+#gi.require_version('Notify', '0.7')
+#from gi.repository import Notify
 
 #from playsound import playsound
 
@@ -165,8 +165,8 @@ def is_time(td2, aa):
     #print("tdiff = ", tdiff, tdiff.total_seconds())
     if tdiff.total_seconds() < 100:
         print("Alarm on:", aa)
-        notify_sys(aa)
-        play_sound()
+        #notify_sys(aa)
+        #play_sound()
 
 
 #           0123 45 67 8 90 12 34

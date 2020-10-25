@@ -13,8 +13,8 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify
+#gi.require_version('Notify', '0.7')
+#from gi.repository import Notify
 
 import pyala, pycal, pycallog
 
