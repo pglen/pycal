@@ -79,29 +79,172 @@ class CalEntry(Gtk.Window):
         self.connect("key-press-event", self.area_key)
         self.connect("key-release-event", self.area_key)
 
+        self.row = 0; self.col = 0
         vbox = Gtk.VBox();
-        self.ptab = Gtk.Table(); #self.ptab.set_column_homogeneous(False)
-        self.ptab.set_col_spacings(4); self.ptab.set_row_spacings(4)
+
+        # ----------------------------------------------------------------
+
+        hbox5 = self.make_scriptline()
+
+        self.row = 0; self.col = 0
+        hbox, self.dtab = self.make_dtab(ttt, xdarrs, idx, xdat)
+
+        self.row = 0; self.col = 0
+        self.ptab = self.make_ptab(ttt, xdarrs, idx)
+
+        # ----------------------------------------------------------------
+        # Assemble all of it
+
+        vbox.pack_start(hbox, 0, 0, 2)
+        vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
+
+        hbox3 = Gtk.HBox()
+        hbox3.pack_start(pggui.Label(" "), 0, 0, 0)
+        hbox3.pack_start(self.table, 0, 0, 4)
+        hbox3.pack_start(pggui.Label(" "), 0, 0, 0)
+
+        hbox4 = Gtk.HBox()
+        hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
+        hbox4.pack_start(self.edit, 1, 1, 4)
+        hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
+
+
+        vbox.pack_start(self.ptab, 0, 0, 4)
+        #vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
+
+        vbox.pack_start(hbox5, 0, 0, 4)
+
+        vbox.pack_start(self.dtab, 0, 0, 4)
+        vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
+        vbox.pack_start(hbox3, 0, 0, 4)
+
+        hbox7 = Gtk.HBox()
+        hbox7.pack_start(pggui.Label(" "), 0, 0, 4)
+        hbox7.pack_start(pggui.Label("_Free form text:", self.edit), 0, 0, 4)
+        hbox7.pack_start(pggui.Label(" "), 1, 1, 4)
+        vbox.pack_start(hbox7, 0, 0, 4)
+
+        vbox.pack_start(hbox4, 0, 0, 4)
+
+        hbox6 = Gtk.HBox()
+        bbb1 = pggui.WideButt("_Cancel", self.cancel)
+        bbb2 = pggui.WideButt(" OK (E_xit)  ", self.ok)
+        hbox6.pack_start(pggui.Label(" "), 1, 1, 0)
+        hbox6.pack_start(bbb1, 0, 0, 2);   hbox6.pack_start(bbb2, 0, 0, 2)
+
+        vbox.pack_start(hbox6, 0, 0, 4)
+
+        self.add(vbox)
+
+        self.show_all()
+        self.set_modal(True)
+        self.set_keep_above(True)
+
+    # --------------------------------------------------------------------
+
+    def make_dtab(self, ttt, xdarrs, idx, xdat):
+
+        dtab = Gtk.Table(); #dtab.set_homogeneous(False)
+        dtab.set_col_spacings(4); dtab.set_row_spacings(4)
+
+        for aa in range(3):
+            self.row += 1; self.col = 0
+            cb2 = Gtk.CheckButton()
+            if xdat:
+                cb2.set_active(xdat[3][aa][0])
+            hs2 = pggui.Spinner(0, 23, 0);
+            if xdat:
+                hs2.set_value(xdat[3][aa][1])
+            ms2 = pggui.Spinner(0, 59, 0);
+            if xdat:
+                ms2.set_value(xdat[3][aa][2])
+
+            #if aa == 0:
+            #    if xdarrs[idx][1] == 0 and xdarrs[idx][2] == 0:
+            #        hs2.set_value(nowh)
+            #        ms2.set_value(nowm)
+
+            dtab.attach(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1,
+                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); self.col += 1
+
+            dtab.attach_defaults(pggui.Label(" Alarm _%d:  Enabled: " % (aa+1), cb2, "Enable / Disable"), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+            dtab.attach_defaults(cb2, self.col, self.col+1, self.row, self.row + 1); self.col += 1
+
+            dtab.attach_defaults(pggui.Label(" _Hour: "), self.col, self.col+1,  self.row, self.row + 1)  ; self.col += 1
+            dtab.attach_defaults(hs2, self.col, self.col+1,  self.row, self.row + 1)            ; self.col += 1
+
+            dtab.attach_defaults(pggui.Label(" Minute: "), self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
+            dtab.attach_defaults(ms2,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
+
+            hbox = Gtk.HBox();
+            cccarr = []
+            for bb in range(len(check_fill)):
+                ccc = Gtk.CheckButton(check_fill[bb])
+
+                if xdat:
+                      ccc.set_active(xdat[3][aa][3][bb])
+
+                cccarr.append(ccc)
+                hbox.pack_start(ccc, 0, 0, 0)
+
+            dtab.attach_defaults(hbox,  self.col+3, self.col+6,  self.row, self.row + 1)              ; self.col += 6
+            self.alarr.append([cb2, hs2, ms2, cccarr])
+
+            #self.row += 1  ; self.col = 0
+        dtab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+
+        # ----------------------------------------------------------------
+        #sss = ttt.strftime("%m-%d-%y")
+        tnow = datetime.datetime.today()
+        nowh = tnow.hour; nowm = tnow.minute
+        sss = "%s %02d:%02d" % (ttt.strftime("%a %d-%b-%Y"), nowh, nowm )
+
+        hbox = Gtk.HBox(); lab = pggui.Label(sss, font = "Sans 16")
+        lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
+
+        hbox.pack_start(pggui.Label(" "), 0, 0, 4)
+        hbox.pack_start(lab, 1, 1, 4)
+        hbox.pack_start(pggui.Label(" "), 0, 0, 4)
+
+        arrt = ((" _Subject: ", "aa"), (" _Description: ", "hello"), (" _Notes: ", "notes"))
+        self.table = pggui.TextTable(arrt, textwidth=85)
+
+        self.edit = pgsimp.SimpleEdit()
+        self.edit.set_size_request(200, 200)
+
+        if len(xdarrs) > idx:
+            self.table.texts[0].set_text(xdarrs[idx][2][0])
+            self.table.texts[1].set_text(xdarrs[idx][2][1])
+            self.table.texts[2].set_text(xdarrs[idx][2][2])
+            self.edit.set_text(xdarrs[idx][2][3])
+
+        return hbox, dtab
+
+    # --------------------------------------------------------------------
+
+    def make_ptab(self, ttt, xdarrs, idx):
+
+        ptab = Gtk.Table(); #self.ptab.set_column_homogeneous(False)
+        ptab.set_col_spacings(4); ptab.set_row_spacings(4)
 
         ds = pggui.Spinner(0, 31, ttt.day)
         mms = pggui.Spinner(1, 12, ttt.month)
         ys = pggui.Spinner(1995, 2100, ttt.year)
 
-        row = 0; col = 0
         ds.set_sensitive(False); mms.set_sensitive(False); ys.set_sensitive(False);
 
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+        ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
 
-        self.ptab.attach_defaults(pggui.Label(" D_ay: ", ds), col, col+1,  row, row + 1)  ; col += 1
-        self.ptab.attach_defaults(ds, col, col+1,  row, row + 1)            ; col += 1
+        ptab.attach_defaults(pggui.Label(" D_ay: ", ds), self.col, self.col+1,  self.row, self.row + 1)  ; self.col += 1
+        ptab.attach_defaults(ds, self.col, self.col+1,  self.row, self.row + 1)            ; self.col += 1
 
-        self.ptab.attach_defaults(pggui.Label(" Mon_th: ", mms), col, col+1,  row, row + 1)     ; col += 1
-        self.ptab.attach_defaults(mms,  col, col+1,  row, row + 1)              ; col += 1
+        ptab.attach_defaults(pggui.Label(" Mon_th: ", mms), self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
+        ptab.attach_defaults(mms,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
 
-        self.ptab.attach_defaults(pggui.Label(" Y_ear: ", ys),  col, col+1,  row, row + 1)     ; col += 1
-        self.ptab.attach_defaults(ys,  col, col+1,  row, row + 1)              ; col += 1
-        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
+        ptab.attach_defaults(pggui.Label(" Y_ear: ", ys),  self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
+        ptab.attach_defaults(ys,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
+        ptab.attach(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1,
+                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); self.col += 1
 
         #nowh = ttt.hour; nowm = ttt.minute
         if idx >= len(xdarrs):
@@ -138,7 +281,8 @@ class CalEntry(Gtk.Window):
                 self.alarr[0][2].set_value(val)
 
         def change_dds(val):
-            print("change_dds", val)
+            #print("change_dds", val)
+            pass
 
         hs  = pggui.Spinner(0, 23, nowh, change_hs);
         ms  = pggui.Spinner(0, 59, nowm, change_ms);
@@ -156,151 +300,35 @@ class CalEntry(Gtk.Window):
             #print("set_dds", val)
             dds.set_value(int(val))
 
-        row += 1; col = 0
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-        self.ptab.attach_defaults(pgsimp.HourSel(set_hs), col, col+1,  row, row + 1) ; col += 1
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-        self.ptab.attach_defaults(pgsimp.MinSel(set_ms), col, col+1,  row, row + 1) ; col += 1
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-        self.ptab.attach_defaults(pgsimp.MinSel(set_dds), col, col+1,  row, row + 1) ; col += 1
+        self.row += 1; self.col = 0
+        ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+        ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+        ptab.attach_defaults(pgsimp.HourSel(set_hs), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
+        ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+        ptab.attach_defaults(pgsimp.MinSel(set_ms), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
+        ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+        ptab.attach_defaults(pgsimp.MinSel(set_dds), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
 
-        row += 1; col = 0
-        self.ptab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
+        self.row += 1; self.col = 0
+        ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
 
-        self.ptab.attach_defaults(pggui.Label(" Hour: ", hs), col, col+1,  row, row + 1)  ; col += 1
-        self.ptab.attach_defaults(hs, col, col+1,  row, row + 1)            ; col += 1
+        ptab.attach_defaults(pggui.Label(" Hour: ", hs), self.col, self.col+1,  self.row, self.row + 1)  ; self.col += 1
+        ptab.attach_defaults(hs, self.col, self.col+1,  self.row, self.row + 1)            ; self.col += 1
 
-        self.ptab.attach_defaults(pggui.Label(" Minute: ", ms), col, col+1,  row, row + 1)     ; col += 1
-        self.ptab.attach_defaults(ms,  col, col+1,  row, row + 1)              ; col += 1
+        ptab.attach_defaults(pggui.Label(" Minute: ", ms), self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
+        ptab.attach_defaults(ms,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
 
-        self.ptab.attach_defaults(pggui.Label(" Duration: (min) ", ms), col, col+1,  row, row + 1)     ; col += 1
-        self.ptab.attach_defaults(dds,  col, col+1,  row, row + 1)              ; col += 1
+        ptab.attach_defaults(pggui.Label(" Duration: (min) ", ms), self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
+        ptab.attach_defaults(dds,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
 
-        self.ptab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); col += 1
+        ptab.attach(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1,
+                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); self.col += 1
 
-        row += 1; col = 0
+        self.row += 1; self.col = 0
 
         self.nowarr = ((ds, mms, ys, hs, ms, dds))
 
-        # ----------------------------------------------------------------
-
-        self.dtab = Gtk.Table(); #self.dtab.set_homogeneous(False)
-        self.dtab.set_col_spacings(4); self.dtab.set_row_spacings(4)
-
-        for aa in range(3):
-            row += 1; col = 0
-            cb2 = Gtk.CheckButton()
-            if xdat:
-                cb2.set_active(xdat[3][aa][0])
-            hs2 = pggui.Spinner(0, 23, 0);
-            if xdat:
-                hs2.set_value(xdat[3][aa][1])
-            ms2 = pggui.Spinner(0, 59, 0);
-            if xdat:
-                ms2.set_value(xdat[3][aa][2])
-
-            #if aa == 0:
-            #    if xdarrs[idx][1] == 0 and xdarrs[idx][2] == 0:
-            #        hs2.set_value(nowh)
-            #        ms2.set_value(nowm)
-
-            self.dtab.attach(pggui.Label("  "), col, col+1, row, row + 1,
-                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); col += 1
-
-            self.dtab.attach_defaults(pggui.Label(" Alarm _%d:  Enabled: " % (aa+1), cb2, "Enable / Disable"), col, col+1, row, row + 1); col += 1
-            self.dtab.attach_defaults(cb2, col, col+1, row, row + 1); col += 1
-
-            self.dtab.attach_defaults(pggui.Label(" _Hour: "), col, col+1,  row, row + 1)  ; col += 1
-            self.dtab.attach_defaults(hs2, col, col+1,  row, row + 1)            ; col += 1
-
-            self.dtab.attach_defaults(pggui.Label(" Minute: "), col, col+1,  row, row + 1)     ; col += 1
-            self.dtab.attach_defaults(ms2,  col, col+1,  row, row + 1)              ; col += 1
-
-            hbox = Gtk.HBox(); cccarr = []
-            for bb in range(len(check_fill)):
-                ccc = Gtk.CheckButton(check_fill[bb])
-
-                if xdat:
-                      ccc.set_active(xdat[3][aa][3][bb])
-
-                cccarr.append(ccc)
-                hbox.pack_start(ccc, 0, 0, 0)
-
-            self.dtab.attach_defaults(hbox,  col+3, col+6,  row, row + 1)              ; col += 6
-            self.alarr.append([cb2, hs2, ms2, cccarr])
-
-            #row += 1  ; col = 0
-        self.dtab.attach_defaults(pggui.Label("  "), col, col+1, row, row + 1); col += 1
-
-        # ----------------------------------------------------------------
-        #sss = ttt.strftime("%m-%d-%y")
-        sss = "%s %02d:%02d" % (ttt.strftime("%a %d-%b-%Y"), nowh, nowm )
-
-        hbox = Gtk.HBox(); lab = pggui.Label(sss, font = "Sans 16")
-        lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
-
-        hbox.pack_start(pggui.Label(" "), 0, 0, 4)
-        hbox.pack_start(lab, 1, 1, 4)
-        hbox.pack_start(pggui.Label(" "), 0, 0, 4)
-
-        arrt = ((" _Subject: ", "aa"), (" _Description: ", "hello"), (" _Notes: ", "notes"))
-        self.table = pggui.TextTable(arrt, textwidth=85)
-
-        self.edit = pgsimp.SimpleEdit()
-        self.edit.set_size_request(200, 200)
-
-        if len(xdarrs) > idx:
-            self.table.texts[0].set_text(xdarrs[idx][2][0])
-            self.table.texts[1].set_text(xdarrs[idx][2][1])
-            self.table.texts[2].set_text(xdarrs[idx][2][2])
-            self.edit.set_text(xdarrs[idx][2][3])
-
-        # ----------------------------------------------------------------
-        # Assemble all of it
-
-        vbox.pack_start(hbox, 0, 0, 2)
-        vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
-
-        hbox3 = Gtk.HBox()
-        hbox3.pack_start(pggui.Label(" "), 0, 0, 0)
-        hbox3.pack_start(self.table, 0, 0, 4)
-        hbox3.pack_start(pggui.Label(" "), 0, 0, 0)
-
-        hbox4 = Gtk.HBox()
-        hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
-        hbox4.pack_start(self.edit, 1, 1, 4)
-        hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
-
-        vbox.pack_start(self.ptab, 0, 0, 4)
-        #vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
-
-        vbox.pack_start(self.dtab, 0, 0, 4)
-        vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
-        vbox.pack_start(hbox3, 0, 0, 4)
-
-        hbox7 = Gtk.HBox()
-        hbox7.pack_start(pggui.Label(" "), 0, 0, 4)
-        hbox7.pack_start(pggui.Label("_Free form text:", self.edit), 0, 0, 4)
-        hbox7.pack_start(pggui.Label(" "), 1, 1, 4)
-        vbox.pack_start(hbox7, 0, 0, 4)
-
-        vbox.pack_start(hbox4, 0, 0, 4)
-
-        hbox6 = Gtk.HBox()
-        bbb1 = pggui.WideButt("_Cancel", self.cancel)
-        bbb2 = pggui.WideButt(" OK (E_xit)  ", self.ok)
-        hbox6.pack_start(pggui.Label(" "), 1, 1, 0)
-        hbox6.pack_start(bbb1, 0, 0, 2);   hbox6.pack_start(bbb2, 0, 0, 2)
-
-        vbox.pack_start(hbox6, 0, 0, 4)
-
-        self.add(vbox)
-
-        self.show_all()
-        self.set_modal(True)
-        self.set_keep_above(True)
+        return ptab
 
     # --------------------------------------------------------------------
 
@@ -329,6 +357,16 @@ class CalEntry(Gtk.Window):
             if event.keyval == Gdk.KEY_Alt_L or \
                   event.keyval == Gdk.KEY_Alt_R:
                 self.alt = False;
+
+    def make_scriptline(self):
+        hbox5 = Gtk.HBox()
+        hbox5.pack_start(pggui.Label(" "), 0, 0, 4)
+        hbox5.pack_start(pggui.Label(" Execute Script:"), 0, 0, 4)
+        hbox5.pack_start(Gtk.CheckButton("Enabled"), 0, 0, 4)
+        self.script = Gtk.Entry()
+        hbox5.pack_start(self.script, True, True, 4)
+        hbox5.pack_start(Gtk.Button("Browse"), 0, 0, 4)
+        return hbox5
 
     def ok(self, buff):
 
