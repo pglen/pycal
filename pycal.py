@@ -547,8 +547,6 @@ class CalCanvas(Gtk.DrawingArea):
                     except: pass
                 hx, hy = self.hit_test(event.x, event.y)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
-                #print(nnn, ttt, xx, yy, "--", hx, hy)
-                print("Pop Menu", event.x, event.y)
                 sdd = ttt.strftime("%a %d-%b-%Y")
                 self.menu = pggui.Menu(("Selection: %s" % sdd, "New Calendar Entry",
                                             "Edit entry", "Delete Entry", "Edit Day"),
@@ -562,7 +560,7 @@ class CalCanvas(Gtk.DrawingArea):
             #self.get_root_window().set_cursor(self.arrow)
 
         elif  event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
-            print("DBL click", event.x, event.y)
+            #print("DBL click", event.x, event.y)
             if event.button == 1:
                 if self.popped:
                     try:    self.tt.destroy()
@@ -573,7 +571,6 @@ class CalCanvas(Gtk.DrawingArea):
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
                 if not pad:
                     self.dlg = pycalent.CalEntry(event.x, event.y, self, self.done_caldlg)
-
 
     def menucb(self, txt, cnt):
         #print (" txt cnt", txt, txt)
@@ -603,6 +600,42 @@ class CalCanvas(Gtk.DrawingArea):
 
         if cnt == 3:
             print("Deleting entry")
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+                self.popped = False
+
+            hx, hy = self.hit_test(xxx, yyy)
+            (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+            #if not pad:
+            #    self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
+
+            # This was the font height on draw ...
+            hhh2 = self.rect.height / 60; hhh = min(hhh2, 12) + 6
+
+            xdarr = self.get_daydat(ttt)
+            xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
+
+            idx = int(((yyy - (hhh2 + 4)) - yy) // hhh2)
+            #print("len", len(xdarrs), "idx", idx)
+
+            msg = "\n"
+
+            if idx >= len(xdarrs):
+                pgutils.message("\nNot pointing to valid Item or\nItem not in personal calendar."
+                                " \nPlease select a deletable item.")
+                return
+            else:
+                xdat = xdarrs[idx]
+                sdd = ttt.strftime("%a %d-%b-%Y")
+                sdd +=  " %02d:%02d" %  (xdat[1][3], xdat[1][4])
+                print("xdat", xdat);
+                msg += "%s\n\n%s\n%s" % (sdd, xdat[2][0], xdat[2][1])
+
+            ret = pgutils.yes_no(msg, title = " Confirm Delete Item ")
+            if ret == Gtk.ResponseType.YES:
+                print("deleting", xdat[1], xdat[2][0], xdat[2][1]);
+
         if cnt == 4:
             print("Editing day")
 
