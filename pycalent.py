@@ -27,9 +27,9 @@ check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 
 class CalEntry(Gtk.Window):
 
-    def __init__(self, hx, hy, self2, callb = None):
+    def __init__(self, hx, hy, xxxx, yyyy, self2, callb = None):
 
-        #print("CalEntry init", hx, hy)
+        print("CalEntry init", hx, hy)
 
         warnings.simplefilter("ignore")
 
@@ -49,7 +49,7 @@ class CalEntry(Gtk.Window):
 
         self.set_position(Gtk.WindowPosition.CENTER)
 
-        xxxx, yyyy = self2.get_pointer()
+        #xxxx, yyyy = self2.get_pointer()
         (nnn, ttt, pad, xx, yy) = self2.darr[hx][hy]
 
         # This was the font height on draw ...

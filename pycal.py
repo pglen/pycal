@@ -547,9 +547,8 @@ class CalCanvas(Gtk.DrawingArea):
                     except: pass
                 hx, hy = self.hit_test(event.x, event.y)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
-
                 #print(nnn, ttt, xx, yy, "--", hx, hy)
-
+                print("Pop Menu", event.x, event.y)
                 sdd = ttt.strftime("%a %d-%b-%Y")
                 self.menu = pggui.Menu(("Selection: %s" % sdd, "New Calendar Entry",
                                             "Edit entry", "Delete Entry", "Edit Day"),
@@ -563,7 +562,7 @@ class CalCanvas(Gtk.DrawingArea):
             #self.get_root_window().set_cursor(self.arrow)
 
         elif  event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
-            #print("DBL click", event.button)
+            print("DBL click", event.x, event.y)
             if event.button == 1:
                 hx, hy = self.hit_test(event.x, event.y)
                 if self.popped:
@@ -572,34 +571,34 @@ class CalCanvas(Gtk.DrawingArea):
                     self.popped = False
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
                 if not pad:
-                    self.dlg = pycalent.CalEntry(hx, hy, self, self.done_caldlg)
+                    self.dlg = pycalent.CalEntry(hx, hy, event.x, event.y, self, self.done_caldlg)
 
 
     def menucb(self, txt, cnt):
         #print (" txt cnt", txt, txt)
+        xxx = self.menu.event.x;  yyy = self.menu.event.y
 
         if cnt == 1:
             print("New entry")
-            xx, yy = self.get_pointer()
-            hx, hy = self.hit_test(xx, yy)
+            hx, hy = self.hit_test(xxx, yyy)
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
                 self.popped = False
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
-                self.dlg = pycalent.CalEntry(hx, hy, self, self.done_caldlg)
+                self.dlg = pycalent.CalEntry(hx, hy, xx, yy, self, self.done_caldlg)
 
         if cnt == 2:
-            print("Editing entry", self.menu.event.x, self.menu.event.y)
-            hx, hy = self.hit_test(self.menu.event.x, self.menu.event.y)
+            print("Editing entry", xxx, yyy)
+            hx, hy = self.hit_test(xxx, yyy)
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
                 self.popped = False
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
-                self.dlg = pycalent.CalEntry(hx, hy, self, self.done_caldlg)
+                self.dlg = pycalent.CalEntry(hx, hy, xxx, yyy, self, self.done_caldlg)
 
         if cnt == 3:
             print("Deleting entry")
