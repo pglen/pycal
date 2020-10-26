@@ -19,7 +19,10 @@ try:
 except:
     print("No notify subsystem")
 
-from playsound import playsound
+try:
+    from playsound import playsound
+except:
+    print("No sound subsystem")
 
 import gettext, locale
 gettext.bindtextdomain('pyala', './locale/')

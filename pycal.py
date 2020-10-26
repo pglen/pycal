@@ -333,11 +333,22 @@ class CalCanvas(Gtk.DrawingArea):
                                 else:
                                     arr5 = defa[:]
 
+                                def unpackx(*arrx):
+                                    res = arrx
+                                    return res
+
+                                #print("ver", sys.version_info[0])
+                                #if sys.version_info[0] < 3:
+                                #carr = [aa[2],
+                                #        [int(dd), int(mm),
+                                #                int(yy), int(HH), int(MM), int(dur)],
+                                #                        [unpackx(aa[3:])], [ arr3, arr4, arr5 ] ]
                                 carr = [aa[2],
-                                        [int(dd), int(mm),
-                                                int(yy), int(HH), int(MM), int(dur)],
-                                                        [*aa[3:]], [ arr3, arr4, arr5 ] ]
+                                            [int(dd), int(mm),
+                                                    int(yy), int(HH), int(MM), int(dur)],
+                                                            [*aa[3:]], [ arr3, arr4, arr5 ] ]
                                 #print("reading carr", carr)
+
                                 self.xarr.append(carr)
 
     # --------------------------------------------------------------------
@@ -715,6 +726,14 @@ class CalCanvas(Gtk.DrawingArea):
 
         return arr
 
+    def decode_text(self, txt):
+        strx = ""
+        #txt2 = txt.decode("cp437")
+        for aa in txt:
+            if ord(aa) < 128:
+                strx += aa
+        return strx.decode("cp437")
+
     def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
         (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
@@ -747,8 +766,14 @@ class CalCanvas(Gtk.DrawingArea):
                         txt += str(sss[2][0])
                     else:
                         txt += "Empty Subject Line " # + sss[0]
-                    #print("printing", txt, "len:", len(txt), "ulen", len(txt.encode("UTF8")) )
-                    self.pangolayout.set_text(txt, len(txt.encode("UTF8")) )
+                    print("printing", txt, "len:", len(txt), "ulen", len(txt.encode("UTF8")) )
+                    if sys.version_info[0] < 3:
+                        txt2 = self.decode_text(txt)
+                        print("ver 2", txt2)
+                        self.pangolayout.set_text(txt2, len(txt2))
+                    else:
+                        self.pangolayout.set_text(txt, len(txt.encode("UTF8")) )
+
                     txx, tyy = self.pangolayout.get_pixel_size()
                     self.cr.move_to(xxx, prog)
                     prog += tyy
