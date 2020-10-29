@@ -414,7 +414,6 @@ class CalCanvas(Gtk.DrawingArea):
                     #print(aa[1].year, aa[1].month, aa[1].day, "\nsum:",
                     #                flatten(aa[0]), "\ndesc:", flatten(aa[5]) )
 
-
                     carr = ["", [ aa[1].day, aa[1].month, aa[1].year,
                                             aa[1].hour, aa[1].minute, 0 ],
                                [flatten(aa[0]), "", "", flatten(aa[5]) ],
@@ -550,6 +549,21 @@ class CalCanvas(Gtk.DrawingArea):
         elif  event.type == Gdk.EventType.BUTTON_PRESS:
             #print("Single click", event.button)
             if event.button == 1:
+
+                hit = pggui.Rectangle(event.x, event.y, 2, 2)
+
+                if self.tri_2 != []:
+                    #print("Got tri2", self.tri_2)
+                    rrr = pggui.Rectangle(self.tri_2)
+                    if rrr.intersect(hit)[0]:
+                        print("Click in tri 2")
+
+                if self.tri_1 != []:
+                    #print("Got tri1", self.tri_1)
+                    rrr = pggui.Rectangle(self.tri_1)
+                    if rrr.intersect(hit)[0]:
+                        print("Click in tri 1")
+
                 self.shx, self.shy = self.hit_test(event.x, event.y)
 
             if event.button == 3:
@@ -728,11 +742,12 @@ class CalCanvas(Gtk.DrawingArea):
 
     def decode_text(self, txt):
         strx = ""
-        #txt2 = txt.decode("cp437")
-        for aa in txt:
+        txt2 = txt.encode("ascii", "ignore")
+        for aa in txt2:
             if ord(aa) < 128:
                 strx += aa
-        return strx.decode("cp437")
+        return strx
+        #return strx.decode("cp437")
 
     def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
 
@@ -766,7 +781,7 @@ class CalCanvas(Gtk.DrawingArea):
                         txt += str(sss[2][0])
                     else:
                         txt += "Empty Subject Line " # + sss[0]
-                    print("printing", txt, "len:", len(txt), "ulen", len(txt.encode("UTF8")) )
+                    #print("printing", txt, "len:", len(txt), "ulen", len(txt.encode("UTF8")) )
                     if sys.version_info[0] < 3:
                         txt2 = self.decode_text(txt)
                         print("ver 2", txt2)
@@ -803,6 +818,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.layout = PangoCairo.create_layout(cr)
         self.rect = self.get_allocation()
         self.cr = cr
+        self.cr2 = pggui.CairoHelper(cr)
 
         # Paint white, ignore system BG
         cr.set_source_rgba(255/255, 255/255, 255/255)
@@ -856,6 +872,7 @@ class CalCanvas(Gtk.DrawingArea):
             cr.line_to(self.rect.width, yy + self.head)
         cr.stroke()
 
+        self.tri_2 = [] ; self.tri_1 = []
         cr.set_source_rgba(88/255, 88/255, 100/255)
 
         for aa in range(7):
@@ -865,6 +882,11 @@ class CalCanvas(Gtk.DrawingArea):
                 (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
                 xx = aa * pitchx;  yy = bb * pitchy + self.head
 
+                warnings.simplefilter("ignore")
+                xx2, yy2 = self.get_pointer()
+                warnings.simplefilter("default")
+                mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
+
                 # Save it back to built array
                 self.darr[aa][bb] = ((nnn, ttt, pad, xx, yy))
 
@@ -872,14 +894,8 @@ class CalCanvas(Gtk.DrawingArea):
                 rrr, ggg, bbb = (255., 255., 255.)
 
                 if not pad:
-
-                    warnings.simplefilter("ignore")
-                    xx2, yy2 = self.get_pointer()
-                    warnings.simplefilter("default")
-
-                    mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
                     if hx == mx and hy == my:
-                        #print("Mouse over day:", xxx, yyy)
+                        #print("Mouse over day:", mx, my)
                         if self.zdate == ttt:
                             rrr, ggg, bbb = (200/255, 230/255, 200/255)
                         elif self.shx == aa and self.shy == bb:
@@ -929,24 +945,52 @@ class CalCanvas(Gtk.DrawingArea):
                 '''
                 ww = pitchx; hh = pitchy
 
-                if self.shx == aa and self.shy == bb:
-                    cr.set_source_rgba(10/255, 10/255, 125/255)
+                if not pad:
+                    if self.shx == aa and self.shy == bb:
+                        # Draw nav arrows
+                        self.cr.set_source_rgba(238/255, 255/255, 238/255)
+                        xxx =  xx + border/2 + 11 * pitchx/12
+                        yyy =  yy + border/2 + 5*pitchy/8
+                        www =  pitchx - border - 11*pitchx/12
+                        hhh =  pitchy - border - 5*pitchy/8
+                        #cr.rectangle(xxx, yyy, www, hhh)
+                        #cr.fill()
 
-                    # Draw corners
-                    cr.move_to(xx+2, yy+hh-2)
-                    cr.line_to(xx+2, yy+hh-hh/4)
-                    cr.move_to(xx+2, yy+hh - 2)
-                    cr.line_to(xx+ww/4, yy +hh- 2)
+                        # Draw triangles
+                        cr.set_line_width(1)
+                        self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                        self.tri_1 = [xxx, yyy, www, hhh/3]
+                        self.cr2.tri(self.tri_1)
+                        cr.fill()
+                        self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                        self.cr2.tri(self.tri_1)
+                        cr.stroke()
 
-                    cr.move_to(xx+ww-2, yy + 2)
-                    cr.line_to(xx+ww-2, yy + hh/4)
-                    cr.move_to(xx+ww-2, yy + 2)
-                    cr.line_to(xx+ww-ww/4, yy + 2)
+                        # Draw triangles2
+                        self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                        self.tri_2 = [xxx, yyy + 2*hhh/3, www, hhh/3]
+                        self.cr2.tri2(self.tri_2)
+                        cr.fill()
+                        self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                        self.cr2.tri2(self.tri_2)
+                        cr.stroke()
 
-                    cr.stroke()
+                        # Draw corners
+                        cr.set_source_rgba(10/255, 10/255, 125/255)
+                        cr.move_to(xx+2, yy+hh-2)
+                        cr.line_to(xx+2, yy+hh-hh/4)
+                        cr.move_to(xx+2, yy+hh - 2)
+                        cr.line_to(xx+ww/4, yy +hh- 2)
 
+                        cr.move_to(xx+ww-2, yy + 2)
+                        cr.line_to(xx+ww-2, yy + hh/4)
+                        cr.move_to(xx+ww-2, yy + 2)
+                        cr.line_to(xx+ww-ww/4, yy + 2)
+
+                        cr.stroke()
+
+    # --------------------------------------------------------------------
     # Trigger alarms, if not done already
-
     def pop_alarm(self, aa):
         done = False
         for dd in self.donearr:
