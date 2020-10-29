@@ -530,6 +530,7 @@ class CalCanvas(Gtk.DrawingArea):
 
         if (self.old_hx != hx or self.old_hy != hy):
             #print("Delta", hx, hy)
+            self.scrollday = 0
             self.queue_draw()
 
         self.old_hx = hx; self.old_hy = hy
@@ -550,7 +551,6 @@ class CalCanvas(Gtk.DrawingArea):
         elif  event.type == Gdk.EventType.BUTTON_PRESS:
             #print("Single click", event.button)
             if event.button == 1:
-
                 hit = pggui.Rectangle(event.x, event.y, 2, 2)
 
                 if self.tri_2 != []:
@@ -559,13 +559,18 @@ class CalCanvas(Gtk.DrawingArea):
                     if rrr.intersect(hit)[0]:
                         print("Click in tri 2")
                         self.scrollday += 1
+                        self.invalidate()
+                        return
 
                 if self.tri_1 != []:
                     #print("Got tri1", self.tri_1)
                     rrr = pggui.Rectangle(self.tri_1)
                     if rrr.intersect(hit)[0]:
                         print("Click in tri 1")
-                        self.scrollday -= 1
+                        if  self.scrollday > 0:
+                            self.scrollday -= 1
+                        self.invalidate()
+                        return
 
                 self.shx, self.shy = self.hit_test(event.x, event.y)
 
@@ -774,10 +779,14 @@ class CalCanvas(Gtk.DrawingArea):
 
         arrd = self.get_daydat(ttt)
         arrsd = sorted(arrd, key=lambda val: val[1][3] * 60 + val[1][4] )
-        tmpscroll = self.scrollday
+        if self.shx == aa and self.shy == bb:
+            tmpscroll = self.scrollday
+        else:
+            tmpscroll = 0
+
         if len(arrsd):
             try:
-                for sss in arrsd[self.scrollday:]:
+                for sss in arrsd[tmpscroll:]:
                     #print("sss", sss[3][3], sss[3][4])
                     txt = "%02d:%02d " % (int(sss[1][3]), int(sss[1][4]))
                     if sss[2][0]:
