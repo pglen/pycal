@@ -140,6 +140,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.donearr = []
         self.moon = True
         self.holy = True
+        self.scrollday = 0
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -557,12 +558,14 @@ class CalCanvas(Gtk.DrawingArea):
                     rrr = pggui.Rectangle(self.tri_2)
                     if rrr.intersect(hit)[0]:
                         print("Click in tri 2")
+                        self.scrollday += 1
 
                 if self.tri_1 != []:
                     #print("Got tri1", self.tri_1)
                     rrr = pggui.Rectangle(self.tri_1)
                     if rrr.intersect(hit)[0]:
                         print("Click in tri 1")
+                        self.scrollday -= 1
 
                 self.shx, self.shy = self.hit_test(event.x, event.y)
 
@@ -771,10 +774,10 @@ class CalCanvas(Gtk.DrawingArea):
 
         arrd = self.get_daydat(ttt)
         arrsd = sorted(arrd, key=lambda val: val[1][3] * 60 + val[1][4] )
-
+        tmpscroll = self.scrollday
         if len(arrsd):
             try:
-                for sss in arrsd:
+                for sss in arrsd[self.scrollday:]:
                     #print("sss", sss[3][3], sss[3][4])
                     txt = "%02d:%02d " % (int(sss[1][3]), int(sss[1][4]))
                     if sss[2][0]:
