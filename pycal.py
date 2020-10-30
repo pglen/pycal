@@ -141,6 +141,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.moon = True
         self.holy = True
         self.scrollday = 0
+        self.ign = 0
 
         if not xdate:
             self.set_date(datetime.datetime.today())
@@ -557,21 +558,24 @@ class CalCanvas(Gtk.DrawingArea):
                     #print("Got tri2", self.tri_2)
                     rrr = pggui.Rectangle(self.tri_2)
                     if rrr.intersect(hit)[0]:
-                        print("Click in tri 2")
+                        #print("Click in tri 2")
                         self.scrollday += 1
                         self.invalidate()
+                        self.ign += 1
                         return
 
                 if self.tri_1 != []:
                     #print("Got tri1", self.tri_1)
                     rrr = pggui.Rectangle(self.tri_1)
                     if rrr.intersect(hit)[0]:
-                        print("Click in tri 1")
+                        #print("Click in tri 1")
                         if  self.scrollday > 0:
                             self.scrollday -= 1
                         self.invalidate()
+                        self.ign += 1
                         return
 
+                self.ign = 0
                 self.shx, self.shy = self.hit_test(event.x, event.y)
 
             if event.button == 3:
@@ -593,6 +597,11 @@ class CalCanvas(Gtk.DrawingArea):
             #self.get_root_window().set_cursor(self.arrow)
 
         elif  event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+
+            if self.ign:
+                self.ign -= 1
+                return
+
             #print("DBL click", event.x, event.y)
             if event.button == 1:
                 if self.popped:
@@ -662,7 +671,7 @@ class CalCanvas(Gtk.DrawingArea):
                 xdat = xdarrs[idx]
                 sdd = ttt.strftime("%a %d-%b-%Y")
                 sdd +=  " %02d:%02d" %  (xdat[1][3], xdat[1][4])
-                print("xdat", xdat);
+                #print("xdat", xdat);
                 msg += "%s\n\n%s\n%s" % (sdd, xdat[2][0], xdat[2][1])
 
             ret = pgutils.yes_no(msg, title = " Confirm Delete Item ")

@@ -73,7 +73,7 @@ class CalEntry(Gtk.Window):
 
         self.set_title(title)
 
-        print ("xdat loading", xdat)
+        #print ("xdat loading", xdat)
 
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
