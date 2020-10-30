@@ -536,6 +536,8 @@ class CalCanvas(Gtk.DrawingArea):
 
         self.old_hx = hx; self.old_hy = hy
 
+    # --------------------------------------------------------------------
+
     def area_button(self, area, event):
         self.mouevent = event
         #self.mouse = Rectangle(event.x, event.y, 4, 4)

@@ -60,8 +60,9 @@ class CalEntry(Gtk.Window):
         xdarr = self2.get_daydat(ttt)
         xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
 
-        idx = int(((yyyy - (hhh2 + 4)) - yy) // hhh2)
-        #print("len", len(xdarrs), "idx", idx)
+        idx = int(((yyyy - (hhh2 + 4)) - yy) // hhh2) + self2.scrollday
+
+        print("len", len(xdarrs), "idx", idx, "ign", self2.scrollday)
 
         title = "Calendar Item Entry"
         if idx >= len(xdarrs):
