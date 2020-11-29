@@ -55,9 +55,10 @@ def notify_sys(alname, alsub, ddd = ""):
     except:
         print("Notify subsystem is not installed")
         return
-    sss = "at" + ddd + "\n" + alname  + " \n" + alsub
+    sss = " at " + ddd + "\n" + alname  + " \n" + alsub
     nnn = Notify.Notification.new("Calendar Alert", sss, "dialog-information")
     nnn.add_action("action_click", "Acknowledge Alarm", _callback_func, None)
+    nnn.set_timeout(0)
     nnn.show()
 
 def is_alarm_time(td2, aa):

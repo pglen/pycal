@@ -62,7 +62,7 @@ class CalEntry(Gtk.Window):
 
         idx = int(((yyyy - (hhh2 + 4)) - yy) // hhh2) + self2.scrollday
 
-        print("len", len(xdarrs), "idx", idx, "ign", self2.scrollday)
+        #print("len", len(xdarrs), "idx", idx, "ign", self2.scrollday)
 
         title = "Calendar Item Entry"
         if idx >= len(xdarrs):
@@ -145,6 +145,12 @@ class CalEntry(Gtk.Window):
 
     def make_dtab(self, ttt, xdarrs, idx, xdat):
 
+        #def change_hs2(val):
+        #    print("change_hs2")
+
+        #def change_ms2(val):
+        #    print("change_ms2")
+
         dtab = Gtk.Table(); #dtab.set_homogeneous(False)
         dtab.set_col_spacings(4); dtab.set_row_spacings(4)
 
@@ -153,10 +159,10 @@ class CalEntry(Gtk.Window):
             cb2 = Gtk.CheckButton()
             if xdat:
                 cb2.set_active(xdat[3][aa][0])
-            hs2 = pggui.Spinner(0, 23, 0);
+            hs2 = pggui.Spinner(0, 23, 0, change_hs2);
             if xdat:
                 hs2.set_value(xdat[3][aa][1])
-            ms2 = pggui.Spinner(0, 59, 0);
+            ms2 = pggui.Spinner(0, 59, 0, change_ms2);
             if xdat:
                 ms2.set_value(xdat[3][aa][2])
 
@@ -363,11 +369,53 @@ class CalEntry(Gtk.Window):
         hbox5 = Gtk.HBox()
         hbox5.pack_start(pggui.Label(" "), 0, 0, 4)
         hbox5.pack_start(pggui.Label(" Execute Script:"), 0, 0, 4)
-        hbox5.pack_start(Gtk.CheckButton("Enabled"), 0, 0, 4)
+        self.scrcheck = Gtk.CheckButton("Enabled")
+        hbox5.pack_start(self.scrcheck, 0, 0, 4)
         self.script = Gtk.Entry()
         hbox5.pack_start(self.script, True, True, 4)
-        hbox5.pack_start(Gtk.Button("Browse"), 0, 0, 4)
+        self.browse = Gtk.Button("Browse")
+        self.browse.connect("button-press-event", self.browsefunc)
+        hbox5.pack_start(self.browse, 0, 0, 4)
         return hbox5
+
+    def done_open_fc(self, win, resp):
+        print ("done_open_fc", win, resp)
+        if resp == Gtk.ButtonsType.OK:
+            fname = win.get_filename()
+            if not fname:
+                #print "Must have filename"
+                #self.update_statusbar("No filename specified")
+                pass
+            elif os.path.isdir(fname):
+                #self.update_statusbar("Changed to %s" % fname)
+                #os.chdir(fname)
+                #win.set_current_folder(fname)
+                return
+            else:
+                print("got filename", fname)
+                #self.openfile(fname)
+                self.script.set_text(fname)
+                pass
+        win.destroy()
+
+    def browsefunc(self, butt, event):
+        #print("browse called", butt, event)
+        # Traditional open file
+        warnings.simplefilter("ignore")
+        but =   "Cancel", Gtk.ButtonsType.CANCEL,\
+         "Open File", Gtk.ButtonsType.OK
+        fc = Gtk.FileChooserDialog("Open file", self, \
+             Gtk.FileChooserAction.OPEN  \
+            #Gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER
+            , but)
+        warnings.simplefilter("default")
+
+        fc.set_default_response(Gtk.ButtonsType.OK)
+        fc.set_current_folder(os.getcwd())
+        fc.connect("response", self.done_open_fc)
+        #fc.connect("current-folder-changed", self.folder_ch )
+        #fc.set_current_name(self.fname)
+        fc.run()
 
     def ok(self, buff):
 
@@ -411,7 +459,10 @@ class CalEntry(Gtk.Window):
             xnowarr.append(int(ww.get_value()))
         #print()
 
-        arrx = (self.uuid.hex, tuple(xnowarr), txtarr, xalarr)
+        scr = (self.script.get_text(), self.scrcheck.get_active())
+        arrx = (self.uuid.hex, tuple(xnowarr), txtarr, xalarr, scr, )
+        #print("Saving", arrx)
+
         self.callb("OK", arrx)
         self.destroy()
 
