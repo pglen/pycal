@@ -145,11 +145,13 @@ class CalEntry(Gtk.Window):
 
     def make_dtab(self, ttt, xdarrs, idx, xdat):
 
-        #def change_hs2(val):
-        #    print("change_hs2")
+        def change_hs2(val):
+            #print("change_hs2")
+            pass
 
-        #def change_ms2(val):
-        #    print("change_ms2")
+        def change_ms2(val):
+            #print("change_ms2")
+            pass
 
         dtab = Gtk.Table(); #dtab.set_homogeneous(False)
         dtab.set_col_spacings(4); dtab.set_row_spacings(4)
