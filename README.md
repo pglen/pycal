@@ -2,7 +2,7 @@
 
 ## Calendar with monitorable alarm QUEUE and the usual features
 
-In (under) development
+In (under) development. Most of it works ....
 
 ![Screen shot o pycal](pycal_screen.png "PyCal Screen Shot")
 
