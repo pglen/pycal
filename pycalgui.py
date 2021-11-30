@@ -21,9 +21,11 @@ from gi.repository import GLib
 #except:
 #    print("No notify subsystem")
 
-import pyala, pycal, pycallog, calfile
+mydir = os.path.dirname(os.path.realpath(__file__))
+#print("dir", mydir)
 
-sys.path.append('../common')
+os.chdir(mydir)
+import pyala, pycal, pycallog, calfile
 
 import pggui, pgutils
 
@@ -140,6 +142,10 @@ class MainWindow():
         self.cal.holy = butt.get_active()
         self.cal.invalidate()
 
+    def def_toggle(self, butt):
+        self.cal.defc = butt.get_active()
+        self.cal.invalidate()
+
     def keypress(self, win, event):
 
         #print ("key", event.string, "val", event.keyval, "state", event.state)
@@ -217,12 +223,17 @@ class MainWindow():
         hbox.pack_start(Gtk.Label.new(" "), 1, 1, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
+        self.check3a = Gtk.CheckButton.new_with_label("Default   "); self.check3a.set_active(True)
+        hbox.pack_start(self.check3a, 0, 0, 0)
+        hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
+
+        hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
         self.check3 = Gtk.CheckButton.new_with_label("Personal"); self.check3.set_active(True)
         hbox.pack_start(self.check3, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.check4 = Gtk.CheckButton.new_with_label("Work"); self.check4.set_active(True)
+        self.check4 = Gtk.CheckButton.new_with_label("Work  "); self.check4.set_active(True)
         hbox.pack_start(self.check4, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
@@ -240,9 +251,9 @@ class MainWindow():
         self.mywin.add(self.vbox)
 
     # --------------------------------------------------------------------
-    def menucom(self, menu, item):
-        #print("menu called", menu, item)
+    def menucom(self, paren, menu, item):
 
+        #print("menu called", menu, "item", item)
         if item == 0:
             print("Open")
         if item == 1:
@@ -260,7 +271,6 @@ class MainWindow():
             pyala.notify_sys("Test alarm notifyer", "Test description appears here.", dddd)
             pgutils.message("\nTesting Popup Dialog\n" + "Test dialog description would appear here.",
                                 title =  "Alarm at " + dddd )
-
         if "xit" in menu:
             OnExit(self)
 

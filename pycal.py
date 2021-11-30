@@ -140,6 +140,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.donearr = []
         self.moon = True
         self.holy = True
+        self.defc = True
         self.scrollday = 0
         self.ign = 0
 
@@ -452,6 +453,7 @@ class CalCanvas(Gtk.DrawingArea):
         pitchx = (self.rect.width) // 7;
         pitchy = newheight // 6;
         py2 = int(py) - self.head
+        #print("px", px, "pitchy", pitchy)
         return  int(px) // pitchx, py2 // pitchy
 
     def dest_me(self):
@@ -585,6 +587,7 @@ class CalCanvas(Gtk.DrawingArea):
                     try:    self.tt.destroy()
                     except: pass
                 hx, hy = self.hit_test(event.x, event.y)
+                #print("hx, hY", hx, hy)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
                 sdd = ttt.strftime("%a %d-%b-%Y")
                 self.menu = pggui.Menu(("Selection: %s" % sdd, "New Calendar Entry",
@@ -679,6 +682,7 @@ class CalCanvas(Gtk.DrawingArea):
             ret = pgutils.yes_no(msg, title = " Confirm Delete Item ")
             if ret == Gtk.ResponseType.YES:
                 print("deleting", xdat[1], xdat[2][0], xdat[2][1]);
+                self.invalidate()
 
         if cnt == 4:
             print("Editing day")
