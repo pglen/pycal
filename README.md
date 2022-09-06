@@ -1,4 +1,4 @@
-# pycal
+# Python Calendar - pycal
 
 ## Calendar with alarm queue monitor ability ... and the usual features
 
@@ -8,12 +8,11 @@ Nice basis for any python calendar related project
 
 ![Screen shot o pycal](pycal_screen.png "PyCal Screen Shot")
 
-INSTALL
+## INSTALL
 
-# Usual gi installs plus:
+### Usual gi installs plus:
 
 sudo apt-get install gir1.2-notify-0.7
-
 
 ![Screen Shot](mainscreen.png)
 
