@@ -29,6 +29,8 @@ gettext.bindtextdomain('pyala', './locale/')
 gettext.textdomain('pyala')
 _ = gettext.gettext
 
+sys.path.append('../pycommon')
+
 import calfile, pycalsql
 
 #calfname = "~/.local/share/evolution/calendar/system/calendar.ics"

@@ -646,7 +646,7 @@ class CalCanvas(Gtk.DrawingArea):
                 self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
         if cnt == 3:
-            print("Deleting entry")
+            print("Deleting entry", )
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
