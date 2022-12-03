@@ -1038,14 +1038,16 @@ class CalCanvas(Gtk.DrawingArea):
             sys.stdout.write('\a')
             sys.stdout.flush()
 
-
     def eval_alarm(self):
         #print("eval_alarm")
         flag = False
         tmp = datetime.datetime.today()
         #print("tmp", tmp)
+
         for aa in self.xarr:
             #print (aa[3][0][0])
+            #print(aa)
+
             if aa[3][0][0]:
                 # Is it today?
                 if aa[1][0] == tmp.day and aa[1][1] == tmp.month  \

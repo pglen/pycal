@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 
-from __future__ import absolute_import, print_function
+#from __future__ import absolute_import, print_function
 
 import signal, os, time, sys, subprocess, platform, random, warnings
 import ctypes, datetime, sqlite3, warnings, math, pickle, uuid
 from calendar import monthrange
-
-import pycalent
-
-sys.path.append('../pycommon')
-
-import pggui, pgutils, pgsimp, pgbox
 
 import gi; gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
@@ -21,6 +15,11 @@ from gi.repository import cairo
 
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import PangoCairo
+
+#import pycalent
+#sys.path.append('../pycommon')
+
+import pggui, pgutils, pgsimp, pgbox
 
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 

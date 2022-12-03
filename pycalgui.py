@@ -25,8 +25,9 @@ mydir = os.path.dirname(os.path.realpath(__file__))
 #print("dir", mydir)
 
 os.chdir(mydir)
-import pyala, pycal, pycallog, calfile
+sys.path.append('../pycommon')
 
+import pyala, pycal, pycallog, calfile
 import pggui, pgutils
 
 class flydlg(Gtk.Window):
@@ -172,6 +173,7 @@ class MainWindow():
     def populate(self):
 
         self.vbox = Gtk.VBox(); self.vbox.set_spacing(4)
+
         hbox = Gtk.HBox()
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
@@ -242,6 +244,9 @@ class MainWindow():
         xxx.connect("clicked", OnExit, self)
         hbox.pack_start(xxx, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
+
+        #self.vbox.pack_start(Gtk.Label("s"), 0, 0, 0)
+        self.vbox.pack_start(pggui.xSpacer(2), 0, 0, 0)
 
         self.vbox.pack_start(hbox, 0, 0, 0)
         self.cal = pycal.CalCanvas()

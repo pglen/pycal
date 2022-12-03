@@ -4,8 +4,9 @@
 # Log window. Special as it hides instead of dies.
 # Intercepts stdout; printing show both in stdout and this window
 
-from __future__ import absolute_import
-from __future__ import print_function
+#from __future__ import absolute_import
+#from __future__ import print_function
+
 import  time, datetime
 
 import gi

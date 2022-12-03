@@ -18,8 +18,6 @@ from gi.repository import Gdk
 
 import pyala, pycal, pycallog
 
-sys.path.append('../pycommon')
-
 import pggui, pgutils, sutil
 
 debug = False

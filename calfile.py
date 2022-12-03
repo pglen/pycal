@@ -228,7 +228,4 @@ if __name__ == "__main__":
 
     #xstat = os.stat(calfile);
 
-
-
-
-
+# EOF

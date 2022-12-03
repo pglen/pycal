@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
+#from __future__ import print_function
 
 # ------------------------------------------------------------------------
 # Test client for the pyserv project. Encrypt test.
@@ -105,7 +105,9 @@ def eval_all(output, verbose = 0):
 
     res = []
     for aa in output:
-        #print("out", aa) #print(str(aa[1]))
+        if verbose:
+            print("out", aa)
+            print(str(aa[1]))
 
         idx = aa[2].find("M")
         if idx >= 0:
@@ -115,6 +117,7 @@ def eval_all(output, verbose = 0):
 
         delta = datetime.timedelta(minutes = mmm)
         td2 = aa[1] - delta
+
         #print("td2 = ", td2)
         #if verbose > 0:
         #    print("Summ:", "'" + str(aa[0]) + "'", "Alrm:", str(aa[1]),
@@ -142,7 +145,8 @@ def help():
     print("pyala.py parse and intepret pycal alarm files")
     print("  Options:")
     print("      -f         show full screen")
-    print("      -v [level] verbose")
+    print("      -v         verbose")
+    print("      -d [level] debug")
     print("      -x         clear config")
     print("      -c         show config")
     print("      -t         show timing")
@@ -175,6 +179,15 @@ if __name__ == "__main__":
         sys.exit(1)
 
     config.verbose = 0
+    config.full_screen = 0
+    config.list = 0
+    config.debug = 0
+    config.verbose = 0
+    config.clear_config = 0
+    config.show_config = 0
+    config.show_timing = 0
+    config.use_stdout = 0
+    config.test_trig = 0
 
     for aa in opts:
         #print("aa", aa)
@@ -190,12 +203,17 @@ if __name__ == "__main__":
         if aa[0] == "-V": print("Version", version); exit(1)
         if aa[0] == "-f": config.full_screen = True
         if aa[0] == "-l": config.list = True
-        if aa[0] == "-v": config.verbose = int(aa[1])
+        if aa[0] == "-d": config.debug = int(aa[1])
+        if aa[0] == "-v": config.verbose = True
         if aa[0] == "-x": config.clear_config = True
         if aa[0] == "-c": config.show_config = True
         if aa[0] == "-t": config.show_timing = True
         if aa[0] == "-o": config.use_stdout = True
         if aa[0] == "-g": config.test_trig = True
+
+    for aa in dir(config):
+        if "__" not in aa:
+            print(aa, "=", config.__getattribute__(aa))
 
     if config.test_trig:
         print("Testing pyala triggers. Verbose =", config.verbose)
@@ -244,8 +262,10 @@ if __name__ == "__main__":
             print(ret)
             break
 
-        #ala = eval_all(res)
-        #print("Alarm on:", aa)
+        ala = eval_all(res)
+        print("Alarm on:", ala)
+
+
         #notify_sys(aa)
         #play_sound()
 
