@@ -18,8 +18,11 @@ from gi.repository import PangoCairo
 
 #import pycalent
 #sys.path.append('../pycommon')
+#import pyvguicom, pgutils, pgsimp, pgbox
+#import pyvguicom
 
-import pggui, pgutils, pgsimp, pgbox
+#sys.path.append('../pyvguicom')
+from pyvguicom import pggui, pgutils, pgsimp, pgbox
 
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 

@@ -22,13 +22,27 @@ from gi.repository import GLib
 #    print("No notify subsystem")
 
 mydir = os.path.dirname(os.path.realpath(__file__))
-#print("dir", mydir)
-
+#print("mydir", mydir)
 os.chdir(mydir)
-sys.path.append('../pycommon')
 
+try:
+    from pyvguicom import pgutils
+    moddir = os.path.dirname(os.path.realpath(pgutils.__file__))
+    #print("moddir", moddir)
+    sys.path.append(moddir)
+    #print(sys.path[-3:])
+except:
+    # Local
+    base = os.path.dirname(os.path.realpath(__file__))
+    moddir = os.path.join(base, "..", "pyvguicom")
+    moddir2 = os.path.join(base, "..", "pyvguicom", "pyvguicom")
+    #print("moddir", moddir)
+    sys.path.append(moddir)
+    sys.path.append(moddir2)
+    from pyvguicom import pgutils
+
+from pyvguicom import pggui, pgutils, pgsimp, pgbox
 import pyala, pycal, pycallog, calfile
-import pggui, pgutils
 
 class flydlg(Gtk.Window):
 

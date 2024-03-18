@@ -9,8 +9,8 @@ from calendar import monthrange
 
 import pycalent, pycallog, pycalsql, calfile, pyala
 
-sys.path.append('../common')
-import pggui, pgutils, pgsimp, pgbox
+#sys.path.append('../common')
+from pyvguicom import pggui, pgutils, pgsimp, pgbox
 
 # Spec:
 
