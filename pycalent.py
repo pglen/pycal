@@ -22,7 +22,7 @@ from gi.repository import PangoCairo
 #import pyvguicom
 
 #sys.path.append('../pyvguicom')
-from pyvguicom import pggui, pgutils, pgsimp, pgbox
+from pyvguicom import pggui, pgutils, pgsimp, pgbox, pgentry, pgsel
 
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 
@@ -315,11 +315,11 @@ class CalEntry(Gtk.Window):
         self.row += 1; self.col = 0
         ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
         ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
-        ptab.attach_defaults(pgsimp.HourSel(set_hs), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
+        ptab.attach_defaults(pgsel.HourSel(set_hs), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
         ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
-        ptab.attach_defaults(pgsimp.MinSel(set_ms), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
+        ptab.attach_defaults(pgsel.MinSel(set_ms), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
         ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
-        ptab.attach_defaults(pgsimp.MinSel(set_dds), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
+        ptab.attach_defaults(pgsel.MinSel(set_dds), self.col, self.col+1,  self.row, self.row + 1) ; self.col += 1
 
         self.row += 1; self.col = 0
         ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1

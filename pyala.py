@@ -5,7 +5,25 @@
 # ------------------------------------------------------------------------
 # Test client for the pyserv project. Encrypt test.
 
-import  os, sys, getopt, signal, select, socket, time, struct
+import  os, sys
+
+try:
+    from pyvguicom import pgutils
+    moddir = os.path.dirname(os.path.realpath(pgutils.__file__))
+    #print("moddir", moddir)
+    sys.path.append(moddir)
+    #print(sys.path[-3:])
+except:
+    # Local
+    base = os.path.dirname(os.path.realpath(__file__))
+    moddir = os.path.join(base, "..", "pyvguicom")
+    moddir2 = os.path.join(base, "..", "pyvguicom", "pyvguicom")
+    #print("moddir", moddir)
+    sys.path.append(moddir)
+    sys.path.append(moddir2)
+    from pyvguicom import pgutils
+
+import  getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 
 import gi
@@ -22,7 +40,12 @@ except:
 try:
     from playsound import playsound
 except:
-    print("No sound subsystem")
+    pass
+    def playsound(arg):
+        print("Fake playsound")
+        Gdk.beep()
+        pass
+    #print("No sound subsystem")
 
 import gettext, locale
 gettext.bindtextdomain('pyala', './locale/')
@@ -148,6 +171,7 @@ def help():
     print("  Options:")
     print("      -f         show full screen")
     print("      -v         verbose")
+    print("      -q         quiet")
     print("      -d [level] debug")
     print("      -x         clear config")
     print("      -c         show config")
@@ -175,12 +199,13 @@ if __name__ == "__main__":
     opts = []; args = []
     longopt = ["help", ]
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?fv:xctVolg", longopt)
+        opts, args = getopt.getopt(sys.argv[1:], "d:h?fvxctVolgq", longopt)
     except getopt.GetoptError as err:
         print(("Invalid option(s) on command line:"), err)
         sys.exit(1)
 
     config.verbose = 0
+    config.quiet = 0
     config.full_screen = 0
     config.list = 0
     config.debug = 0
@@ -207,15 +232,17 @@ if __name__ == "__main__":
         if aa[0] == "-l": config.list = True
         if aa[0] == "-d": config.debug = int(aa[1])
         if aa[0] == "-v": config.verbose = True
+        if aa[0] == "-q": config.quiet = True
         if aa[0] == "-x": config.clear_config = True
         if aa[0] == "-c": config.show_config = True
         if aa[0] == "-t": config.show_timing = True
         if aa[0] == "-o": config.use_stdout = True
         if aa[0] == "-g": config.test_trig = True
 
-    for aa in dir(config):
-        if "__" not in aa:
-            print(aa, "=", config.__getattribute__(aa))
+    if config.verbose:
+        for aa in dir(config):
+            if "__" not in aa:
+                print(aa, "=", config.__getattribute__(aa))
 
     if config.test_trig:
         print("Testing pyala triggers. Verbose =", config.verbose)
@@ -239,8 +266,9 @@ if __name__ == "__main__":
         print("Cannot open/create calendar database.", calfname2, sys.exc_info())
         sys.exit(2)
 
-    print("Started pyala ... CTRL-C to exit. Verbose =", config.verbose)
-    print("Using calfname:", calfname2)
+    if not config.quiet:
+        print("Started pyala ... CTRL-C to exit. Verbose =", config.verbose)
+        print("Using calfname:", calfname2)
 
     xstat = os.stat(calfname2)
     res = []
@@ -259,14 +287,15 @@ if __name__ == "__main__":
         #    print(aa)
 
         if hasattr(config, "list"):
-            print("Listing alarms:")
-            ret = dblist_all(res, 0)
-            print(ret)
-            break
+            if config.list:
+                print("Listing alarms:")
+                ret = dblist_all(res, 0)
+                print(ret)
+                break
+
 
         ala = eval_all(res)
         print("Alarm on:", ala)
-
 
         #notify_sys(aa)
         #play_sound()

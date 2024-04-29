@@ -18,7 +18,7 @@ from gi.repository import Gdk
 
 import pyala, pycal, pycallog
 
-import pggui, pgutils, sutil
+import pggui, pgutils #, sutil
 
 debug = False
 
@@ -155,7 +155,7 @@ class CalSQLite():
             self.conn.commit()
         except:
             print("Cannot put sql ", sys.exc_info())
-            sutil.print_exception("put")
+            pgutils.print_exception("put")
             self.errstr = "Cannot put sql " + str(sys.exc_info())
             ret = False
         finally:

@@ -171,27 +171,27 @@ class CalCanvas(Gtk.DrawingArea):
     def keypress(self, win, event):
 
         ret = False
-        print ("key", event.string, "val", event.keyval, "state", event.state)
+        #print ("key", event.string, "val", event.keyval, "state", event.state)
         #print("hw", event.hardware_keycode)
 
-        if  event.state & Gdk.ModifierType.SHIFT_MASK:
-            print("SHIFT")
-        if  event.state & Gdk.ModifierType.CONTROL_MASK:
-            print("CONTROL")
-        if  event.state & Gdk.ModifierType.MOD1_MASK:
-            print("ALT")
+        #if  event.state & Gdk.ModifierType.SHIFT_MASK:
+        #    print("SHIFT")
+        #if  event.state & Gdk.ModifierType.CONTROL_MASK:
+        #    print("CONTROL")
+        #if  event.state & Gdk.ModifierType.MOD1_MASK:
+        #    print("ALT")
 
         if event.keyval == Gdk.KEY_Up:
-            print("Up")
+            #print("Up")
             ret = True
         if event.keyval == Gdk.KEY_Down:
-            print("Down")
+            #print("Down")
             ret = True
         if event.keyval == Gdk.KEY_Left:
-            print("Left")
+            #print("Left")
             ret = True
         if event.keyval == Gdk.KEY_Right:
-            print("Right")
+            #print("Right")
             ret = True
 
         return ret
@@ -669,8 +669,9 @@ class CalCanvas(Gtk.DrawingArea):
             msg = "\n"
 
             if idx >= len(xdarrs):
-                pgutils.message("\nNot pointing to valid Item or\nItem not in personal calendar."
-                                " \nPlease select a deletable item.")
+                pgutils.message(    "\nNot pointing to valid Item or"
+                                    "\nItem not in personal calendar."
+                                    "\nPlease select a deletable item.")
                 return
             else:
                 xdat = xdarrs[idx]
