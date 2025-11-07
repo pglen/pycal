@@ -80,6 +80,7 @@ def notify_sys(alname, alsub, ddd = ""):
     except:
         print("Notify subsystem is not installed")
         return
+
     sss = " at " + ddd + "\n" + alname  + " \n" + alsub
     nnn = Notify.Notification.new("Calendar Alert", sss, "dialog-information")
     nnn.add_action("action_click", "Acknowledge Alarm", _callback_func, None)
@@ -157,7 +158,7 @@ def eval_all(output, verbose = 0):
     return res
 
 def dblist_all(arg1, arg2):
-    global pgdebug, config, sqldb
+    global config, sqldb
 
     ret = sqldb.getdata("%")
 
@@ -168,35 +169,36 @@ def dblist_all(arg1, arg2):
 def help():
 
     print("pyala.py parse and intepret pycal alarm files")
-    print("  Options:")
-    print("      -f         show full screen")
-    print("      -v         verbose")
-    print("      -q         quiet")
-    print("      -d [level] debug")
-    print("      -x         clear config")
-    print("      -c         show config")
-    print("      -t         show timing")
-    print("      -o         use stdout")
-    print("      -g         test triggers")
-    print("      -V         print Version")
-    print("      -l         list pending alarms")
-    print("      -h         print help")
-    print("      -?         print help")
+    print("Options:     -v         -- increment verbose level.")
+    print("             -q         -- quiet")
+    print("             -d [level] -- debug level [0-9]")
+    print("             -c         -- show config")
+    print("             -t         -- show timing")
+    print("             -g         -- test triggers")
+    print("             -V         -- print Version")
+    print("             -l         -- list pending alarms")
+    print("             -h         -- print help")
+    print("             -?         -- print help")
 
-#pgdebug = 0
 version = "1.0"
 
 class Config():
     def __init__(self):
         self.test_trig = False
+        self.verbose = 0
+        self.quiet = 0
+        self.list = 0
+        self.debug = 0
+        self.verbose = 0
+        self.show_config = 0
+        self.show_timing = 0
+        self.test_trig = 0
 
 if __name__ == "__main__":
 
-    global pgdebug, config, sqldb
+    global config, sqldb
 
-    config = Config()
-
-    opts = []; args = []
+    config = Config() ; opts = []; args = []
     longopt = ["help", ]
     try:
         opts, args = getopt.getopt(sys.argv[1:], "d:h?fvxctVolgq", longopt)
@@ -204,48 +206,35 @@ if __name__ == "__main__":
         print(("Invalid option(s) on command line:"), err)
         sys.exit(1)
 
-    config.verbose = 0
-    config.quiet = 0
-    config.full_screen = 0
-    config.list = 0
-    config.debug = 0
-    config.verbose = 0
-    config.clear_config = 0
-    config.show_config = 0
-    config.show_timing = 0
-    config.use_stdout = 0
-    config.test_trig = 0
-
     for aa in opts:
         #print("aa", aa)
+        if aa[0] == "-V": print("Version", version, "built Fri 07.Nov.2025"); exit(1)
+        if aa[0] == "-v": config.verbose += 1
+        if aa[0] == "-h" or aa[0] == "--help": help();  exit(1)
         if aa[0] == "-d":
             try:
-                pgdebug = int(aa[1])
-                print( sys.argv[0], _("Running at debug level"),  pgdebug)
+                config.debug = int(aa[1])
+                if config.verbose:
+                    print( sys.argv[0], _("Running at debug level"),  config.debug)
             except:
-                pgdebug = 0
+                #print(sys.exc_info())
+                config.debug = 0
 
-        if aa[0] == "-h" or aa[0] == "--help": help();  exit(1)
         if aa[0] == "-?": help();  exit(1)
-        if aa[0] == "-V": print("Version", version); exit(1)
-        if aa[0] == "-f": config.full_screen = True
         if aa[0] == "-l": config.list = True
-        if aa[0] == "-d": config.debug = int(aa[1])
-        if aa[0] == "-v": config.verbose = True
         if aa[0] == "-q": config.quiet = True
-        if aa[0] == "-x": config.clear_config = True
         if aa[0] == "-c": config.show_config = True
         if aa[0] == "-t": config.show_timing = True
-        if aa[0] == "-o": config.use_stdout = True
         if aa[0] == "-g": config.test_trig = True
 
-    if config.verbose:
+    if config.debug > 1:
         for aa in dir(config):
             if "__" not in aa:
-                print(aa, "=", config.__getattribute__(aa))
+                print(" config:", aa, "=", config.__getattribute__(aa))
 
     if config.test_trig:
-        print("Testing pyala triggers. Verbose =", config.verbose)
+        if config.verbose:
+            print("Testing pyala triggers. Verbose =", config.verbose)
         play_sound()
         notify_sys("Testing Notification", "Hello Sub")
         sys.exit(0)
@@ -277,6 +266,7 @@ if __name__ == "__main__":
         if xstat.st_mtime != os.stat(calfname2).st_mtime or not first:
             first = True
             xstat = os.stat(calfname2)
+        if config.verbose:
             print("Calfile has changed, evaluating");
 
         else:
