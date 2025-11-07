@@ -194,6 +194,17 @@ class Config():
         self.show_timing = 0
         self.test_trig = 0
 
+optx =  [
+                 ("v", "version",   "b",    bool,   0, ),
+                 ("v", "verbose",   "+",    int,   0, ),
+                 ("d", "debug",     "=",    int,   0, ),
+                 ("f", "fname",     "=",    str,   "untitled", ),
+                 ("a", "arr",       "=",    str,   "", ),
+                 ("b", "back",      "b",    bool,  False, ),
+                 ("h", "help",      "b",    bool,  False, ),
+            ]
+
+
 if __name__ == "__main__":
 
     global config, sqldb

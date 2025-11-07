@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import getopt
-
 def printobj(conf):
     for aa in dir(conf):
             if "__" not in aa:
@@ -63,6 +61,7 @@ def parse(argv, optx):
 
     #print("opts:", opts, "lopts:", lopts)
     xargs = []
+    import getopt
     try:
         opts, xargs = getopt.gnu_getopt(argv[1:], opts, lopts)
     except getopt.GetoptError as err:
@@ -99,12 +98,10 @@ if __name__ == "__main__":
     if config.parseerror:
         print(config.parseerror)
         sys.exit(1)
-
     if config.help:
         print("Help")
         sys.exit(1)
-
-    print("dump output:")
+    print("dump options:")
     printobj(config)
 
 # EOF
