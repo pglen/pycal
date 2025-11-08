@@ -17,8 +17,7 @@ from gi.repository import Gdk
 #from gi.repository import Notify
 
 import pyala, pycal, pycallog
-
-import pggui, pgutils #, sutil
+#import pggui, pgutils
 
 debug = False
 
@@ -96,7 +95,7 @@ class CalSQLite():
         else:
             return None
 
-    def   getdata(self, kkk):
+    def   getdata(self, kkk, all = False):
         try:
             #c = self.conn.cursor()
             self.c.execute("select * from caldata where keyx like ?", (kkk,))
@@ -115,6 +114,8 @@ class CalSQLite():
             pass
 
         if rr:
+            if all:
+                return (rr)
             return (rr[2], rr[3], rr[4])
         else:
             return ([], [], [])
@@ -299,6 +300,23 @@ class CalSQLite():
             pass
 
         return rr
+
+    def   rmone(self, kkk):
+        print("removing one", kkk)
+        try:
+            #c = self.conn.cursor()
+            self.c.execute("delete from calendar where keyx == ?", (kkk,) )
+            rr = self.c.fetchone()
+        except:
+            print("Cannot delete sql data", sys.exc_info())
+            self.errstr = "Cannot delete sql data" + str(sys.exc_info())
+        finally:
+            #c.close
+            pass
+        if rr:
+            return rr[1]
+        else:
+            return None
 
     # --------------------------------------------------------------------
     # Return None if no data

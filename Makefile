@@ -13,9 +13,14 @@ all:
 help:
 	@echo
 	@echo "Targets:"
-	@echo "	 make install    -- Install PyEdPro "
-	@echo "	 make pack       -- package PyEdPro "
+	@echo "	 make install    --    Install  "
+	@echo "	 make pack       --    package  "
+	@echo "	 make clean      --    rm py temps  "
+	@echo "	 make git        --    check in to repo  "
 	@echo
+
+clean:
+	@rm -f __pycache__/*
 
 install:
 	@python3 ./install.py

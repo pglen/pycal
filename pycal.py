@@ -548,11 +548,11 @@ class CalCanvas(Gtk.DrawingArea):
         mods = event.state & Gtk.accelerator_get_default_mod_mask()
 
         if(mods & Gdk.ModifierType.MOD1_MASK):
-            print("Modifier ALT",  event.state)
-
+            #print("Modifier ALT",  event.state)
+            pass
         if event.state & Gdk.ModifierType.CONTROL_MASK:
-            print( "Ctrl ButPress x =", event.x, "y =", event.y)
-
+            #print( "Ctrl ButPress x =", event.x, "y =", event.y)
+            pass
         elif  event.type == Gdk.EventType.BUTTON_PRESS:
             #print("Single click", event.button)
             if event.button == 1:
@@ -669,7 +669,7 @@ class CalCanvas(Gtk.DrawingArea):
             msg = "\n"
 
             if idx >= len(xdarrs):
-                pgutils.message(    "\nNot pointing to valid Item or"
+                pggui.message(    "\nNot pointing to valid Item or"
                                     "\nItem not in personal calendar."
                                     "\nPlease select a deletable item.")
                 return
@@ -680,9 +680,11 @@ class CalCanvas(Gtk.DrawingArea):
                 #print("xdat", xdat);
                 msg += "%s\n\n%s\n%s" % (sdd, xdat[2][0], xdat[2][1])
 
-            ret = pgutils.yes_no(msg, title = " Confirm Delete Item ")
+            ret = pggui.yes_no(msg, title = " Confirm Delete Item ")
             if ret == Gtk.ResponseType.YES:
-                print("deleting", xdat[1], xdat[2][0], xdat[2][1]);
+                #print("deleting", xdat)
+                print("deleting", xdat[1], "1", xdat[2][0], "2", xdat[2][1]);
+                self.sql.rmone(xdat[2][0])
                 self.invalidate()
 
         if cnt == 4:
@@ -1034,7 +1036,7 @@ class CalCanvas(Gtk.DrawingArea):
             print("Alarm triggered", dddd)
             pyala.play_sound()
             pyala.notify_sys(aa[2][0], aa[2][1], dddd)
-            pgutils.message("\n" + aa[2][0] + "\n" + aa[2][1], title =  "Alarm at " + dddd)
+            pggui.message("\n" + aa[2][0] + "\n" + aa[2][1], title =  "Alarm at " + dddd)
 
             sys.stdout.write('\a')
             sys.stdout.flush()

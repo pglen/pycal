@@ -105,7 +105,7 @@ def is_alarm_time(td2, aa):
 
     return ret
 
-def list_all(output, verbose = 0):
+def list_all(output):
 
     res = []
     td3 = datetime.datetime.today()
@@ -127,11 +127,13 @@ def list_all(output, verbose = 0):
 
 # ------------------------------------------------------------------------
 
-def eval_all(output, verbose = 0):
+def eval_all(output):
+
+    global  config
 
     res = []
     for aa in output:
-        if verbose:
+        if config.verbose:
             print("out", aa)
             print(str(aa[1]))
 
@@ -157,104 +159,66 @@ def eval_all(output, verbose = 0):
 
     return res
 
-def dblist_all(arg1, arg2):
+def dblist_all():
     global config, sqldb
-
-    ret = sqldb.getdata("%")
-
+    ret = sqldb.getdata("%", True)
     return ret
-
-# ------------------------------------------------------------------------
-
-def help():
-
-    print("pyala.py parse and intepret pycal alarm files")
-    print("Options:     -v         -- increment verbose level.")
-    print("             -q         -- quiet")
-    print("             -d [level] -- debug level [0-9]")
-    print("             -c         -- show config")
-    print("             -t         -- show timing")
-    print("             -g         -- test triggers")
-    print("             -V         -- print Version")
-    print("             -l         -- list pending alarms")
-    print("             -h         -- print help")
-    print("             -?         -- print help")
 
 version = "1.0"
 
-class Config():
-    def __init__(self):
-        self.test_trig = False
-        self.verbose = 0
-        self.quiet = 0
-        self.list = 0
-        self.debug = 0
-        self.verbose = 0
-        self.show_config = 0
-        self.show_timing = 0
-        self.test_trig = 0
-
 optx =  [
-                 ("v", "version",   "b",    bool,   0, ),
-                 ("v", "verbose",   "+",    int,   0, ),
-                 ("d", "debug",     "=",    int,   0, ),
-                 ("f", "fname",     "=",    str,   "untitled", ),
-                 ("a", "arr",       "=",    str,   "", ),
-                 ("b", "back",      "b",    bool,  False, ),
-                 ("h", "help",      "b",    bool,  False, ),
+                 ("V", "version",   "b",    bool,  False, "Show version."),
+                 ("v", "verbose",   "+",    int,   0, "Increase verbosity level."),
+                 ("d", "debug",     "=",    int,   0,   "Debug level (0-9) default=0",),
+                 ("f", "fname",     "=",    str,   calfname, "Calendar file name." ),
+                 ("l", "list",      "b",    bool,  False, "List file" ),
+                 ("q", "quiet",     "b",    bool,  False, "Less output" ),
+                 ("c", "show",      "b",    bool,  False, "Show data" ),
+                 ("t", "timing",     "b",   bool,  False, "Show timing details" ),
+                 ("g", "trig",       "b",   bool,  False, "Test triggers" ),
+                 ("i", "interval",   "=",   int,   10,    "Time interval between scans" ),
             ]
-
 
 if __name__ == "__main__":
 
     global config, sqldb
 
-    config = Config() ; opts = []; args = []
-    longopt = ["help", ]
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?fvxctVolgq", longopt)
-    except getopt.GetoptError as err:
-        print(("Invalid option(s) on command line:"), err)
+    import comline
+    comline.prologue = "Alarm engine for pycalgui."
+    comline.epilogue = ""
+    config = comline.parse(sys.argv, optx)
+
+    if config.parseerror:
+        print(config.parseerror)
         sys.exit(1)
 
-    for aa in opts:
-        #print("aa", aa)
-        if aa[0] == "-V": print("Version", version, "built Fri 07.Nov.2025"); exit(1)
-        if aa[0] == "-v": config.verbose += 1
-        if aa[0] == "-h" or aa[0] == "--help": help();  exit(1)
-        if aa[0] == "-d":
-            try:
-                config.debug = int(aa[1])
-                if config.verbose:
-                    print( sys.argv[0], _("Running at debug level"),  config.debug)
-            except:
-                #print(sys.exc_info())
-                config.debug = 0
+    if config.help:
+        sys.exit(0)
 
-        if aa[0] == "-?": help();  exit(1)
-        if aa[0] == "-l": config.list = True
-        if aa[0] == "-q": config.quiet = True
-        if aa[0] == "-c": config.show_config = True
-        if aa[0] == "-t": config.show_timing = True
-        if aa[0] == "-g": config.test_trig = True
+    if config.version:
+        print("Version 1.0", end = " ")
+        if config.verbose:
+            print("built on Sat 08.Nov.2025", end = " ")
+        print()
+        sys.exit(0)
 
     if config.debug > 1:
         for aa in dir(config):
             if "__" not in aa:
                 print(" config:", aa, "=", config.__getattribute__(aa))
 
-    if config.test_trig:
+    if config.trig:
         if config.verbose:
             print("Testing pyala triggers. Verbose =", config.verbose)
         play_sound()
         notify_sys("Testing Notification", "Hello Sub")
         sys.exit(0)
 
-    calfname2 = os.path.expanduser(calfname)
+    calfname2 = os.path.expanduser(config.fname)
 
     # Pre eval calfile
     #try:
-    #    res = calfile.eval_file(calfname2, config.verbose)
+    #    res = calfile.eval_file(config.fname2, config.verbose)
     #except:
     #    print("Cannot open caledar file:", "'" + calfname2 + "'")
     #    #print(sys.exc_info())
@@ -267,9 +231,18 @@ if __name__ == "__main__":
         sys.exit(2)
 
     if not config.quiet:
-        print("Started pyala ... CTRL-C to exit. Verbose =", config.verbose)
+        print("Started pyala ... CTRL-C to exit")
+
+    if config.verbose:
         print("Using calfname:", calfname2)
 
+    if config.list:
+        print("Listing alarms:")
+        ret = dblist_all()
+        print(ret)
+        sys.exit(0)
+
+    # Start scanning
     xstat = os.stat(calfname2)
     res = []
     first = False
@@ -277,33 +250,18 @@ if __name__ == "__main__":
         if xstat.st_mtime != os.stat(calfname2).st_mtime or not first:
             first = True
             xstat = os.stat(calfname2)
-        if config.verbose:
-            print("Calfile has changed, evaluating");
+            if config.verbose:
+                print("Calfile has changed, evaluating");
+            ala = eval_all(res)
+            if config.verbose:
+                print("Alarm on:", ala)
+            #notify_sys(aa)
+            #play_sound()
 
-        else:
-            #print("Calfile has not changed");
-            pass
-
-        #for aa in res:
-        #    print(aa)
-
-        if hasattr(config, "list"):
-            if config.list:
-                print("Listing alarms:")
-                ret = dblist_all(res, 0)
-                print(ret)
-                break
-
-
-        ala = eval_all(res)
-        print("Alarm on:", ala)
-
-        #notify_sys(aa)
-        #play_sound()
-
-        now = datetime.datetime.today()
-        #print("Now: ", now)
+        if config.verbose > 2:
+            now = datetime.datetime.today()
+            print("Now: ", now)
         #time.sleep(60 - now.second)
-        time.sleep(10);
+        time.sleep(config.interval);
 
 # EOF

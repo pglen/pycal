@@ -166,13 +166,14 @@ class MainWindow():
         #print ("key", event.string, "val", event.keyval, "state", event.state)
         #print("hw", event.hardware_keycode)
 
+        '''
         if  event.state & Gdk.ModifierType.SHIFT_MASK:
             print("SHIFT")
         if  event.state & Gdk.ModifierType.CONTROL_MASK:
             print("CONTROL")
         if  event.state & Gdk.ModifierType.MOD1_MASK:
             print("ALT")
-
+        '''
         if event.keyval == Gdk.KEY_F11:
             if  self.fullscreen:
                 self.mywin.unfullscreen()
