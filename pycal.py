@@ -201,11 +201,11 @@ class CalCanvas(Gtk.DrawingArea):
         self.set_date(self.xdate)
 
     # --------------------------------------------------------------------
-    def set_dbfile(self, dbfile):
+    def set_dbfile(self, dbfile, config):
 
         self.dbfile = dbfile
         try:
-            self.sql = pycalsql.CalSQLite(self.dbfile)
+            self.sql = pycalsql.CalSQLite(self.dbfile, config)
         except:
             print("Cannot make/open calendar database.")
         self.get_month_data()
@@ -632,9 +632,7 @@ class CalCanvas(Gtk.DrawingArea):
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
                 self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
-
         if cnt == 2:
-            #print("Editing entry", xxx, yyy)
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
@@ -642,6 +640,7 @@ class CalCanvas(Gtk.DrawingArea):
 
             hx, hy = self.hit_test(xxx, yyy)
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+            print("Editing entry:",  nnn, ttt, pad, xx, yy, int(xxx), int(yyy),)
             if not pad:
                 self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
@@ -683,8 +682,8 @@ class CalCanvas(Gtk.DrawingArea):
             ret = pggui.yes_no(msg, title = " Confirm Delete Item ")
             if ret == Gtk.ResponseType.YES:
                 #print("deleting", xdat)
-                print("deleting", xdat[1], "1", xdat[2][0], "2", xdat[2][1]);
-                self.sql.rmone(xdat[2][0])
+                print("deleting", xdat[1], "-", xdat[2][0], "-", xdat[2][1]);
+                self.sql.rmone(nnn)
                 self.invalidate()
 
         if cnt == 4:

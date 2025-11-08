@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-#from __future__ import absolute_import, print_function
+import os, time, sys, warnings, uuid, datetime
 
-import signal, os, time, sys, subprocess, platform, random, warnings
-import ctypes, datetime, sqlite3, warnings, math, pickle, uuid
 from calendar import monthrange
 
 import gi; gi.require_version("Gtk", "3.0")
@@ -13,15 +11,6 @@ from gi.repository import GLib
 from gi.repository import Pango
 from gi.repository import cairo
 
-gi.require_version('PangoCairo', '1.0')
-from gi.repository import PangoCairo
-
-#import pycalent
-#sys.path.append('../pycommon')
-#import pyvguicom, pgutils, pgsimp, pgbox
-#import pyvguicom
-
-#sys.path.append('../pyvguicom')
 from pyvguicom import pggui, pgutils, pgsimp, pgbox, pgentry, pgsel
 
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
@@ -406,14 +395,14 @@ class CalEntry(Gtk.Window):
     def browsefunc(self, butt, event):
         #print("browse called", butt, event)
         # Traditional open file
-        warnings.simplefilter("ignore")
+        #warnings.simplefilter("ignore")
         but =   "Cancel", Gtk.ButtonsType.CANCEL,\
          "Open File", Gtk.ButtonsType.OK
         fc = Gtk.FileChooserDialog("Open file", self, \
              Gtk.FileChooserAction.OPEN  \
             #Gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER
             , but)
-        warnings.simplefilter("default")
+        #warnings.simplefilter("default")
 
         fc.set_default_response(Gtk.ButtonsType.OK)
         fc.set_current_folder(os.getcwd())

@@ -1,61 +1,47 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
-
-# ------------------------------------------------------------------------
-# Test client for the pyserv project. Encrypt test.
-
-import  os, sys, getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading, sqlite3
-
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
-from gi.repository import Gdk
-
-#gi.require_version('Notify', '0.7')
-#from gi.repository import Notify
+import os, sys, sqlite3
 
 import pyala, pycal, pycallog
-#import pggui, pgutils
-
-debug = False
-
-# -------------------------------------------------------------------
+from pyvguicom import pgutils
 
 class CalSQLite():
 
-    def __init__(self, file):
+    ''' SQL routines for calendar '''
 
-        #self.take = 0
+    def __init__(self, file, config):
+
+        self.config = config
         self.errstr = ""
 
+        if self.config.debug > 0:
+            print("sql file:", file)
         try:
-            self.conn = sqlite3.connect(file)
+            self.curr = sqlite3.connect(file)
         except:
             print("Cannot open/create db:", file, sys.exc_info())
             return
         try:
-            self.c = self.conn.cursor()
+            self.cur = self.curr.cursor()
             # Create table
-            self.c.execute("create table if not exists calendar \
+            self.cur.execute("create table if not exists calendar \
              (pri INTEGER PRIMARY KEY, keyx text, uid text, val text, val2 text, val3 text, val4 text)")
-            self.c.execute("create index if not exists kcalendar on calendar (keyx)")
-            self.c.execute("create index if not exists pcalendar on calendar (pri)")
+            self.cur.execute("create index if not exists kcalendar on calendar (keyx)")
+            self.cur.execute("create index if not exists pcalendar on calendar (pri)")
 
-            self.c.execute("create table if not exists caldata \
+            self.cur.execute("create table if not exists caldata \
              (pri INTEGER PRIMARY KEY, keyx text, val text, val2 text, val3 text)")
-            self.c.execute("create index if not exists kcaldata on caldata (keyx)")
-            self.c.execute("create index if not exists pcaldata on caldata (pri)")
+            self.cur.execute("create index if not exists kcaldata on caldata (keyx)")
+            self.cur.execute("create index if not exists pcaldata on caldata (pri)")
 
-            self.c.execute("create table if not exists calala \
+            self.cur.execute("create table if not exists calala \
              (pri INTEGER PRIMARY KEY, keyx text, val text, val2 text, val3 text)")
-            self.c.execute("create index if not exists kcalala on calala (keyx)")
-            self.c.execute("create index if not exists pcalala on calala (pri)")
+            self.cur.execute("create index if not exists kcalala on calala (keyx)")
+            self.cur.execute("create index if not exists pcalala on calala (pri)")
 
-            self.c.execute("PRAGMA synchronous=OFF")
+            self.cur.execute("PRAGMA synchronous=OFF")
             # Save (commit) the changes
-            self.conn.commit()
+            self.curr.commit()
         except:
             print("Cannot insert sql data", sys.exc_info())
             self.errstr = "Cannot insert sql data" + str(sys.exc_info())
@@ -70,20 +56,17 @@ class CalSQLite():
 
     def   get(self, kkk):
 
-        #print("Getting data by keyx=", kkk)
-
+        if self.config.debug > 2:
+            print("Getting by keyx =", "'" + kkk + "'")
         try:
-            #c = self.conn.cursor()
-            self.c.execute("select * from calendar where keyx like ?", (kkk,))
-
-        #except sqlite3.OperationalError:
-        #    pass
+            #c = self.curr.cursor()
+            self.cur.execute("select * from calendar where keyx like ?", (kkk,))
         except:
-            print("Cannot get sql ", kkk, sys.exc_info())
+            #print("Cannot get sql for ", kkk, sys.exc_info())
+            #pgutils.print_exception("cannot get")
             self.errstr = "Cannot get sql data" + str(sys.exc_info())
-
         try:
-            rr = self.c.fetchall()
+            rr = self.cur.fetchall()
         except:
              rr = None
 
@@ -96,16 +79,19 @@ class CalSQLite():
             return None
 
     def   getdata(self, kkk, all = False):
+
+        if self.config.debug > 2:
+            print("Getting data by keyx =", "'" + kkk + "'")
         try:
-            #c = self.conn.cursor()
-            self.c.execute("select * from caldata where keyx like ?", (kkk,))
+            #c = self.curr.cursor()
+            self.cur.execute("select * from caldata where keyx like ?", (kkk,))
         #except sqlite3.OperationalError:
         #    pass
         except:
             print("Cannot get sql data for", kkk, sys.exc_info())
             self.errstr = "Cannot get sql data" + str(sys.exc_info())
         try:
-            rr = self.c.fetchone()
+            rr = self.cur.fetchone()
         except:
             rr = None
 
@@ -126,34 +112,34 @@ class CalSQLite():
     def   put(self, keyx, uid, val, val2, val3, val4):
 
         #got_clock = time.clock()
-        if debug:
-            print("putting data", keyx, uid, val, val2, val3, val4)
+        if self.config.debug > 1:
+            print("putting:", keyx, uid, val, val2, val3, val4)
 
         #print("types", type(keyx), type(uid), type(val), type(val2), type(val3), type(val4))
 
         ret = True
         try:
-            #c = self.conn.cursor()
+            #c = self.curr.cursor()
             if os.name == "nt":
-                self.c.execute("select * from calendar where keyx == ?", (keyx,))
+                self.cur.execute("select * from calendar where keyx == ?", (keyx,))
             else:
-                self.c.execute("select * from calendar indexed by kcalendar where keyx == ?", (keyx,))
-            rr = self.c.fetchall()
+                self.cur.execute("select * from calendar indexed by kcalendar where keyx == ?", (keyx,))
+            rr = self.cur.fetchall()
             if rr == []:
                 #print ("inserting")
-                self.c.execute("insert into calendar (keyx, uid, val, val2, val3, val4) \
+                self.cur.execute("insert into calendar (keyx, uid, val, val2, val3, val4) \
                     values (?, ?, ?, ?, ?, ?)", (keyx, uid, val, val2, val3, val4))
             else:
                 #print ("updating")
                 if os.name == "nt":
-                    self.c.execute("update calendar \
+                    self.cur.execute("update calendar \
                                 set uid = ? val = ? val2 = ?, val3 = ?, val4 = ? where keyx = ?", \
                                       (uid, val, val2, val3, val4, keyx))
                 else:
-                    self.c.execute("update calendar indexed by kcalendar \
+                    self.cur.execute("update calendar indexed by kcalendar \
                                 set uid = ?, val = ?, val2 = ?, val3 = ?, val4 = ? where keyx = ?",\
                                      (uid, val, val2, val3, val4, keyx))
-            self.conn.commit()
+            self.curr.commit()
         except:
             print("Cannot put sql ", sys.exc_info())
             pgutils.print_exception("put")
@@ -173,34 +159,34 @@ class CalSQLite():
     def   putdata(self, keyx, val, val2, val3):
 
         #got_clock = time.clock()
-        if True or debug:
-            print("putting data", keyx, val, val2, val3)
+        if self.config.debug > 1:
+            print("putting data:", keyx, val, val2, val3)
 
         #print("types", type(keyx), type(val), type(val2), type(val3))
 
         ret = True
         try:
-            #c = self.conn.cursor()
+            #c = self.curr.cursor()
             if os.name == "nt":
-                self.c.execute("select * from caldata where keyx == ?", (keyx,))
+                self.cur.execute("select * from caldata where keyx == ?", (keyx,))
             else:
-                self.c.execute("select * from caldata indexed by kcaldata where keyx == ?", (keyx,))
-            rr = self.c.fetchall()
+                self.cur.execute("select * from caldata indexed by kcaldata where keyx == ?", (keyx,))
+            rr = self.cur.fetchall()
             if rr == []:
                 #print "inserting"
-                self.c.execute("insert into caldata (keyx, val, val2, val3) \
+                self.cur.execute("insert into caldata (keyx, val, val2, val3) \
                     values (?, ?, ?, ?)", (keyx, val, val2, val3))
             else:
                 #print "updating"
                 if os.name == "nt":
-                    self.c.execute("update caldata \
+                    self.cur.execute("update caldata \
                                 set val = ? val2 = ?, val3 = ? where keyx = ?", \
                                       (val, val2, val3, keyx))
                 else:
-                    self.c.execute("update caldata indexed by kcaldata \
+                    self.cur.execute("update caldata indexed by kcaldata \
                                 set val = ?, val2 = ?, val3 = ? where keyx = ?",\
                                      (val, val2, val3, keyx))
-            self.conn.commit()
+            self.curr.commit()
         except:
             print("Cannot put sql data", sys.exc_info())
             self.errstr = "Cannot put sql data" + str(sys.exc_info())
@@ -218,32 +204,32 @@ class CalSQLite():
     def   putala(self, keyx, val, val2, val3):
 
         #got_clock = time.clock()
-        if debug:
+        if self.config.debug > 1:
             print("putala", keyx, val, val2, val3)
 
         ret = True
         try:
-            #c = self.conn.cursor()
+            #c = self.curr.cursor()
             if os.name == "nt":
-                self.c.execute("select * from calala where keyx == ?", (keyx,))
+                self.cur.execute("select * from calala where keyx == ?", (keyx,))
             else:
-                self.c.execute("select * from calala indexed by kcalala where keyx == ?", (keyx,))
-            rr = self.c.fetchall()
+                self.cur.execute("select * from calala indexed by kcalala where keyx == ?", (keyx,))
+            rr = self.cur.fetchall()
             if rr == []:
                 #print "inserting"
-                self.c.execute("insert into caldata (keyx, val, val2, val3) \
+                self.cur.execute("insert into caldata (keyx, val, val2, val3) \
                     values (?, ?, ?, ?)", (keyx, val, val2, val3))
             else:
                 #print "updating"
                 if os.name == "nt":
-                    self.c.execute("update caldata \
+                    self.cur.execute("update caldata \
                                 set val = ? val2 = ?, val3 = ? where keyx = ?", \
                                       (val, val2, val3, keyx))
                 else:
-                    self.c.execute("update caldata indexed by kcaldata \
+                    self.cur.execute("update caldata indexed by kcaldata \
                                 set val = ?, val2 = ?, val3 = ? where keyx = ?",\
                                      (val, val2, val3, keyx))
-            self.conn.commit()
+            self.curr.commit()
         except:
             print("Cannot put sql ala", sys.exc_info())
             self.errstr = "Cannot put sql ala" + str(sys.exc_info())
@@ -260,14 +246,17 @@ class CalSQLite():
 
         #got_clock = time.clock()
 
+        if self.config.debug > 1:
+            print("Get ala by keyx =", "'" + kkk + "'")
+
         ret = []
         try:
-            #c = self.conn.cursor()
+            #c = self.curr.cursor()
             if os.name == "nt":
-                self.c.execute("select * from calala where keyx like ?", (keyx,))
+                self.cur.execute("select * from calala where keyx like ?", (keyx,))
             else:
-                self.c.execute("select * from calala indexed by kcalala where keyx like ?", (keyx,))
-            ret = self.c.fetchall()
+                self.cur.execute("select * from calala indexed by kcalala where keyx like ?", (keyx,))
+            ret = self.cur.fetchall()
         except:
             print("Cannot get sql ala", sys.exc_info())
             self.errstr = "Cannot get sql ala" + str(sys.exc_info())
@@ -284,13 +273,13 @@ class CalSQLite():
 
     def   getall(self, strx = "", limit = 1000):
 
-        #print("getall '" +  strx + "'")
-
+        if self.config.debug > 1:
+            print("getall '" +  strx + "'")
         try:
-            #c = self.conn.cursor()
-            self.c.execute("select * from calendar where val like ? or val2 like ? or val3 like ? limit  ?",
+            #c = self.curr.cursor()
+            self.cur.execute("select * from calendar where val like ? or val2 like ? or val3 like ? limit  ?",
                                             (strx, strx, strx, limit))
-            rr = self.c.fetchall()
+            rr = self.cur.fetchall()
         except:
             rr = []
             print("Cannot get all sql data", sys.exc_info())
@@ -302,11 +291,12 @@ class CalSQLite():
         return rr
 
     def   rmone(self, kkk):
-        print("removing one", kkk)
+        if self.config.debug > 1:
+            print("removing one:", kkk)
         try:
-            #c = self.conn.cursor()
-            self.c.execute("delete from calendar where keyx == ?", (kkk,) )
-            rr = self.c.fetchone()
+            #c = self.curr.cursor()
+            self.cur.execute("delete from calendar where keyx like ?", (kkk,) )
+            rr = self.cur.fetchone()
         except:
             print("Cannot delete sql data", sys.exc_info())
             self.errstr = "Cannot delete sql data" + str(sys.exc_info())
@@ -322,11 +312,13 @@ class CalSQLite():
     # Return None if no data
 
     def   rmall(self):
-        print("removing all")
+        if self.config.debug > 1:
+            print("removing all")
+
         try:
-            #c = self.conn.cursor()
-            self.c.execute("delete from calendar")
-            rr = self.c.fetchone()
+            #c = self.curr.cursor()
+            self.cur.execute("delete from calendar")
+            rr = self.cur.fetchone()
         except:
             print("Cannot delete sql data", sys.exc_info())
             self.errstr = "Cannot delete sql data" + str(sys.exc_info())
@@ -339,11 +331,12 @@ class CalSQLite():
             return None
 
     def   rmalldata(self):
-        print("removing all")
+        if self.config.debug > 1:
+            print("removing all data")
         try:
-            #c = self.conn.cursor()
-            self.c.execute("delete from caldata")
-            rr = self.c.fetchone()
+            #c = self.curr.cursor()
+            self.cur.execute("delete from caldata")
+            rr = self.cur.fetchone()
         except:
             print("Cannot delete sql data", sys.exc_info())
             self.errstr = "Cannot get sql data" + str(sys.exc_info())
@@ -355,10 +348,7 @@ class CalSQLite():
         else:
             return None
 
-
 if __name__ == "__main__":
     print("This is a module file, use pycalgui.py")
 
 # EOF
-
-

@@ -218,7 +218,8 @@ if __name__ == "__main__":
         #print("arr", arr)
         for bb in arr:
             #summ, startdt, trig, audio, aluid, desc
-            print("Summ:", bb[0], "Start:", bb[1], "Trig:", bb[2], "aluid:", bb[3], "\ndesc", bb[4])
+            print("Summ:", bb[0], "Start:", bb[1], "Trig:", bb[2],
+                        "aluid:", bb[3], "\ndesc", bb[4])
             pass
 
     except:
