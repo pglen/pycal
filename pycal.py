@@ -2,15 +2,15 @@
 
 from __future__ import absolute_import, print_function
 
-import signal, os, time, sys, subprocess, platform, random
-import ctypes, datetime, sqlite3, warnings, math, pickle, warnings
+import os, time, sys, datetime, random, warnings
+#import signal, ctypes, sqlite3, math
+#import  pickle, warnings, subprocess, platform
 
 from calendar import monthrange
 
 import pycalent, pycallog, pycalsql, calfile, pyala
 
-#sys.path.append('../common')
-from pyvguicom import pggui, pgutils, pgsimp, pgbox
+from pyvguicom import pggui, pgutils
 
 # Spec:
 
@@ -122,9 +122,10 @@ class CalPopup(Gtk.Window):
 
 class CalCanvas(Gtk.DrawingArea):
 
-    def __init__(self, xdate = None, statbox = None):
+    def __init__(self, config, xdate = None, statbox = None):
         Gtk.DrawingArea.__init__(self)
         self.statbox = statbox
+        self.config = config
         self.mouevent = self.dlg = None
         self.xtext = self.darr = self.xarr = self.coll = []
         self.old_hx = 0; self.old_hy = 0; self.fired = 0;
@@ -202,7 +203,6 @@ class CalCanvas(Gtk.DrawingArea):
 
     # --------------------------------------------------------------------
     def set_dbfile(self, dbfile, config):
-
         self.dbfile = dbfile
         try:
             self.sql = pycalsql.CalSQLite(self.dbfile, config)
@@ -298,8 +298,8 @@ class CalCanvas(Gtk.DrawingArea):
     # --------------------------------------------------------------------
     def get_month_data(self):
 
+        #print(sys.version_info)
         self.xarr = []
-
         # Get padded (OK) days
         for aa in range(7):
             lastd = self.darr[aa]
@@ -340,19 +340,20 @@ class CalCanvas(Gtk.DrawingArea):
                                     res = arrx
                                     return res
 
-                                #print("ver", sys.version_info[0])
                                 #if sys.version_info[0] < 3:
                                 #carr = [aa[2],
-                                #        [int(dd), int(mm),
-                                #                int(yy), int(HH), int(MM), int(dur)],
-                                #                        [unpackx(aa[3:])], [ arr3, arr4, arr5 ] ]
+                                #           [int(dd), int(mm),
+                                #           int(yy), int(HH), int(MM), int(dur)],
+                                #           [unpackx(aa[3:])],
+                                #           [ arr3, arr4, arr5 ] ]
                                 carr = [aa[2],
                                             [int(dd), int(mm),
-                                                    int(yy), int(HH), int(MM), int(dur)],
-                                                            [*aa[3:]], [ arr3, arr4, arr5 ] ]
+                                            int(yy), int(HH), int(MM), int(dur)],
+                                            [*aa[3:]], [ arr3, arr4, arr5 ] ]
                                 #print("reading carr", carr)
 
                                 self.xarr.append(carr)
+        #print("xarr", self.xarr)
 
     # --------------------------------------------------------------------
     def get_cal_data(self, arrx):
@@ -454,7 +455,12 @@ class CalCanvas(Gtk.DrawingArea):
         pitchy = newheight // 6;
         py2 = int(py) - self.head
         #print("px", px, "pitchy", pitchy)
-        return  int(px) // pitchx, py2 // pitchy
+        aa = 0; bb = 0
+        try: aa = int(px) // pitchx;
+        except: pass
+        try: bb =  py2 // pitchy;
+        except: pass
+        return aa, bb
 
     def dest_me(self):
         print("Destroying ...")
@@ -590,9 +596,12 @@ class CalCanvas(Gtk.DrawingArea):
                 #print("hx, hY", hx, hy)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
                 sdd = ttt.strftime("%a %d-%b-%Y")
+                warnings.simplefilter("ignore")
                 self.menu = pggui.Menu(("Selection: %s" % sdd, "New Calendar Entry",
-                                            "Edit entry", "Delete Entry", "Edit Day"),
+                                            "Edit entry", "Delete Entry"),
                                                 self.menucb, event)
+                warnings.simplefilter("default")
+
             self.queue_draw()
 
         elif  event.type == Gdk.EventType.BUTTON_RELEASE:
@@ -640,12 +649,12 @@ class CalCanvas(Gtk.DrawingArea):
 
             hx, hy = self.hit_test(xxx, yyy)
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
-            print("Editing entry:",  nnn, ttt, pad, xx, yy, int(xxx), int(yyy),)
+            #, int(xxx), int(yyy),)
+            print("Editing entry:",  nnn, "-", ttt, "-", pad, xx, yy)
             if not pad:
                 self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
         if cnt == 3:
-            print("Deleting entry", )
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
@@ -657,33 +666,38 @@ class CalCanvas(Gtk.DrawingArea):
             #    self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
             # This was the font height on draw ...
-            hhh2 = self.rect.height / 60; hhh = min(hhh2, 12) + 6
-
+            hhh2 = self.rect.height / 60; hhh2 = min(hhh2, 12) + 6
             xdarr = self.get_daydat(ttt)
             xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
+            idx = int(((yyy - (hhh2 + 4)) - yy) // hhh2) + self.scrollday
+            #print(idx, "xdarrs", xdarrs)
 
-            idx = int(((yyy - (hhh2 + 4)) - yy) // hhh2)
             #print("len", len(xdarrs), "idx", idx)
-
             msg = "\n"
 
             if idx >= len(xdarrs):
-                pggui.message(    "\nNot pointing to valid Item or"
+                pggui.message(      "\nNot pointing to valid Item or"
                                     "\nItem not in personal calendar."
                                     "\nPlease select a deletable item.")
                 return
             else:
                 xdat = xdarrs[idx]
+                if self.config.debug > 3:
+                    print("Deleting entry", xdat)
+
                 sdd = ttt.strftime("%a %d-%b-%Y")
                 sdd +=  " %02d:%02d" %  (xdat[1][3], xdat[1][4])
-                #print("xdat", xdat);
                 msg += "%s\n\n%s\n%s" % (sdd, xdat[2][0], xdat[2][1])
 
+            warnings.simplefilter("ignore")
             ret = pggui.yes_no(msg, title = " Confirm Delete Item ")
+            warnings.simplefilter("default")
+
             if ret == Gtk.ResponseType.YES:
-                #print("deleting", xdat)
-                print("deleting", xdat[1], "-", xdat[2][0], "-", xdat[2][1]);
-                self.sql.rmone(nnn)
+                #print("deleting", xdat[0])
+                ret = self.sql.rmone(xdat[0])
+                if not ret:
+                    pggui.message(      "\nCannot delete %s" % xdat[2][0])
                 self.invalidate()
 
         if cnt == 4:

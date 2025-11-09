@@ -5,8 +5,9 @@
 # ------------------------------------------------------------------------
 # Test client for the pyserv project. Encrypt test.
 
-import  os, sys, getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading
+import  os, sys, getopt, time, warnings, datetime
+
+#import  random, stat, os.path, , threading
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -97,6 +98,7 @@ class MainWindow():
         self.mywin.connect("unmap", OnExit)
         self.populate()
         self.mywin.show_all()
+        pycallog.load_log(logfname)
 
     def fwmonth(self, butt):
         m2 = self.cal.xdate.month + 1; y2 = self.cal.xdate.year
@@ -172,9 +174,12 @@ class MainWindow():
         hbox = Gtk.HBox()
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        menu = ("Open", "Close", "Dump Cal", "Show Log", "Test alarms", "Exit")
+        warnings.simplefilter("ignore")
+        #menu = ("Open", "Close", "Dump Cal", "Show Log", "Test alarms", "Exit")
+        menu = ("Dump Cal", "Show Log", "Test alarms", "Exit")
         self.menu = pggui.MenuButt(menu, self.menucom, None)
-        #hbox.pack_start(self.menu, 0, 0, 0)
+        warnings.simplefilter("default")
+        hbox.pack_start(self.menu, 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
         self.check = Gtk.CheckButton.new_with_label("Moon"); self.check.set_active(True)
@@ -245,7 +250,7 @@ class MainWindow():
         self.vbox.pack_start(pggui.xSpacer(2), 0, 0, 0)
 
         self.vbox.pack_start(hbox, 0, 0, 0)
-        self.cal = pycal.CalCanvas()
+        self.cal = pycal.CalCanvas(config)
         self.cal.mainwin = self
         self.vbox.pack_start(self.cal, 1, 1, 0)
         #self.cal.calc_curr()
@@ -255,11 +260,14 @@ class MainWindow():
     def menucom(self, paren, menu, item):
 
         #print("menu called", menu, "item", item)
+        #if item == 0:
+        #    pass
+        #    print("Open")
+        #if item == 1:
+        #    pass
+        #    #print("Save")
+        #    #pycallog.save_log(logfname)
         if item == 0:
-            print("Open")
-        if item == 1:
-            print("Save")
-        if item == 2:
             if config.verbose:
                 print("Cal dump:",  mained.cal.xarr)
             ddd = self.cal.sql.getall("%")
@@ -267,15 +275,16 @@ class MainWindow():
             for aa in ddd:
                 print(aa)
 
-        if item == 3:
-            print("Showing log")    #,  mained.cal.get_daydat(datetime.datetime.today() ))
+        if item == 1:
+            #print("Showing log")
             self.logwin.show_log()
-        if item == 4:
+
+        if item == 2:
             pyala.play_sound()
             ddd = datetime.datetime.today()
             dddd = str(ddd.hour) + ":" + str(ddd.minute)
             pyala.notify_sys("Test alarm notifyer", "Test description appears here.", dddd)
-            pgutils.message("\nTesting Popup Dialog\n" + "Test dialog description would appear here.",
+            pggui.message("\nTesting Popup Dialog\n" + "Test dialog description would appear here.",
                                 title =  "Alarm at " + dddd )
         if "xit" in menu:
             OnExit(self)
@@ -283,22 +292,24 @@ class MainWindow():
 def     OnExit(butt, arg = None, prompt = True):
 
     global mained
-    #mained.mywin.set_title("Exiting ...")
-    #pgutils.usleep(100)
+
+    mained.mywin.set_title("Exiting ...")
+    mainwin.logwin.append_logwin("Ended app: %s\r" % (datetime.datetime.today().ctime()) )
+    pycallog.save_log(logfname)
+    pggui.usleep(300)
 
     rootwin = mained.mywin.get_screen().get_root_window()
     disp =  mained.mywin.get_display()
     cur = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.ARROW)
     rootwin.set_cursor(cur)
 
-    mainwin.logwin.append_logwin("Ended app: %s\r" % (datetime.datetime.today().ctime()) )
     #print("Exited")
     Gtk.main_quit()
 
-pgdebug = 0
 version = "1.0"
 
 calfname = os.path.expanduser("~" + os.sep + ".pycal" + os.sep + "caldata.sql")
+logfname = os.path.expanduser("~" + os.sep + ".pycal" + os.sep + "callog.txt")
 
 # ------------------------------------------------------------------------
 
@@ -335,7 +346,7 @@ if __name__ == "__main__":
             print("built on Sat 08.Nov.2025", end = " ")
         print()
         sys.exit(0)
-    if config.debug > 1:
+    if config.debug > 5:
         for aa in dir(config):
             if "__" not in aa:
                 print(" config:", aa, "=", config.__getattribute__(aa))
@@ -359,10 +370,12 @@ if __name__ == "__main__":
     mainwin.cal.set_dbfile(config.fname, config)
     mainwin.cal.set_moonfile(astrofname)
     mainwin.cal.set_usafile(usafname)
-    mainwin.logwin.append_logwin("Started app: %s\r" % (datetime.datetime.today().ctime()) )
+    mainwin.logwin.append_logwin("Started app: %s\n" % (datetime.datetime.today().ctime()) )
 
     mainwin.cal.grab_focus()
     Gtk.main()
-    #print("Ended pyalagui")
+    if config.debug > 0:
+        print("Ended pyalagui")
+    sys.exit(0)
 
 # EOF

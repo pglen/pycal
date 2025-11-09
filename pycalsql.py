@@ -46,17 +46,12 @@ class CalSQLite():
             print("Cannot insert sql data", sys.exc_info())
             self.errstr = "Cannot insert sql data" + str(sys.exc_info())
 
-        finally:
-            # We close the cursor, we are done with it
-            #c.close()
-            pass
-
     # --------------------------------------------------------------------
     # Return None if no data
 
     def   get(self, kkk):
 
-        if self.config.debug > 2:
+        if self.config.debug > 5:
             print("Getting by keyx =", "'" + kkk + "'")
         try:
             #c = self.curr.cursor()
@@ -69,18 +64,17 @@ class CalSQLite():
             rr = self.cur.fetchall()
         except:
              rr = None
-
-        finally:
-            #c.close
-            pass
-        if rr:
-            return (rr)
-        else:
+        if not rr:
             return None
+        if self.config.debug > 2:
+            print("key:", kkk)
+            for aa in rr:
+                print(" ", aa)
+        return (rr)
 
     def   getdata(self, kkk, all = False):
 
-        if self.config.debug > 2:
+        if self.config.debug > 5:
             print("Getting data by keyx =", "'" + kkk + "'")
         try:
             #c = self.curr.cursor()
@@ -94,17 +88,15 @@ class CalSQLite():
             rr = self.cur.fetchone()
         except:
             rr = None
-
-        finally:
-            #c.close
-            pass
-
-        if rr:
-            if all:
-                return (rr)
-            return (rr[2], rr[3], rr[4])
-        else:
+        if not rr:
             return ([], [], [])
+        if self.config.debug > 2:
+            print("Data key:", kkk)
+            for aa in rr:
+                print(" ", aa)
+        if all:
+            return (rr)
+        return (rr[2], rr[3], rr[4])
 
     # --------------------------------------------------------------------
     # Return False if cannot put data
@@ -112,7 +104,7 @@ class CalSQLite():
     def   put(self, keyx, uid, val, val2, val3, val4):
 
         #got_clock = time.clock()
-        if self.config.debug > 1:
+        if self.config.debug > 2:
             print("putting:", keyx, uid, val, val2, val3, val4)
 
         #print("types", type(keyx), type(uid), type(val), type(val2), type(val3), type(val4))
@@ -145,9 +137,6 @@ class CalSQLite():
             pgutils.print_exception("put")
             self.errstr = "Cannot put sql " + str(sys.exc_info())
             ret = False
-        finally:
-            #c.close
-            pass
 
         #self.take += time.clock() - got_clock
 
@@ -191,9 +180,6 @@ class CalSQLite():
             print("Cannot put sql data", sys.exc_info())
             self.errstr = "Cannot put sql data" + str(sys.exc_info())
             ret = False
-        finally:
-            #c.close
-            pass
 
         #self.take += time.clock() - got_clock
 
@@ -204,7 +190,7 @@ class CalSQLite():
     def   putala(self, keyx, val, val2, val3):
 
         #got_clock = time.clock()
-        if self.config.debug > 1:
+        if self.config.debug > 2:
             print("putala", keyx, val, val2, val3)
 
         ret = True
@@ -234,9 +220,6 @@ class CalSQLite():
             print("Cannot put sql ala", sys.exc_info())
             self.errstr = "Cannot put sql ala" + str(sys.exc_info())
             ret = False
-        finally:
-            #c.close
-            pass
 
         #self.take += time.clock() - got_clock
 
@@ -260,9 +243,6 @@ class CalSQLite():
         except:
             print("Cannot get sql ala", sys.exc_info())
             self.errstr = "Cannot get sql ala" + str(sys.exc_info())
-        finally:
-            #c.close
-            pass
 
         #self.get += time.clock() - got_clock
 
@@ -284,25 +264,20 @@ class CalSQLite():
             rr = []
             print("Cannot get all sql data", sys.exc_info())
             self.errstr = "Cannot get sql data" + str(sys.exc_info())
-        finally:
-            #c.close
-            pass
 
         return rr
 
-    def   rmone(self, kkk):
+    def   rmone(self, uid):
         if self.config.debug > 1:
-            print("removing one:", kkk)
+            print("removing one:", uid)
         try:
             #c = self.curr.cursor()
-            self.cur.execute("delete from calendar where keyx like ?", (kkk,) )
+            self.cur.execute("delete from calendar where uid == ?", (uid,) )
+            self.curr.commit()
             rr = self.cur.fetchone()
         except:
             print("Cannot delete sql data", sys.exc_info())
             self.errstr = "Cannot delete sql data" + str(sys.exc_info())
-        finally:
-            #c.close
-            pass
         if rr:
             return rr[1]
         else:
@@ -318,13 +293,11 @@ class CalSQLite():
         try:
             #c = self.curr.cursor()
             self.cur.execute("delete from calendar")
+            self.curr.commit()
             rr = self.cur.fetchone()
         except:
             print("Cannot delete sql data", sys.exc_info())
             self.errstr = "Cannot delete sql data" + str(sys.exc_info())
-        finally:
-            #c.close
-            pass
         if rr:
             return rr[1]
         else:
@@ -336,13 +309,11 @@ class CalSQLite():
         try:
             #c = self.curr.cursor()
             self.cur.execute("delete from caldata")
+            self.curr.commit()
             rr = self.cur.fetchone()
         except:
             print("Cannot delete sql data", sys.exc_info())
             self.errstr = "Cannot get sql data" + str(sys.exc_info())
-        finally:
-            #c.close
-            pass
         if rr:
             return rr[1]
         else:

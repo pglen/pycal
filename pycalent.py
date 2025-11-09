@@ -32,8 +32,6 @@ class CalEntry(Gtk.Window):
         self.alt = False
         self.alarr = []
 
-        hx, hy = self2.hit_test(xxxx, yyyy)
-
         #self.uuid = pgutils.randstr(12)
         self.uuid = uuid.uuid4()
         self.self2 = self2
@@ -44,6 +42,7 @@ class CalEntry(Gtk.Window):
         self.set_position(Gtk.WindowPosition.CENTER)
 
         #xxxx, yyyy = self2.get_pointer()
+        hx, hy = self2.hit_test(xxxx, yyyy)
         (nnn, ttt, pad, xx, yy) = self2.darr[hx][hy]
 
         # This was the font height on draw ...
@@ -51,9 +50,8 @@ class CalEntry(Gtk.Window):
 
         xdarr = self2.get_daydat(ttt)
         xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
-
         idx = int(((yyyy - (hhh2 + 4)) - yy) // hhh2) + self2.scrollday
-
+        #print(idx, "xdarrs", xdarrs)
         #print("len", len(xdarrs), "idx", idx, "ign", self2.scrollday)
 
         title = "Calendar Item Entry"

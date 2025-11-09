@@ -4,9 +4,6 @@
 # Log window. Special as it hides instead of dies.
 # Intercepts stdout; printing show both in stdout and this window
 
-#from __future__ import absolute_import
-#from __future__ import print_function
-
 import  time, datetime
 
 import gi
@@ -14,9 +11,6 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-
-#from . import peddoc, pedync, pedconfig
-#from .pedutil import *
 
 # Adjust to taste. Estimated memory usage is 50 * MAX_LOG bytes
 # Fills up slowly, so not a big issue. Delete ~/.pyedit/pylog.txt if
@@ -83,20 +77,11 @@ class fake_stdout():
                 pass
        '''
 
-# Persistance for logs. Disable if you wish.
-
-def  save_log():
-    pass
-
-def load_log():
-    pass
-
-iconfile = "pycal.png"
+iconfile = "pycal_log.png"
 
 # A quick window to display what is in accum
 
 class   LogWin():
-
 
     def __init__(self):
         self.win2 = Gtk.Window()
@@ -128,9 +113,10 @@ class   LogWin():
 
     def show_log(self):
         try:
-            win2.set_icon_from_file(iconfile)
+            self.win2.set_icon_from_file(iconfile)
         except:
-            print("Cannot load log icon:", iconfile)
+            #import sys
+            print("Cannot load log icon:", iconfile) #, sys.exc_info())
 
         self.win2.show_all()
 
@@ -145,7 +131,8 @@ class   LogWin():
         return True
 
     def _area_focus(self, area, event, dialog):
-        print("focus", event)
+        #print("focus", event)
+        pass
 
     def append_logwin(self, strx):
         tb = self.win2.lab.get_buffer()
@@ -187,6 +174,35 @@ def show_logwin():
 def create_logwin():
     global logwin
     logwin = LogWin()
+
+# Persistance for logs. Disable if you wish.
+
+def  save_log(fname):
+
+    buffer = logwin.win2.lab.get_buffer()
+    start_iter = buffer.get_start_iter()
+    end_iter = buffer.get_end_iter()
+    full_text = buffer.get_text(start_iter, end_iter, False)
+
+    #lines = full_text.splitlines()
+    #for aa in lines:
+    #    print (aa)
+
+    fp = open(fname, "wt")
+    fp.write(full_text)
+    fp.close()
+
+def load_log(fname):
+    try:
+        fp = open(fname, "rt")
+        full_text = fp.read()
+        fp.close()
+    except:
+        return
+
+    buffer = logwin.win2.lab.get_buffer()
+    iter = buffer.get_start_iter()
+    buffer.insert(iter, full_text)
 
 # EOF
 
