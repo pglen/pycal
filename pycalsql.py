@@ -104,7 +104,7 @@ class CalSQLite():
     def   put(self, keyx, uid, val, val2, val3, val4):
 
         #got_clock = time.clock()
-        if self.config.debug > 2:
+        if self.config.debug > 1:
             print("putting:", keyx, uid, val, val2, val3, val4)
 
         #print("types", type(keyx), type(uid), type(val), type(val2), type(val3), type(val4))

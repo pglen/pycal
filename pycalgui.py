@@ -65,7 +65,7 @@ class flydlg(Gtk.Window):
 
 class MainWindow():
 
-    def __init__(self):
+    def __init__(self, config):
 
         self.full = False
         self.fcount = 0
@@ -75,19 +75,17 @@ class MainWindow():
         self.got_warn = False
 
         pggui.register_stock_icons()
-
-        global mained
-        mained = self
         xxx, yyy, www, hhh = pggui.screen_dims_under_cursor()
+
         # Create the toplevel window
         self.mywin = Gtk.Window()
-        self.logwin = pycallog.LogWin()
-        self.mywin.set_icon_from_file("pycal.png")
-        #self.mywin.set_hide_titlebar_when_maximized(True)
+        self.logwin = pycallog.LogWin(config)
+        try:
+            self.mywin.set_icon_from_file(config.icon)
+        except:
+            pass
 
         self.mywin.connect("key-press-event", self.keypress)
-
-        #self.mywin.set_title("Calendar Alarm Monitor")
         self.mywin.set_title("Python Calendar")
 
         self.mywin.set_position(Gtk.WindowPosition.CENTER)
@@ -283,23 +281,21 @@ class MainWindow():
             pyala.play_sound()
             ddd = datetime.datetime.today()
             dddd = str(ddd.hour) + ":" + str(ddd.minute)
-            pyala.notify_sys("Test alarm notifyer", "Test description appears here.", dddd)
+            pyala.notify_sys("Test alarm notifier", "Test description appears here.", dddd)
             pggui.message("\nTesting Popup Dialog\n" + "Test dialog description would appear here.",
                                 title =  "Alarm at " + dddd )
         if "xit" in menu:
             OnExit(self)
 
-def     OnExit(butt, arg = None, prompt = True):
+def     OnExit(butt, mainwin, prompt = True):
 
-    global mained
-
-    mained.mywin.set_title("Exiting ...")
+    mainwin.mywin.set_title("Exiting ...")
     mainwin.logwin.append_logwin("Ended app: %s\r" % (datetime.datetime.today().ctime()) )
     pycallog.save_log(logfname)
-    pggui.usleep(300)
+    pggui.usleep(100)
 
-    rootwin = mained.mywin.get_screen().get_root_window()
-    disp =  mained.mywin.get_display()
+    rootwin = mainwin.mywin.get_screen().get_root_window()
+    disp =  mainwin.mywin.get_display()
     cur = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.ARROW)
     rootwin.set_cursor(cur)
 
@@ -319,14 +315,13 @@ optx =  [
          ("d", "debug",     "=",    int,   0,   "Debug level (0-9) default=0",),
          ("f", "fname",     "=",    str,   calfname, "Calendar file name." ),
          ("l", "list",      "b",    bool,  False, "List file" ),
+         ("g", "log",       "=",    int,   1, "Log level. (0-9) Defult=1" ),
          ("q", "quiet",     "b",    bool,  False, "Less output" ),
          ("c", "show",      "b",    bool,  False, "Show data" ),
          ("t", "timing",     "b",   bool,  False, "Show timing details" ),
         ]
 
 if __name__ == "__main__":
-
-    global config
 
     import comline
     comline.prologue = "GUI for pycal."
@@ -346,6 +341,11 @@ if __name__ == "__main__":
             print("built on Sat 08.Nov.2025", end = " ")
         print()
         sys.exit(0)
+
+    # Add icon files to config
+    config.icon = "images/pycal.png"
+    config.logicon = "images/pycal_log.png"
+
     if config.debug > 5:
         for aa in dir(config):
             if "__" not in aa:
@@ -366,7 +366,7 @@ if __name__ == "__main__":
     #usafname = os.path.join(os.path.expanduser(calfile.locdir), "US_Holidays.ics")
 
     #print("Started pyalagui")
-    mainwin = MainWindow()
+    mainwin = MainWindow(config)
     mainwin.cal.set_dbfile(config.fname, config)
     mainwin.cal.set_moonfile(astrofname)
     mainwin.cal.set_usafile(usafname)
@@ -374,7 +374,7 @@ if __name__ == "__main__":
 
     mainwin.cal.grab_focus()
     Gtk.main()
-    if config.debug > 0:
+    if config.debug > 1:
         print("Ended pyalagui")
     sys.exit(0)
 

@@ -57,7 +57,6 @@ class fake_stdout():
         self.old_stdout.flush()
 
         global logwin;
-
         if logwin:
             logwin.append_logwin(strx)
 
@@ -77,13 +76,12 @@ class fake_stdout():
                 pass
        '''
 
-iconfile = "pycal_log.png"
-
 # A quick window to display what is in accum
 
 class   LogWin():
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.win2 = Gtk.Window()
 
         global logwin
@@ -95,6 +93,13 @@ class   LogWin():
         tit = "pyedpro:log"
         self.win2.set_title(tit)
         self.win2.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
+
+        try:
+            self.win2.set_icon_from_file(self.config.logicon)
+        except:
+            #import sys
+            print("Cannot load log icon:", self.config.logicon)
+             #, sys.exc_info())
 
         self.win2.connect("key-press-event", self._area_key, self.win2)
         self.win2.connect("key-release-event", self._area_key, self.win2)
@@ -109,15 +114,10 @@ class   LogWin():
         self.win2.add(frame)
 
     def closewin(self, win):
-        print("close", win)
+        #print("close", win)
+        pass
 
     def show_log(self):
-        try:
-            self.win2.set_icon_from_file(iconfile)
-        except:
-            #import sys
-            print("Cannot load log icon:", iconfile) #, sys.exc_info())
-
         self.win2.show_all()
 
     # Turn close into minimze
@@ -129,10 +129,6 @@ class   LogWin():
     def _area_destroy(self, area, event, dialog):
         #print("destroy", event)
         return True
-
-    def _area_focus(self, area, event, dialog):
-        #print("focus", event)
-        pass
 
     def append_logwin(self, strx):
         tb = self.win2.lab.get_buffer()
@@ -167,14 +163,6 @@ class   LogWin():
                   event.keyval == Gdk.KEY_Alt_R:
                 area.alt = False;
 
-def show_logwin():
-    global logwin
-    logwin.show_log()
-
-def create_logwin():
-    global logwin
-    logwin = LogWin()
-
 # Persistance for logs. Disable if you wish.
 
 def  save_log(fname):
@@ -183,10 +171,6 @@ def  save_log(fname):
     start_iter = buffer.get_start_iter()
     end_iter = buffer.get_end_iter()
     full_text = buffer.get_text(start_iter, end_iter, False)
-
-    #lines = full_text.splitlines()
-    #for aa in lines:
-    #    print (aa)
 
     fp = open(fname, "wt")
     fp.write(full_text)
@@ -205,4 +189,3 @@ def load_log(fname):
     buffer.insert(iter, full_text)
 
 # EOF
-

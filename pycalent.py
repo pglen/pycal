@@ -13,8 +13,23 @@ from gi.repository import cairo
 
 from pyvguicom import pggui, pgutils, pgsimp, pgbox, pgentry, pgsel
 
+import calfsel
+
 check_fill = ("Notify", "Sound", "Popup", "Beep",  "Email")
 
+class CalFormData():
+
+    def __init__(self, txtarr):
+        self.txtarr = txtarr
+
+    def __str__(self):
+        strx = ""
+        for aa in dir(self):
+            if aa[:2] == "__":
+                continue
+            val = getattr(self, aa)
+            strx += aa + " = " + str(val) + "\n"
+        return strx
 # ------------------------------------------------------------------------
 
 class CalEntry(Gtk.Window):
@@ -32,15 +47,12 @@ class CalEntry(Gtk.Window):
         self.alt = False
         self.alarr = []
 
-        #self.uuid = pgutils.randstr(12)
         self.uuid = uuid.uuid4()
         self.self2 = self2
-
-        self.self2.mainwin.logwin.append_logwin(
-                            "Popup: %s\r" % (datetime.datetime.today().ctime()) )
-
         self.set_position(Gtk.WindowPosition.CENTER)
-
+        if self2.config.log > 1:
+            self.self2.mainwin.logwin.append_logwin(
+                            "Popup: %s\r" % (datetime.datetime.today().ctime()) )
         #xxxx, yyyy = self2.get_pointer()
         hx, hy = self2.hit_test(xxxx, yyyy)
         (nnn, ttt, pad, xx, yy) = self2.darr[hx][hy]
@@ -64,7 +76,7 @@ class CalEntry(Gtk.Window):
 
         self.set_title(title)
 
-        #print ("xdat loading", xdat)
+        print ("xdat loading:", xdat)
 
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
@@ -99,7 +111,6 @@ class CalEntry(Gtk.Window):
         hbox4.pack_start(self.edit, 1, 1, 4)
         hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
 
-
         vbox.pack_start(self.ptab, 0, 0, 4)
         #vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
 
@@ -118,8 +129,8 @@ class CalEntry(Gtk.Window):
         vbox.pack_start(hbox4, 0, 0, 4)
 
         hbox6 = Gtk.HBox()
-        bbb1 = pggui.WideButt("_Cancel", self.cancel)
-        bbb2 = pggui.WideButt(" OK (E_xit)  ", self.ok)
+        bbb1 = pggui.WideButt("_Cancel", self.cancelbut)
+        bbb2 = pggui.WideButt(" OK (E_xit)  ", self.okbut)
         hbox6.pack_start(pggui.Label(" "), 1, 1, 0)
         hbox6.pack_start(bbb1, 0, 0, 2);   hbox6.pack_start(bbb2, 0, 0, 2)
 
@@ -129,7 +140,9 @@ class CalEntry(Gtk.Window):
 
         self.show_all()
         self.set_modal(True)
-        self.set_keep_above(True)
+        #self.set_keep_above(True)
+
+        warnings.simplefilter("default")
 
     # --------------------------------------------------------------------
 
@@ -164,15 +177,21 @@ class CalEntry(Gtk.Window):
             #        ms2.set_value(nowm)
 
             dtab.attach(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1,
-                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1); self.col += 1
+                            Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1);
+            self.col += 1
 
             dtab.attach_defaults(pggui.Label(" Alarm _%d:  Enabled: " % (aa+1), cb2, "Enable / Disable"), self.col, self.col+1, self.row, self.row + 1); self.col += 1
-            dtab.attach_defaults(cb2, self.col, self.col+1, self.row, self.row + 1); self.col += 1
+            dtab.attach_defaults(cb2, self.col, self.col+1, self.row,
+                                                self.row + 1); self.col += 1
 
-            dtab.attach_defaults(pggui.Label(" _Hour: "), self.col, self.col+1,  self.row, self.row + 1)  ; self.col += 1
+            dtab.attach_defaults(pggui.Label(" _Hour: "), self.col,
+                            self.col+1,  self.row, self.row + 1)  ;
+            self.col += 1
             dtab.attach_defaults(hs2, self.col, self.col+1,  self.row, self.row + 1)            ; self.col += 1
 
-            dtab.attach_defaults(pggui.Label(" Minute: "), self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
+            dtab.attach_defaults(pggui.Label(" Minute: "), self.col,
+                     self.col+1,  self.row, self.row + 1)     ;
+            self.col += 1
             dtab.attach_defaults(ms2,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
 
             hbox = Gtk.HBox();
@@ -190,7 +209,8 @@ class CalEntry(Gtk.Window):
             self.alarr.append([cb2, hs2, ms2, cccarr])
 
             #self.row += 1  ; self.col = 0
-        dtab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+        dtab.attach_defaults(pggui.Label("  "),
+                    self.col, self.col+1, self.row, self.row + 1); self.col += 1
 
         # ----------------------------------------------------------------
         #sss = ttt.strftime("%m-%d-%y")
@@ -232,18 +252,32 @@ class CalEntry(Gtk.Window):
 
         ds.set_sensitive(False); mms.set_sensitive(False); ys.set_sensitive(False);
 
-        ptab.attach_defaults(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1); self.col += 1
+        ADEF = ptab.attach_defaults
 
-        ptab.attach_defaults(pggui.Label(" D_ay: ", ds), self.col, self.col+1,  self.row, self.row + 1)  ; self.col += 1
-        ptab.attach_defaults(ds, self.col, self.col+1,  self.row, self.row + 1)            ; self.col += 1
+        ADEF(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1)
+        self.col += 1
 
-        ptab.attach_defaults(pggui.Label(" Mon_th: ", mms), self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
-        ptab.attach_defaults(mms,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
+        ADEF(pggui.Label(" D_ay: ", ds), self.col, self.col+1,  self.row, self.row + 1)  ;
+        self.col += 1
 
-        ptab.attach_defaults(pggui.Label(" Y_ear: ", ys),  self.col, self.col+1,  self.row, self.row + 1)     ; self.col += 1
-        ptab.attach_defaults(ys,  self.col, self.col+1,  self.row, self.row + 1)              ; self.col += 1
+        ADEF(ds, self.col, self.col+1,  self.row, self.row + 1) ;
+        self.col += 1
+
+        ADEF(pggui.Label(" Mon_th: ", mms), self.col, self.col+1,  self.row, self.row + 1)
+        self.col += 1
+
+        ADEF(mms,  self.col, self.col+1,  self.row, self.row + 1)
+        self.col += 1
+
+        ADEF(pggui.Label(" Y_ear: ", ys),  self.col, self.col+1,  self.row, self.row + 1)
+        self.col += 1
+
+        ADEF(ys,  self.col, self.col+1,  self.row, self.row + 1)
+        self.col += 1
+
         ptab.attach(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1,
-                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4); self.col += 1
+                            Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4);
+        self.col += 1
 
         #nowh = ttt.hour; nowm = ttt.minute
         if idx >= len(xdarrs):
@@ -335,6 +369,8 @@ class CalEntry(Gtk.Window):
 
         #print("Keyval: ", event.keyval)
 
+        #    return #True
+
         if  event.type == Gdk.EventType.KEY_PRESS:
             if event.keyval == Gdk.KEY_Alt_L or \
                     event.keyval == Gdk.KEY_Alt_R:
@@ -346,7 +382,7 @@ class CalEntry(Gtk.Window):
 
         if event.keyval == Gdk.KEY_Escape:
             #print (" ESC ", event.keyval)
-            self.cancel(None)
+            pass
 
         if event.keyval >= Gdk.KEY_1 and event.keyval <= Gdk.KEY_9:
             #print ("pedwin Alt num", event.keyval - Gdk.KEY_1)
@@ -361,74 +397,44 @@ class CalEntry(Gtk.Window):
         hbox5 = Gtk.HBox()
         hbox5.pack_start(pggui.Label(" "), 0, 0, 4)
         hbox5.pack_start(pggui.Label(" Execute Script:"), 0, 0, 4)
-        self.scrcheck = Gtk.CheckButton("Enabled")
+        self.scrcheck = Gtk.CheckButton(label="Enabled")
         hbox5.pack_start(self.scrcheck, 0, 0, 4)
         self.script = Gtk.Entry()
         hbox5.pack_start(self.script, True, True, 4)
-        self.browse = Gtk.Button("Browse")
-        self.browse.connect("button-press-event", self.browsefunc)
+        self.browse = Gtk.Button.new_with_mnemonic("_Browse")
+        #self.browse.connect("button-press-event", self.browsefunc)
+        self.browse.connect("clicked", self.browsefunc )
         hbox5.pack_start(self.browse, 0, 0, 4)
         return hbox5
 
-    def done_open_fc(self, win, resp):
-        print ("done_open_fc", win, resp)
-        if resp == Gtk.ButtonsType.OK:
-            fname = win.get_filename()
-            if not fname:
-                #print "Must have filename"
-                #self.update_statusbar("No filename specified")
-                pass
-            elif os.path.isdir(fname):
-                #self.update_statusbar("Changed to %s" % fname)
-                #os.chdir(fname)
-                #win.set_current_folder(fname)
-                return
-            else:
-                print("got filename", fname)
-                #self.openfile(fname)
-                self.script.set_text(fname)
-                pass
-        win.destroy()
+    def browsefunc(self, event):
+        fsel = calfsel.CalFsel(self, self.browse, event)
+        print("fname:", fsel.fname)
+        if fsel.fname:
+            self.script.set_text(fsel.fname)
+            self.scrcheck.set_active(True)
 
-    def browsefunc(self, butt, event):
-        #print("browse called", butt, event)
-        # Traditional open file
-        #warnings.simplefilter("ignore")
-        but =   "Cancel", Gtk.ButtonsType.CANCEL,\
-         "Open File", Gtk.ButtonsType.OK
-        fc = Gtk.FileChooserDialog("Open file", self, \
-             Gtk.FileChooserAction.OPEN  \
-            #Gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER
-            , but)
-        #warnings.simplefilter("default")
-
-        fc.set_default_response(Gtk.ButtonsType.OK)
-        fc.set_current_folder(os.getcwd())
-        fc.connect("response", self.done_open_fc)
-        #fc.connect("current-folder-changed", self.folder_ch )
-        #fc.set_current_name(self.fname)
-        fc.run()
-
-    def ok(self, buff):
-
+    def okbut(self, buff):
         if not self.callb:
             self.destroy()
             return
-
-        self.self2.mainwin.logwin.append_logwin(
-                                "Saved: %s %s\r" % (self.uuid, datetime.datetime.today().ctime()) )
         #print("UUID:", self.uuid)
-        txtarr = []
         #print ("got data", end = " ")
+        txtarr = []
         for bb in self.table.texts:
             #print(bb.get_text(), end = " ")
             txtarr.append(bb.get_text())
-
+        if not txtarr[0]:
+            pggui.message("Subject line cannot be empty.")
+            return
+        self.self2.mainwin.logwin.append_logwin(
+                                "Saved: %s %s %s\r" % (self.uuid,
+                                    datetime.datetime.today().ctime(),
+                                    txtarr[0] ), )
         txtarr.append(self.edit.get_text())
         #print("Free form:", self.edit.get_text())
-
         # Cleanse controls out of the data, assemble it
-        xnowarr = [];  xalarr = []
+        xnowarr = [] ; xalarr = []
         for cc in self.alarr:
             #print("cc", cc[0].get_active(), cc[1].get_value(), \
             #cc[2].get_value(),  end = " ")
@@ -438,31 +444,30 @@ class CalEntry(Gtk.Window):
                 #print("%s=%d" % (check_fill[idx].strip(), dd.get_active()), end = " ")
                 ddd.append(dd.get_active())
                 idx += 1
-
             # Assemble, append
             ccc = (cc[0].get_active(), int(cc[1].get_value()), \
                         int(cc[2].get_value()),  ddd)
             xalarr.append(ccc)
             #print()
-
         #print("Now array:", end = " ")
         for ww in self.nowarr:
             #print(ww.get_value(), end = " ")
             xnowarr.append(int(ww.get_value()))
         #print()
 
-        scr = (self.script.get_text(), self.scrcheck.get_active())
-        arrx = (self.uuid.hex, tuple(xnowarr), txtarr, xalarr, scr, )
-        #print("Saving", arrx)
-
-        self.callb("OK", arrx)
+        cald = CalFormData(txtarr)
+        cald.script = self.scrcheck.get_active(), self.script.get_text()
+        cald.uuid = self.uuid.hex
+        cald.xalarr = xalarr
+        cald.xnow   = xnowarr
+        #print("Saving:") ; print(str(cald))
+        self.callb("OK", cald)
         self.destroy()
 
-    def cancel(self, buff):
+    def cancelbut(self, buff):
         if self.callb:
             self.callb("CANCEL", self)
         self.destroy()
-        pass
 
     def area_button(self, butt, arg):
         #print("Button press in CalEntry")

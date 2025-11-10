@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 
-from __future__ import absolute_import, print_function
-
 import os, time, sys, datetime, random, warnings
-#import signal, ctypes, sqlite3, math
-#import  pickle, warnings, subprocess, platform
 
 from calendar import monthrange
 
 import pycalent, pycallog, pycalsql, calfile, pyala
 
 from pyvguicom import pggui, pgutils
+
+white_col = (255/255, 255/255, 255/255)
+grey_col  = (25/255, 55/255, 25/255)
+lgrey_col = (125/255, 125/255, 125/255)
+blue_col  = (230/255, 230/255, 255/255)
+dblue_col = (88/255, 88/255, 100/255)
+lgree_col = (150/255, 255/255, 150/255)
 
 # Spec:
 
@@ -106,7 +109,7 @@ class CalPopup(Gtk.Window):
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.connect("button-press-event", self.area_button)
 
-        self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#efefef"))
+        self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#cfcfcf"))
 
         vbox = Gtk.VBox(); hbox = Gtk.HBox()
         lab = pggui.Label(strx)
@@ -127,7 +130,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.statbox = statbox
         self.config = config
         self.mouevent = self.dlg = None
-        self.xtext = self.darr = self.xarr = self.coll = []
+        self.xtext = self.darr = self.monarr = self.coll = []
         self.old_hx = 0; self.old_hy = 0; self.fired = 0;
         self.popped = self.cnt = 0
         self.shx, self.shy = (-1, -1)
@@ -167,7 +170,7 @@ class CalCanvas(Gtk.DrawingArea):
         self._cursors()
 
         global handler_tick
-        GLib.timeout_add(1000, handler_tick, self)
+        GLib.timeout_add(1000, self.handler_tick) #, self)
 
     def keypress(self, win, event):
 
@@ -299,7 +302,7 @@ class CalCanvas(Gtk.DrawingArea):
     def get_month_data(self):
 
         #print(sys.version_info)
-        self.xarr = []
+        self.monarr = []
         # Get padded (OK) days
         for aa in range(7):
             lastd = self.darr[aa]
@@ -352,8 +355,8 @@ class CalCanvas(Gtk.DrawingArea):
                                             [*aa[3:]], [ arr3, arr4, arr5 ] ]
                                 #print("reading carr", carr)
 
-                                self.xarr.append(carr)
-        #print("xarr", self.xarr)
+                                self.monarr.append(carr)
+        #print("xarr", self.monarr)
 
     # --------------------------------------------------------------------
     def get_cal_data(self, arrx):
@@ -408,7 +411,7 @@ class CalCanvas(Gtk.DrawingArea):
                                                 zdate.hour, zdate.minute, 0 ],
                                    [flatten(aa[0]), "", "", flatten(aa[5]) ],
                                    [ arr3, arr4, arr5 ]  ]
-                            self.xarr.append(carr)
+                            self.monarr.append(carr)
 
             try:
                 if self.xdate.year == aa[1].year and \
@@ -422,7 +425,7 @@ class CalCanvas(Gtk.DrawingArea):
                                             aa[1].hour, aa[1].minute, 0 ],
                                [flatten(aa[0]), "", "", flatten(aa[5]) ],
                                [ arr3, arr4, arr5 ]  ]
-                    self.xarr.append(carr)
+                    self.monarr.append(carr)
 
             except:
                 print("Cannot parse:", sys.exc_info())
@@ -626,7 +629,8 @@ class CalCanvas(Gtk.DrawingArea):
                 hx, hy = self.hit_test(event.x, event.y)
                 (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
                 if not pad:
-                    self.dlg = pycalent.CalEntry(event.x, event.y, self, self.done_caldlg)
+                    self.dlg = pycalent.CalEntry( \
+                                event.x, event.y, self, self.done_caldlg)
 
     def menucb(self, txt, cnt):
         #print (" txt cnt", txt, txt)
@@ -650,7 +654,8 @@ class CalCanvas(Gtk.DrawingArea):
             hx, hy = self.hit_test(xxx, yyy)
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             #, int(xxx), int(yyy),)
-            print("Editing entry:",  nnn, "-", ttt, "-", pad, xx, yy)
+            if self.config.debug > 3:
+                print("Editing entry:",  nnn, "-", ttt, "-", pad, xx, yy)
             if not pad:
                 self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
@@ -696,8 +701,8 @@ class CalCanvas(Gtk.DrawingArea):
             if ret == Gtk.ResponseType.YES:
                 #print("deleting", xdat[0])
                 ret = self.sql.rmone(xdat[0])
-                if not ret:
-                    pggui.message(      "\nCannot delete %s" % xdat[2][0])
+                #if not ret:
+                #    pggui.message(      "\nCannot delete %s" % xdat[2][0])
                 self.invalidate()
 
         if cnt == 4:
@@ -706,42 +711,48 @@ class CalCanvas(Gtk.DrawingArea):
     # --------------------------------------------------------------------
     # Got data
 
-    def done_caldlg(self, res, arrx):
+    def done_caldlg(self, res, cald):
         if res != "OK":
             return
+        print("cald", cald)
+        return
+
         # See if append or ovewrite
         done = False
-        if self.xarr:
-            for aa in range(len(self.xarr)):
+        if self.monarr:
+            for aa in range(len(self.monarr)):
                 flag = True
-                curr = self.xarr[aa]
+                curr = self.monarr[aa]
                 for bb in range(len(curr[1])-1):
                     if curr[1][bb] !=  arrx[1][bb]:
                         flag = False
                 if flag:
                     done = True
-                    self.xarr[aa] = arrx
+                    self.monarr[aa] = arrx
                     #print("done_caldlg: inserted", end = "")
 
         if not done:
-            self.xarr.append(arrx)
+            self.monarr.append(arrx)
             #print("done_caldlg: appended", end = "")
 
         #printit(arrx)
-        print("arrx", arrx)
+        if self.config.debug > 3:
+            print("arrx", arrx)
 
         # Save to SQLite database
         key = self.make_key(arrx[1])
 
-        #print("put key", key, "val", *arrx[2])
+        if self.config.debug > 1:
+            print("put:", key, "arrx[0] =", arrx[0], "vals = ", *arrx[2])
         self.sql.put(key, arrx[0], *arrx[2])
 
         arrz = []
         for aa in arrx[3]:
             arrz.append(str(aa))
 
-        #print("put data", key, "val", *arrz)
-        self.sql.putdata(key, *arrz)
+        if self.config.debug > 1:
+            print("put data:", key, "val =", *arrz)
+        self.sql.putdata(arrx[0], *arrz)
 
         # Save to SQLite alarms database
         #print("put ala", arrx[3])
@@ -765,7 +776,7 @@ class CalCanvas(Gtk.DrawingArea):
         arr = []
         #print ("get_daydat for", ddd)
         # Get it for arr
-        for aa in self.xarr:
+        for aa in self.monarr:
             last = aa[1]
             if int(last[0]) == ddd.day and \
                 int(last[1]) == ddd.month and \
@@ -801,7 +812,7 @@ class CalCanvas(Gtk.DrawingArea):
         hhh2 = self.rect.height / 60
         hhh2 = min(hhh2, 12)
 
-        self.cr.set_source_rgba(25/255, 55/255, 25/255)
+        self.cr.set_source_rgba(*grey_col)
         self.fd.set_family("Arial")
 
         self.fd.set_size(hhh2 * Pango.SCALE);
@@ -864,7 +875,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.cr2 = pggui.CairoHelper(cr)
 
         # Paint white, ignore system BG
-        cr.set_source_rgba(255/255, 255/255, 255/255)
+        cr.set_source_rgba(*white_col)
         #cr.rectangle( border, border, self.rect.width - border * 2, self.rect.height - border * 2);
         cr.rectangle( 0, 0, self.rect.width, self.rect.height);
         cr.fill()
@@ -875,7 +886,7 @@ class CalCanvas(Gtk.DrawingArea):
         pitchy = newheight // 6;
 
         # Month, year
-        cr.set_source_rgba(25/255, 55/255, 25/255)
+        cr.set_source_rgba(*grey_col)
         self.fd.set_family("Arial")
         self.fd.set_size(self.rect.height / 30 * Pango.SCALE);
         self.pangolayout.set_font_description(self.fd)
@@ -888,7 +899,7 @@ class CalCanvas(Gtk.DrawingArea):
         PangoCairo.show_layout(cr, self.pangolayout)
 
         # Weekdays
-        cr.set_source_rgba(125/255, 125/255, 155/255)
+        cr.set_source_rgba(*lgrey_col)
         self.fd.set_size(self.rect.height / 35 * Pango.SCALE);
         self.pangolayout.set_font_description(self.fd)
         for aa in range(7):
@@ -899,7 +910,7 @@ class CalCanvas(Gtk.DrawingArea):
             PangoCairo.show_layout(cr, self.pangolayout)
 
         # Horiz grid
-        cr.set_source_rgba(125/255, 125/255, 125/255)
+        cr.set_source_rgba(*lgrey_col)
         cr.set_line_width(1)
 
         for aa in range(8):
@@ -916,7 +927,7 @@ class CalCanvas(Gtk.DrawingArea):
         cr.stroke()
 
         self.tri_2 = [] ; self.tri_1 = []
-        cr.set_source_rgba(88/255, 88/255, 100/255)
+        cr.set_source_rgba(*dblue_col)
 
         for aa in range(7):
             for bb in range(6):
@@ -949,11 +960,12 @@ class CalCanvas(Gtk.DrawingArea):
 
                     elif self.zdate == ttt:
                         #print("Today", ttt)
-                        rrr, ggg, bbb = (230/255, 255/255, 220/255)
+                        rrr, ggg, bbb = lgree_col
                     elif self.shx == aa and self.shy == bb:
                         rrr, ggg, bbb = (215/255, 235/255, 235/255)
                     else:
-                        rrr, ggg, bbb = (255/255, 255/255, 255/255)
+                        # Default
+                        rrr, ggg, bbb = white_col
                 else:
                     #if self.shx == aa and self.shy == bb:
                     #    self.cr.set_source_rgba(255/255, 235/255, 235/255)
@@ -1046,7 +1058,7 @@ class CalCanvas(Gtk.DrawingArea):
             self.mainwin.logwin.append_logwin("Alarm at: %s %s %s\r" %
                                     (dddd, aa[2][0], datetime.datetime.today().ctime()) )
 
-            print("Alarm triggered", dddd)
+            #print("Alarm triggered", dddd)
             pyala.play_sound()
             pyala.notify_sys(aa[2][0], aa[2][1], dddd)
             pggui.message("\n" + aa[2][0] + "\n" + aa[2][1], title =  "Alarm at " + dddd)
@@ -1055,44 +1067,51 @@ class CalCanvas(Gtk.DrawingArea):
             sys.stdout.flush()
 
     def eval_alarm(self):
-        #print("eval_alarm")
+
         flag = False
         tmp = datetime.datetime.today()
-        #print("tmp", tmp)
+        if self.config.debug > 3:
+            print("eval_alarm", tmp.day, "-", tmp.month, "-", tmp.year,
+                                    tmp.hour, tmp.minute, tmp.second)
+        for aa in self.monarr:
+            #print("Data:", aa[1])
+            # Is it today?
+            if aa[1][0] == tmp.day and aa[1][1] == tmp.month  \
+                    and aa[1][2] == tmp.year:
+                #if self.config.debug > 1:
+                #    print("Today", aa[1], aa[2])
 
-        for aa in self.xarr:
-            #print (aa[3][0][0])
-            #print(aa)
-
-            if aa[3][0][0]:
-                # Is it today?
-                if aa[1][0] == tmp.day and aa[1][1] == tmp.month  \
-                        and aa[1][2] == tmp.year:
-                    #print("Today", aa)
+                # Enabled?
+                if aa[3][0][0]:
+                    if self.config.debug > 3:
+                        print("Enabled", aa[1], aa[2])
                     # Is it now?
-                    if aa[3][0][1] == tmp.hour:
-                        if aa[3][0][2] == tmp.minute:
+                    if aa[1][3] == tmp.hour:
+                        if aa[1][4] == tmp.minute:
                             self.pop_alarm(aa)
 
                     # Is it in the future?
-                    if aa[3][0][1] >= tmp.hour:
-                        if aa[3][0][2] > tmp.minute:
-                            pass
-                            #print("future", aa[3][0][1], aa[3][0][2])
+                    if  aa[1][3] > tmp.hour or \
+                          aa[1][3] == tmp.hour and aa[1][4] > tmp.minute:
+                            print("future", aa[1][3], aa[1][4])
                             #print("future", aa)
                             #self.set_text(str(aa))
                             self.mainwin.mywin.set_title("Python Calendar -- next up: " \
-                                +  aa[2][0] + " at "  + str(aa[3][0][1]) + ":" + str(aa[3][0][2]))
+                                +  aa[2][0] + " at "  +  \
+                                    str(aa[1][3]) + ":" + str(aa[1][4]))
 
-def handler_tick(main_class):
+    def handler_tick(self):
 
-    #print("handler_tick", main_class)
-    main_class.eval_alarm()
+        if self.config.debug > 4:
+            print("handler_tick")
+        self.eval_alarm()
+        return True
 
-    try:
-        GLib.timeout_add(1000, handler_tick, main_class)
-    except:
-        print("Exception in setting timer handler", sys.exc_info())
+        #try:
+        #    GLib.timeout_add(1000, handler_tick, main_class)
+        #except:
+        #    print("Exception in setting timer handler", sys.exc_info())
+
 
 if __name__ == "__main__":
     print("This is a module file, use pycalgui.py")
