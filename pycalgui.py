@@ -93,7 +93,7 @@ class MainWindow():
         self.mywin.set_default_size(3*www/4, 3*hhh/4)
         self.mywin.set_size_request(200, 200)
         self.mywin.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
-        self.mywin.connect("unmap", OnExit)
+        self.mywin.connect("unmap", OnExit, self)
         self.populate()
         self.mywin.show_all()
         pycallog.load_log(logfname)
@@ -223,18 +223,21 @@ class MainWindow():
 
         hbox.pack_start(Gtk.Label.new(" "), 1, 1, 0)
 
-        hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.check3a = Gtk.CheckButton.new_with_label("Default   "); self.check3a.set_active(True)
-        hbox.pack_start(self.check3a, 0, 0, 0)
-        hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
+        #hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
+        #self.check3a = Gtk.CheckButton.new_with_label("Default   ");
+        #self.check3a.set_active(True)
+        #hbox.pack_start(self.check3a, 0, 0, 0)
+        #hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.check3 = Gtk.CheckButton.new_with_label("Personal"); self.check3.set_active(True)
+        self.check3 = Gtk.CheckButton.new_with_label("Personal");
+        self.check3.set_active(True)
         hbox.pack_start(self.check3, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.check4 = Gtk.CheckButton.new_with_label("Work  "); self.check4.set_active(True)
+        self.check4 = Gtk.CheckButton.new_with_label("Work  ");
+        self.check4.set_active(True)
         hbox.pack_start(self.check4, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
@@ -361,16 +364,20 @@ if __name__ == "__main__":
     if config.verbose:
         print("Using calfname:", config.fname)
 
-    astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
-    usafname = os.path.join(os.path.expanduser(calfile.locdir), "us_en.ics")
-    #usafname = os.path.join(os.path.expanduser(calfile.locdir), "US_Holidays.ics")
+    calnames = "astrocal.ics", "USHolidays.ics"
+
+    #astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
+    #usafname = os.path.join(os.path.expanduser(calfile.locdir),   "us_en.ics")
+    #holfname = os.path.join(os.path.expanduser(calfile.locdir),   "US_Holidays.ics")
 
     #print("Started pyalagui")
     mainwin = MainWindow(config)
-    mainwin.cal.set_dbfile(config.fname, config)
-    mainwin.cal.set_moonfile(astrofname)
-    mainwin.cal.set_usafile(usafname)
+
     mainwin.logwin.append_logwin("Started app: %s\n" % (datetime.datetime.today().ctime()) )
+    mainwin.cal.set_dbfile(config.fname, config)
+
+    mainwin.cal.set_moonfile(calnames[0])
+    mainwin.cal.set_usafile(calnames[1])
 
     mainwin.cal.grab_focus()
     Gtk.main()

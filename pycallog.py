@@ -60,7 +60,6 @@ class fake_stdout():
         if logwin:
             logwin.append_logwin(strx)
 
-
     def limit_loglen(self):
         pass
 

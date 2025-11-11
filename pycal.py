@@ -47,10 +47,8 @@ def flatten(var):
             strx += aa
     except:
         pass
-
     strx = strx.replace("\\n", "\n")
     strx = strx.replace("\\", "\n")
-
     return strx
 
 def isiterable(p_object):
@@ -63,25 +61,20 @@ def isiterable(p_object):
 
 def printit(varx, sp = " "):
 
+    print("printit")
+
     if type(varx) == str:
         print(sp, "'" + varx + "'", end = " ")
-        return
-
-    if type(varx) == int:
-        print(sp, "+", varx, end = " ")
-        return
-
-    if type(varx) == float:
-        print(sp, "++", varx, end = " ")
-        return
-
-    if isiterable(varx):
+    elif type(varx) == int:
+        print(sp, "(int)", varx, end = " ")
+    elif type(varx) == float:
+        print(sp, "(float)", varx, end = " ")
+    elif isiterable(varx):
         for aa in varx:
             printit(aa, sp + "  ")
-            print()
+        print()
     else:
         print(sp, varx, end = " ")
-
 
 def get_rule_str(mmm, rr):
 
@@ -211,15 +204,26 @@ class CalCanvas(Gtk.DrawingArea):
             self.sql = pycalsql.CalSQLite(self.dbfile, config)
         except:
             print("Cannot make/open calendar database.")
-        self.get_month_data()
+        self.monarr = self.get_month_data()
+
+    #def add_calfile(self, calfilename):
+    #    ''' Add additional calendar file '''
+    #    arr = calfile.eval_file(calfilename)
+    #    self.monarr += self.get_cal_data(arr)
 
     def set_moonfile(self, moonfile):
         self.moonarr = calfile.eval_file(moonfile)
-        self.get_cal_data(self.moonarr )
+        self.monarr += self.get_cal_data(self.moonarr)
 
     def set_usafile(self, usafile):
-        self.usarr = calfile.eval_file(usafile)
-        self.get_cal_data(self.usarr )
+        self.usarr = calfile.eval_file(usafile, 0)
+        #for aa in self.usarr:
+        #    print(aa)
+        self.monarr += self.get_cal_data(self.usarr)
+
+    def set_holfile(self, holfile):
+        self.holarr = calfile.eval_file(holfile)
+        self.monarr += self.get_cal_data(self.holarr )
 
     def _cursors(self):
         disp =  self.get_display()
@@ -301,66 +305,62 @@ class CalCanvas(Gtk.DrawingArea):
     # --------------------------------------------------------------------
     def get_month_data(self):
 
-        #print(sys.version_info)
-        self.monarr = []
+        arr = []
         # Get padded (OK) days
         for aa in range(7):
             lastd = self.darr[aa]
             for bb in lastd:
-                if not bb[2]:
-                    ddd = bb[1]
-                    key = "%02d-%02d-%02d %%" % (ddd.day, ddd.month, ddd.year)
-                    if self.sql:
-                        # Get it from the DB
-                        arr2 = self.sql.get(key)
-                        if arr2:
-                            #print("sql.get key", key, "got sql", arr2)
-                            for aa in arr2:
-                                ttt = aa[1].split(" ")
-                                (dd, mm, yy) = ttt[0].split("-")
-                                (HH, MM) = ttt[1].split(":")
-                                dur = ttt[2]
-                                arr3, arr4, arr5 = self.sql.getdata(key)
-                                #print("sql get data arr3", arr3, "arr4", arr4, "arr5", arr5)
+                if bb[2]:
+                    continue
+                ddd = bb[1]
+                key = "%02d-%02d-%02d %%" % (ddd.day, ddd.month, ddd.year)
+                if not self.sql:
+                    continue
+                # Get it from the DB
+                arr2 = self.sql.get(key)
+                if not arr2:
+                    continue
+                #print("sql.get key", key, "got sql", arr2)
+                for aa in arr2:
+                    ttt = aa[1].split(" ")
+                    (dd, mm, yy) = ttt[0].split("-")
+                    (HH, MM) = ttt[1].split(":")
+                    dur = ttt[2]
+                    arr3, arr4, arr5 = self.sql.getdata(key)
+                    #print("sql get data arr3", arr3, "arr4", arr4, "arr5", arr5)
 
-                                defa = ( False, 0, 0, [False, False, False, False, False])
-                                #arr3x = eval(arr3); print("arr3 evaled", type(arr3x), arr3x)
+                    defa = ( False, 0, 0, [False, False, False, False, False])
+                    #arr3x = eval(arr3); print("arr3 evaled", type(arr3x), arr3x)
 
-                                if arr3:
-                                    arr3 = eval(arr3)
-                                else:
-                                    arr3 = defa[:]
-                                if arr4:
-                                    arr4 = eval(arr4)
-                                else:
-                                    arr4 = defa[:]
-                                if arr5:
-                                    arr5 = eval(arr5)
-                                else:
-                                    arr5 = defa[:]
+                    if arr3:
+                        arr3 = eval(arr3)
+                    else:
+                        arr3 = defa[:]
+                    if arr4:
+                        arr4 = eval(arr4)
+                    else:
+                        arr4 = defa[:]
+                    if arr5:
+                        arr5 = eval(arr5)
+                    else:
+                        arr5 = defa[:]
 
-                                def unpackx(*arrx):
-                                    res = arrx
-                                    return res
-
-                                #if sys.version_info[0] < 3:
-                                #carr = [aa[2],
-                                #           [int(dd), int(mm),
-                                #           int(yy), int(HH), int(MM), int(dur)],
-                                #           [unpackx(aa[3:])],
-                                #           [ arr3, arr4, arr5 ] ]
-                                carr = [aa[2],
-                                            [int(dd), int(mm),
-                                            int(yy), int(HH), int(MM), int(dur)],
-                                            [*aa[3:]], [ arr3, arr4, arr5 ] ]
-                                #print("reading carr", carr)
-
-                                self.monarr.append(carr)
-        #print("xarr", self.monarr)
+                    def unpackx(*arrx):
+                        res = arrx
+                        return res
+                    carr = [aa[2],
+                                [int(dd), int(mm),
+                                int(yy), int(HH), int(MM), int(dur)],
+                                [*aa[3:]], [ arr3, arr4, arr5 ] ]
+                    #print("reading carr", carr)
+                    arr.append(carr)
+        return arr
 
     # --------------------------------------------------------------------
     def get_cal_data(self, arrx):
-        #print("arrx", arrx)
+
+        #print("get_cal_data() arrx", arrx)
+        arr = []
 
         # Blank the alarm fields
         arr3 = [ False, 0, 0, [False, False, False, False, False]]
@@ -411,7 +411,7 @@ class CalCanvas(Gtk.DrawingArea):
                                                 zdate.hour, zdate.minute, 0 ],
                                    [flatten(aa[0]), "", "", flatten(aa[5]) ],
                                    [ arr3, arr4, arr5 ]  ]
-                            self.monarr.append(carr)
+                            arr.append(carr)
 
             try:
                 if self.xdate.year == aa[1].year and \
@@ -425,11 +425,12 @@ class CalCanvas(Gtk.DrawingArea):
                                             aa[1].hour, aa[1].minute, 0 ],
                                [flatten(aa[0]), "", "", flatten(aa[5]) ],
                                [ arr3, arr4, arr5 ]  ]
-                    self.monarr.append(carr)
+                    arr.append(carr)
 
             except:
                 print("Cannot parse:", sys.exc_info())
                 print( "aa", aa)
+        return arr
 
     def set_date(self, dt):
 
@@ -442,12 +443,13 @@ class CalCanvas(Gtk.DrawingArea):
         self.__calc_curr()
         self.freeze = False
 
-        self.get_month_data()
+        self.monarr = self.get_month_data()
+
         if self.moon:
-            self.get_cal_data(self.moonarr)
+            self.monarr += self.get_cal_data(self.moonarr)
 
         if self.holy:
-            self.get_cal_data(self.usarr)
+            self.monarr += self.get_cal_data(self.usarr)
 
         self.queue_draw()
 
@@ -644,7 +646,7 @@ class CalCanvas(Gtk.DrawingArea):
             hx, hy = self.hit_test(xxx, yyy)
             (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
-                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
+                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg, True)
         if cnt == 2:
             if self.popped:
                 try:    self.tt.destroy()
@@ -714,8 +716,6 @@ class CalCanvas(Gtk.DrawingArea):
     def done_caldlg(self, res, cald):
         if res != "OK":
             return
-        print("cald", cald)
-        return
 
         # See if append or ovewrite
         done = False
@@ -724,35 +724,36 @@ class CalCanvas(Gtk.DrawingArea):
                 flag = True
                 curr = self.monarr[aa]
                 for bb in range(len(curr[1])-1):
-                    if curr[1][bb] !=  arrx[1][bb]:
+                    #print("curr", curr[1][bb], cald.xnowarr[bb])
+                    if curr[1][bb] !=  cald.xnowarr[bb]:
                         flag = False
+                        break
                 if flag:
                     done = True
-                    self.monarr[aa] = arrx
-                    #print("done_caldlg: inserted", end = "")
-
+                    #self.monarr[aa] = arrx
+                    print("done_caldlg: insert")
         if not done:
-            self.monarr.append(arrx)
-            #print("done_caldlg: appended", end = "")
+            #self.monarr.append(arrx)
+            print("done_caldlg: append")
+        #printit(cald)
 
-        #printit(arrx)
-        if self.config.debug > 3:
-            print("arrx", arrx)
+        if self.config.debug > 2:
+            print("cald", cald)
 
         # Save to SQLite database
-        key = self.make_key(arrx[1])
+        key = self.make_key(cald.xnowarr)
 
         if self.config.debug > 1:
-            print("put:", key, "arrx[0] =", arrx[0], "vals = ", *arrx[2])
-        self.sql.put(key, arrx[0], *arrx[2])
+            print("put:", key, "-",  cald.xuuid, "vals =", *cald.txtarr)
+        self.sql.put(key,  cald.xuuid, *cald.txtarr)
 
         arrz = []
-        for aa in arrx[3]:
+        for aa in cald.xalarr:
             arrz.append(str(aa))
 
         if self.config.debug > 1:
             print("put data:", key, "val =", *arrz)
-        self.sql.putdata(arrx[0], *arrz)
+        self.sql.putdata(cald.xuuid, *arrz)
 
         # Save to SQLite alarms database
         #print("put ala", arrx[3])

@@ -14,7 +14,6 @@ Nice basis for any python calendar related project
 
 sudo apt-get install gir1.2-notify-0.7
 
-
 # EOF
 
 

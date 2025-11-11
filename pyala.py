@@ -225,7 +225,7 @@ if __name__ == "__main__":
     #    sys.exit(0)
 
     try:
-        sqldb = pycalsql.CalSQLite(calfname2)
+        sqldb = pycalsql.CalSQLite(calfname2, config)
     except:
         print("Cannot open/create calendar database.", calfname2, sys.exc_info())
         sys.exit(2)

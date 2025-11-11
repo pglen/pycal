@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
+#from __future__ import print_function
 
 # ------------------------------------------------------------------------
 # Test client for the pyserv project. Encrypt test.
@@ -20,6 +20,17 @@ from gi.repository import Gdk
 
 caldir = "~/.local/share/evolution/calendar/system/"
 locdir = "~/.pycal/"
+
+def flatten(var):
+    strx = ""
+    try:
+        for aa in var:
+            strx += aa
+    except:
+        pass
+    strx = strx.replace("\n", "")
+    strx = strx.replace("\\", "")
+    return strx
 
 # ------------------------------------------------------------------------
 # This is a hacked version of the calendar file format parser.
@@ -79,7 +90,11 @@ def eval_file(calfile, verbose = 0):
         if "END" in comp[0] and "VEVENT" in comp[1]:
             start = False
 
+            summ = flatten(summ)
+
             if verbose > 0:
+                print("Summ:", summ)
+            elif verbose > 1:
                 print("Summ:", summ, "Alarm:", startdt, "Trig:", trig,
                         "Action:", audio, "Alarmuid:", aluid, "Description:", desc)
 
