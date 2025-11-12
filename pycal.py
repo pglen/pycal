@@ -206,19 +206,12 @@ class CalCanvas(Gtk.DrawingArea):
             print("Cannot make/open calendar database.")
         self.monarr = self.get_month_data()
 
-    #def add_calfile(self, calfilename):
-    #    ''' Add additional calendar file '''
-    #    arr = calfile.eval_file(calfilename)
-    #    self.monarr += self.get_cal_data(arr)
-
     def set_moonfile(self, moonfile):
         self.moonarr = calfile.eval_file(moonfile)
         self.monarr += self.get_cal_data(self.moonarr)
 
     def set_usafile(self, usafile):
         self.usarr = calfile.eval_file(usafile, 0)
-        #for aa in self.usarr:
-        #    print(aa)
         self.monarr += self.get_cal_data(self.usarr)
 
     def set_holfile(self, holfile):
@@ -306,6 +299,9 @@ class CalCanvas(Gtk.DrawingArea):
     def get_month_data(self):
 
         arr = []
+        if not self.sql:
+            return arr
+
         # Get padded (OK) days
         for aa in range(7):
             lastd = self.darr[aa]
@@ -314,24 +310,20 @@ class CalCanvas(Gtk.DrawingArea):
                     continue
                 ddd = bb[1]
                 key = "%02d-%02d-%02d %%" % (ddd.day, ddd.month, ddd.year)
-                if not self.sql:
-                    continue
                 # Get it from the DB
                 arr2 = self.sql.get(key)
                 if not arr2:
                     continue
                 #print("sql.get key", key, "got sql", arr2)
                 for aa in arr2:
+                    #print("sql.got", aa)
                     ttt = aa[1].split(" ")
                     (dd, mm, yy) = ttt[0].split("-")
                     (HH, MM) = ttt[1].split(":")
                     dur = ttt[2]
-                    arr3, arr4, arr5 = self.sql.getdata(key)
-                    #print("sql get data arr3", arr3, "arr4", arr4, "arr5", arr5)
-
+                    arr3, arr4, arr5, arr6, arr7 = self.sql.getdata(aa[2])
+                    #print("sql.getdata:", arr3, arr4, arr5, arr6, arr7)
                     defa = ( False, 0, 0, [False, False, False, False, False])
-                    #arr3x = eval(arr3); print("arr3 evaled", type(arr3x), arr3x)
-
                     if arr3:
                         arr3 = eval(arr3)
                     else:
@@ -351,7 +343,7 @@ class CalCanvas(Gtk.DrawingArea):
                     carr = [aa[2],
                                 [int(dd), int(mm),
                                 int(yy), int(HH), int(MM), int(dur)],
-                                [*aa[3:]], [ arr3, arr4, arr5 ] ]
+                                [*aa[3:]], [ arr3, arr4, arr5 ], arr6, arr7 ]
                     #print("reading carr", carr)
                     arr.append(carr)
         return arr
@@ -637,14 +629,16 @@ class CalCanvas(Gtk.DrawingArea):
     def menucb(self, txt, cnt):
         #print (" txt cnt", txt, txt)
         xxx = self.menu.event.x;  yyy = self.menu.event.y
+
+        hx, hy = self.hit_test(xxx, yyy)
+        (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+
         if cnt == 1:
             #print("New entry")
             if self.popped:
                 try:    self.tt.destroy()
                 except: pass
                 self.popped = False
-            hx, hy = self.hit_test(xxx, yyy)
-            (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
             if not pad:
                 self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg, True)
         if cnt == 2:
@@ -652,36 +646,19 @@ class CalCanvas(Gtk.DrawingArea):
                 try:    self.tt.destroy()
                 except: pass
                 self.popped = False
-
-            hx, hy = self.hit_test(xxx, yyy)
-            (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
-            #, int(xxx), int(yyy),)
             if self.config.debug > 3:
                 print("Editing entry:",  nnn, "-", ttt, "-", pad, xx, yy)
             if not pad:
                 self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
 
         if cnt == 3:
-            if self.popped:
-                try:    self.tt.destroy()
-                except: pass
-                self.popped = False
-
-            hx, hy = self.hit_test(xxx, yyy)
-            (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
-            #if not pad:
-            #    self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
-
             # This was the font height on draw ...
             hhh2 = self.rect.height / 60; hhh2 = min(hhh2, 12) + 6
             xdarr = self.get_daydat(ttt)
             xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
             idx = int(((yyy - (hhh2 + 4)) - yy) // hhh2) + self.scrollday
-            #print(idx, "xdarrs", xdarrs)
-
             #print("len", len(xdarrs), "idx", idx)
             msg = "\n"
-
             if idx >= len(xdarrs):
                 pggui.message(      "\nNot pointing to valid Item or"
                                     "\nItem not in personal calendar."
@@ -691,10 +668,10 @@ class CalCanvas(Gtk.DrawingArea):
                 xdat = xdarrs[idx]
                 if self.config.debug > 3:
                     print("Deleting entry", xdat)
-
                 sdd = ttt.strftime("%a %d-%b-%Y")
                 sdd +=  " %02d:%02d" %  (xdat[1][3], xdat[1][4])
-                msg += "%s\n\n%s\n%s" % (sdd, xdat[2][0], xdat[2][1])
+                msg += "%s\n\n%s ? " % (sdd, xdat[2][0])
+                #msg += "%s\n\n%s\n%s" % (sdd, xdat[2][0], xdat[2][1])
 
             warnings.simplefilter("ignore")
             ret = pggui.yes_no(msg, title = " Confirm Delete Item ")
@@ -707,16 +684,15 @@ class CalCanvas(Gtk.DrawingArea):
                 #    pggui.message(      "\nCannot delete %s" % xdat[2][0])
                 self.invalidate()
 
-        if cnt == 4:
-            print("Editing day")
-
-    # --------------------------------------------------------------------
-    # Got data
+        #if cnt == 4:
+        #    print("Editing day")
 
     def done_caldlg(self, res, cald):
-        if res != "OK":
-            return
 
+        '''  Got data save it '''
+
+        if res != "OK":         # Cancel pressed
+            return
         # See if append or ovewrite
         done = False
         if self.monarr:
@@ -731,33 +707,34 @@ class CalCanvas(Gtk.DrawingArea):
                 if flag:
                     done = True
                     #self.monarr[aa] = arrx
-                    print("done_caldlg: insert")
+                    #print("done_caldlg: insert")
         if not done:
             #self.monarr.append(arrx)
-            print("done_caldlg: append")
+            pass
+            #print("done_caldlg: append")
         #printit(cald)
 
-        if self.config.debug > 2:
-            print("cald", cald)
+        if self.config.debug > 1:
+            print(cald)
 
         # Save to SQLite database
         key = self.make_key(cald.xnowarr)
 
         if self.config.debug > 1:
-            print("put:", key, "-",  cald.xuuid, "vals =", *cald.txtarr)
-        self.sql.put(key,  cald.xuuid, *cald.txtarr)
+            print("put:", key, cald.xuuid, *cald.txtarr, cald.scope)
+        #if self.newx:
+        self.sql.put(key, cald.xuuid, *cald.txtarr, cald.scope)
 
         arrz = []
         for aa in cald.xalarr:
             arrz.append(str(aa))
-
+        arry = []
+        for aa in cald.xscript:
+            arry.append(str(aa))
         if self.config.debug > 1:
-            print("put data:", key, "val =", *arrz)
-        self.sql.putdata(cald.xuuid, *arrz)
-
-        # Save to SQLite alarms database
-        #print("put ala", arrx[3])
-        #self.sql.putala(key, *arrz)
+            print("put data:", cald.xuuid,  *arrz, *arry)
+        self.sql.putdata(cald.xuuid, *arrz, *arry)
+        self.invalidate()
 
     # --------------------------------------------------------------------
 

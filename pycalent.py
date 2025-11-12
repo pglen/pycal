@@ -34,6 +34,7 @@ class CalFormData():
 class CalAlaData():
 
     def __init__(self):
+        self.arr = []
         pass
 
     def __str__(self):
@@ -54,15 +55,20 @@ class CalEntry(Gtk.Window):
         warnings.simplefilter("ignore")
 
         Gtk.Window.__init__(self)
+        self.newx = newx
         self.callb = callb
         self.set_accept_focus(True);
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.alt = False
         self.aladat = CalAlaData()
-        self.aladat.arr = []
-        self.uuid = uuid.uuid4()
         self.self2 = self2
         self.set_position(Gtk.WindowPosition.CENTER)
+        try:
+            self.set_icon_from_file(self2.config.logicon)
+        except:
+            #print("load icon", sys.exc_info())
+            pass
+
         if self2.config.log > 1:
             self.self2.mainwin.logwin.append_logwin(
                             "Popup: %s\r" % (datetime.datetime.today().ctime()) )
@@ -76,27 +82,32 @@ class CalEntry(Gtk.Window):
         xdarr = self2.get_daydat(ttt)
         xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
         idx = int(((yyyy - (hhh2 + 4)) - yy) // hhh2) + self2.scrollday
-        #print(idx, "xdarrs", xdarrs)
-        #print("len", len(xdarrs), "idx", idx, "ign", self2.scrollday)
+        #print("xdarr idx", xdarrs[idx])
+
+        #sss = ttt.strftime("%m-%d-%y")
+        tnow = datetime.datetime.today()
+        self.nowh = tnow.hour; self.nowm = tnow.minute
 
         title = "Calendar Item Entry"
 
         #print("CalEntry init", hx, hy)
 
-        #idx >= len(xdarrs):
-        if newx:
+        if self.newx or idx >= len(xdarrs):
+            self.uuid = uuid.uuid4().hex
             xdarrs = []
             idx = 0
+            self.newx = True    # Force new if blank hit test
             title += " (New) "
             xdat = []
         else:
             xdat = xdarrs[idx]
+            print("xdat =")
+            for aa in xdat:
+                print(aa)
+
             title += " %02d:%02d " % (xdat[1][3], xdat[1][4])
-
+            self.uuid = xdat[0]
         self.set_title(title)
-
-        #print ("xdat loading:", xdat)
-
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
         self.connect("key-release-event", self.area_key)
@@ -106,9 +117,8 @@ class CalEntry(Gtk.Window):
 
         # ----------------------------------------------------------------
 
-        hbox5 = self.make_scriptline()
-        hbox9 = self.make_workline()
-        hbox5.pack_start(hbox9, 0, 0, 4)
+        hbox5 = self.make_scriptline(xdat)
+        hbox9 = self.make_workline(xdat) ; hbox5.pack_start(hbox9, 0, 0, 4)
 
         self.row = 0; self.col = 0
         hbox, self.dtab = self.make_dtab(ttt, xdarrs, idx, xdat)
@@ -172,30 +182,31 @@ class CalEntry(Gtk.Window):
         def change_hs2(val):
             #print("change_hs2")
             pass
-
         def change_ms2(val):
             #print("change_ms2")
             pass
-
         dtab = Gtk.Table(); #dtab.set_homogeneous(False)
         dtab.set_col_spacings(4); dtab.set_row_spacings(4)
-
         for aa in range(3):
             self.row += 1; self.col = 0
             cb2 = Gtk.CheckButton()
-            if xdat:
+            defh = 0 ; defm = 0
+            if self.newx and aa == 0:
+                defh = self.nowh ; defm = self.nowm
+                cb2.set_active(True)
+            elif xdat:
                 cb2.set_active(xdat[3][aa][0])
-            hs2 = pggui.Spinner(0, 23, 0, change_hs2);
+            hs2 = pggui.Spinner(0, 23, defh, change_hs2);
             if xdat:
                 hs2.set_value(xdat[3][aa][1])
-            ms2 = pggui.Spinner(0, 59, 0, change_ms2);
+            ms2 = pggui.Spinner(0, 59, defm, change_ms2);
             if xdat:
                 ms2.set_value(xdat[3][aa][2])
 
             #if aa == 0:
             #    if xdarrs[idx][1] == 0 and xdarrs[idx][2] == 0:
-            #        hs2.set_value(nowh)
-            #        ms2.set_value(nowm)
+            #        hs2.set_value(self.nowh)
+            #        ms2.set_value(self.nowm)
 
             dtab.attach(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1,
                             Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL, 1, 1);
@@ -232,11 +243,7 @@ class CalEntry(Gtk.Window):
                     self.col, self.col+1, self.row, self.row + 1); self.col += 1
         #print("aladat", self.aladat)
 
-        # ----------------------------------------------------------------
-        #sss = ttt.strftime("%m-%d-%y")
-        tnow = datetime.datetime.today()
-        nowh = tnow.hour; nowm = tnow.minute
-        sss = "%s %02d:%02d" % (ttt.strftime("%a %d-%b-%Y"), nowh, nowm )
+        sss = "%s %02d:%02d" % (ttt.strftime("%a %d-%b-%Y"), self.nowh, self.nowm )
 
         hbox = Gtk.HBox(); lab = pggui.Label(sss, font = "Sans 16")
         lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
@@ -276,51 +283,43 @@ class CalEntry(Gtk.Window):
 
         ADEF(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1)
         self.col += 1
-
         ADEF(pggui.Label(" D_ay: ", ds), self.col, self.col+1,  self.row, self.row + 1)  ;
         self.col += 1
-
         ADEF(ds, self.col, self.col+1,  self.row, self.row + 1) ;
         self.col += 1
-
         ADEF(pggui.Label(" Mon_th: ", mms), self.col, self.col+1,  self.row, self.row + 1)
         self.col += 1
-
         ADEF(mms,  self.col, self.col+1,  self.row, self.row + 1)
         self.col += 1
-
         ADEF(pggui.Label(" Y_ear: ", ys),  self.col, self.col+1,  self.row, self.row + 1)
         self.col += 1
-
         ADEF(ys,  self.col, self.col+1,  self.row, self.row + 1)
         self.col += 1
-
         ptab.attach(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1,
                             Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4);
         self.col += 1
-
-        #nowh = ttt.hour; nowm = ttt.minute
-        if idx >= len(xdarrs):
+        #self.nowh = ttt.hour; self.nowm = ttt.minute
+        if self.newx or idx >= len(xdarrs):
             tnow = datetime.datetime.today()
-            nowh = tnow.hour; nowm = tnow.minute
+            self.nowh = tnow.hour; self.nowm = tnow.minute
             # See if there is an entry, step forward
             for ff in range(10):
                 got = False
                 for fff in xdarrs:
-                    if fff[1][3] == nowh:
-                        if fff[1][4] == nowm + ff:
+                    if fff[1][3] == self.nowh:
+                        if fff[1][4] == self.nowm + ff:
                             got = True
                             break
 
                 # Assign, contain
                 if not got:
-                    nowm += ff
-                    nowm = nowm % 59
+                    self.nowm += ff
+                    self.nowm = self.nowm % 59
                     break
-            durm = 60-nowm
+            durm = 60-self.nowm
         else:
-            nowh = xdarrs[idx][1][3]
-            nowm = xdarrs[idx][1][4]
+            self.nowh = xdarrs[idx][1][3]
+            self.nowm = xdarrs[idx][1][4]
             durm = xdarrs[idx][1][5]
 
         def change_hs(val):
@@ -337,12 +336,12 @@ class CalEntry(Gtk.Window):
             #print("change_dds", val)
             pass
 
-        hs  = pggui.Spinner(0, 23, nowh, change_hs);
-        ms  = pggui.Spinner(0, 59, nowm, change_ms);
+        hs  = pggui.Spinner(0, 23, self.nowh, change_hs);
+        ms  = pggui.Spinner(0, 59, self.nowm, change_ms);
         dds = pggui.Spinner(0, 1000, durm, change_dds)
 
-        hs.set_value(nowh)
-        ms.set_value(nowm)
+        hs.set_value(self.nowh)
+        ms.set_value(self.nowm)
 
         def set_hs(val):
             #print("set_hs", val)
@@ -410,51 +409,56 @@ class CalEntry(Gtk.Window):
 
         #print("Keyval: ", event.keyval)
 
-        #    return #True
-
         if  event.type == Gdk.EventType.KEY_PRESS:
             if event.keyval == Gdk.KEY_Alt_L or \
                     event.keyval == Gdk.KEY_Alt_R:
                 self.alt = True;
-
         if event.keyval == Gdk.KEY_Tab:
             #print ("pedwin TREE TAB", event.keyval)
             pass
-
         if event.keyval == Gdk.KEY_Escape:
             #print (" ESC ", event.keyval)
             pass
-
         if event.keyval >= Gdk.KEY_1 and event.keyval <= Gdk.KEY_9:
             #print ("pedwin Alt num", event.keyval - Gdk.KEY_1)
             pass
-
         elif  event.type == Gdk.EventType.KEY_RELEASE:
             if event.keyval == Gdk.KEY_Alt_L or \
                   event.keyval == Gdk.KEY_Alt_R:
                 self.alt = False;
 
-    def make_workline(self):
+    def make_workline(self, xdat):
+        #print("work", xdat)
         hbox6s = Gtk.HBox()
         hbox6s.pack_start(pggui.Label(" "), 1, 1, 4)
         rarr = ["Personal", "Work",]
         self.scope = rarr[0]
+        cnt = 0
+        try:
+            for cnt, aa in enumerate(rarr):
+                if xdat[2][4] == aa:
+                   self.scope = aa
+                   break
+        except: pass
         def _radio(rad, strx):
             #print("scope set to:", strx)
             self.scope = strx
         radios = pggui.RadioGroup(rarr, _radio, True)
-        radios.set_check(0, 1)
+        radios.set_check(cnt, 1)
         hbox6s.pack_start(radios, 0, 0, 4)
         hbox6s.pack_start(pggui.Label(" "), 1, 1, 4)
         return hbox6s
 
-    def make_scriptline(self):
+    def make_scriptline(self, xdat):
+        print("make:script", xdat[4], xdat[5])
         hbox5s = Gtk.HBox()
         hbox5s.pack_start(pggui.Label(" "), 0, 0, 4)
         hbox5s.pack_start(pggui.Label(" Execute Script:"), 0, 0, 4)
         self.scrcheck = Gtk.CheckButton(label="Enabled")
         hbox5s.pack_start(self.scrcheck, 0, 0, 4)
         self.script = Gtk.Entry()
+        self.script.set_text(xdat[5])
+        self.scrcheck.set_active(xdat[4])
         hbox5s.pack_start(self.script, True, True, 4)
         self.browse = Gtk.Button.new_with_mnemonic("_Browse")
         #self.browse.connect("button-press-event", self.browsefunc)
@@ -515,9 +519,8 @@ class CalEntry(Gtk.Window):
             cald.xnowarr.append(int(ww.get_value()))
         #print()
         cald.xscript = self.scrcheck.get_active(), self.script.get_text()
-        cald.xuuid = self.uuid.hex
+        cald.xuuid = self.uuid
         cald.scope = self.scope
-
         #print("Saving:") ; print(str(cald))
         self.callb("OK", cald)
         self.destroy()
@@ -535,9 +538,3 @@ if __name__ == "__main__":
     print("This is a module file, use pycalgui.py")
 
 # EOF
-
-
-
-
-
-

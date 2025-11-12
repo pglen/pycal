@@ -364,11 +364,9 @@ if __name__ == "__main__":
     if config.verbose:
         print("Using calfname:", config.fname)
 
-    calnames = "astrocal.ics", "USHolidays.ics"
+    calnames = "astrocal.ics", "holidays.ics"
 
     #astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
-    #usafname = os.path.join(os.path.expanduser(calfile.locdir),   "us_en.ics")
-    #holfname = os.path.join(os.path.expanduser(calfile.locdir),   "US_Holidays.ics")
 
     #print("Started pyalagui")
     mainwin = MainWindow(config)
