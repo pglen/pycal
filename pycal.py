@@ -336,6 +336,10 @@ class CalCanvas(Gtk.DrawingArea):
                         arr5 = eval(arr5)
                     else:
                         arr5 = defa[:]
+                    if arr6:
+                        arr6 = eval(arr6)
+                    else:
+                        arr6 = False
 
                     def unpackx(*arrx):
                         res = arrx
@@ -344,7 +348,8 @@ class CalCanvas(Gtk.DrawingArea):
                                 [int(dd), int(mm),
                                 int(yy), int(HH), int(MM), int(dur)],
                                 [*aa[3:]], [ arr3, arr4, arr5 ], arr6, arr7 ]
-                    #print("reading carr", carr)
+                    if self.config.debug > 3:
+                         print("reading carr", carr)
                     arr.append(carr)
         return arr
 
@@ -694,33 +699,33 @@ class CalCanvas(Gtk.DrawingArea):
         if res != "OK":         # Cancel pressed
             return
         # See if append or ovewrite
-        done = False
-        if self.monarr:
-            for aa in range(len(self.monarr)):
-                flag = True
-                curr = self.monarr[aa]
-                for bb in range(len(curr[1])-1):
-                    #print("curr", curr[1][bb], cald.xnowarr[bb])
-                    if curr[1][bb] !=  cald.xnowarr[bb]:
-                        flag = False
-                        break
-                if flag:
-                    done = True
-                    #self.monarr[aa] = arrx
-                    #print("done_caldlg: insert")
-        if not done:
-            #self.monarr.append(arrx)
-            pass
-            #print("done_caldlg: append")
+        #done = False
+        #if self.monarr:
+        #    for aa in range(len(self.monarr)):
+        #        flag = True
+        #        curr = self.monarr[aa]
+        #        for bb in range(len(curr[1])-1):
+        #            #print("curr", curr[1][bb], cald.xnowarr[bb])
+        #            if curr[1][bb] !=  cald.xnowarr[bb]:
+        #                flag = False
+        #                break
+        #        if flag:
+        #            done = True
+        #            #self.monarr[aa] = arrx
+        #            #print("done_caldlg: insert")
+        #if not done:
+        #    #self.monarr.append(arrx)
+        #    pass
+        #    #print("done_caldlg: append")
         #printit(cald)
 
-        if self.config.debug > 1:
+        if self.config.debug > 2:
             print(cald)
 
         # Save to SQLite database
         key = self.make_key(cald.xnowarr)
 
-        if self.config.debug > 1:
+        if self.config.debug > 2:
             print("put:", key, cald.xuuid, *cald.txtarr, cald.scope)
         #if self.newx:
         self.sql.put(key, cald.xuuid, *cald.txtarr, cald.scope)
@@ -731,7 +736,7 @@ class CalCanvas(Gtk.DrawingArea):
         arry = []
         for aa in cald.xscript:
             arry.append(str(aa))
-        if self.config.debug > 1:
+        if self.config.debug > 2:
             print("put data:", cald.xuuid,  *arrz, *arry)
         self.sql.putdata(cald.xuuid, *arrz, *arry)
         self.invalidate()

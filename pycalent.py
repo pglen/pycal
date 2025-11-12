@@ -46,8 +46,6 @@ class CalAlaData():
             strx += aa + " = " + str(val) + "\n"
         return strx
 
-# ------------------------------------------------------------------------
-
 class CalEntry(Gtk.Window):
 
     def __init__(self, xxxx, yyyy, self2, callb = None, newx = False):
@@ -87,11 +85,8 @@ class CalEntry(Gtk.Window):
         #sss = ttt.strftime("%m-%d-%y")
         tnow = datetime.datetime.today()
         self.nowh = tnow.hour; self.nowm = tnow.minute
-
         title = "Calendar Item Entry"
-
         #print("CalEntry init", hx, hy)
-
         if self.newx or idx >= len(xdarrs):
             self.uuid = uuid.uuid4().hex
             xdarrs = []
@@ -101,9 +96,10 @@ class CalEntry(Gtk.Window):
             xdat = []
         else:
             xdat = xdarrs[idx]
-            print("xdat =")
-            for aa in xdat:
-                print(aa)
+            if self2.config.debug > 3:
+                print("xdat =")
+                for aa in xdat:
+                    print(aa)
 
             title += " %02d:%02d " % (xdat[1][3], xdat[1][4])
             self.uuid = xdat[0]
@@ -111,12 +107,10 @@ class CalEntry(Gtk.Window):
         self.connect("button-press-event", self.area_button)
         self.connect("key-press-event", self.area_key)
         self.connect("key-release-event", self.area_key)
-
         self.row = 0; self.col = 0
         vbox = Gtk.VBox();
 
-        # ----------------------------------------------------------------
-
+        # make GUI lines
         hbox5 = self.make_scriptline(xdat)
         hbox9 = self.make_workline(xdat) ; hbox5.pack_start(hbox9, 0, 0, 4)
 
@@ -126,9 +120,7 @@ class CalEntry(Gtk.Window):
         self.row = 0; self.col = 0
         self.ptab = self.make_ptab(ttt, xdarrs, idx)
 
-        # ----------------------------------------------------------------
         # Assemble all of it
-
         vbox.pack_start(hbox, 0, 0, 2)
         vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
 
@@ -174,8 +166,6 @@ class CalEntry(Gtk.Window):
         #self.set_keep_above(True)
 
         warnings.simplefilter("default")
-
-    # --------------------------------------------------------------------
 
     def make_dtab(self, ttt, xdarrs, idx, xdat):
 
@@ -265,8 +255,6 @@ class CalEntry(Gtk.Window):
             self.edit.set_text(xdarrs[idx][2][3])
 
         return hbox, dtab
-
-    # --------------------------------------------------------------------
 
     def make_ptab(self, ttt, xdarrs, idx):
 
@@ -372,7 +360,6 @@ class CalEntry(Gtk.Window):
         PATT(pgsel.MinSel(set_dds), self.col, self.col+1,  self.row, self.row + 1)
         self.col += 1
 
-        # ----------------------------------------------------------------------
         self.row += 1; self.col = 0
 
         PATT(pggui.Label("  "), self.col, self.col+1, self.row, self.row + 1)
@@ -397,13 +384,10 @@ class CalEntry(Gtk.Window):
                      Gtk.AttachOptions.EXPAND , Gtk.AttachOptions.EXPAND , 4, 4)
         self.col += 1
 
-        # ----------------------------------------------------------------------
         self.row += 1; self.col = 0
         self.nowarr = ((ds, mms, ys, hs, ms, dds))
 
         return ptab
-
-    # --------------------------------------------------------------------
 
     def area_key(self, area, event):
 
@@ -450,15 +434,17 @@ class CalEntry(Gtk.Window):
         return hbox6s
 
     def make_scriptline(self, xdat):
-        print("make:script", xdat[4], xdat[5])
+        #print("make_scriptline", xdat[4], xdat[5])
         hbox5s = Gtk.HBox()
         hbox5s.pack_start(pggui.Label(" "), 0, 0, 4)
         hbox5s.pack_start(pggui.Label(" Execute Script:"), 0, 0, 4)
         self.scrcheck = Gtk.CheckButton(label="Enabled")
         hbox5s.pack_start(self.scrcheck, 0, 0, 4)
         self.script = Gtk.Entry()
-        self.script.set_text(xdat[5])
-        self.scrcheck.set_active(xdat[4])
+        try:
+            self.script.set_text(xdat[5])
+            self.scrcheck.set_active(bool(xdat[4]))
+        except: pass
         hbox5s.pack_start(self.script, True, True, 4)
         self.browse = Gtk.Button.new_with_mnemonic("_Browse")
         #self.browse.connect("button-press-event", self.browsefunc)
@@ -468,10 +454,10 @@ class CalEntry(Gtk.Window):
 
     def browsefunc(self, event):
         fsel = calfsel.CalFsel(self, self.browse, event)
-        print("fname:", fsel.fname)
+        #print("calfsel fname:", fsel.fname)
         if fsel.fname:
             self.script.set_text(fsel.fname)
-            self.scrcheck.set_active(True)
+            #self.scrcheck.set_active(True)
 
     def okbut(self, buff):
 
@@ -518,7 +504,7 @@ class CalEntry(Gtk.Window):
             #print(ww.get_value(), end = " ")
             cald.xnowarr.append(int(ww.get_value()))
         #print()
-        cald.xscript = self.scrcheck.get_active(), self.script.get_text()
+        cald.xscript = (self.scrcheck.get_active(), self.script.get_text(),)
         cald.xuuid = self.uuid
         cald.scope = self.scope
         #print("Saving:") ; print(str(cald))
