@@ -379,7 +379,7 @@ if __name__ == "__main__":
 
     mainwin.cal.grab_focus()
     Gtk.main()
-    if config.debug > 1:
+    if config.debug > 2:
         print("Ended pyalagui")
     sys.exit(0)
 

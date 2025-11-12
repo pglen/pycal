@@ -1027,61 +1027,72 @@ class CalCanvas(Gtk.DrawingArea):
 
                         cr.stroke()
 
-    # --------------------------------------------------------------------
-    # Trigger alarms, if not done already
-    def pop_alarm(self, aa):
+    def pop_alarm(self, aa, subs):
+
+        ''' Trigger alarms, if not done already '''
+        print("Alarm:", aa, subs)
+        #return
+
         done = False
         for dd in self.donearr:
             if dd == aa[0]:
                 done = True
-
         if not done:
             self.donearr.append(aa[0])
-            dddd = str(aa[3][0][1]) + ":" + str(aa[3][0][2])
-            self.mainwin.logwin.append_logwin("Alarm at: %s %s %s\r" %
-                                    (dddd, aa[2][0], datetime.datetime.today().ctime()) )
+
+            #dddd = str(aa[3][0][1]) + ":" + str(aa[3][0][2])
+            #self.mainwin.logwin.append_logwin("Alarm at: %s %s %s\r" %
+            #                        (dddd, aa[2][0], datetime.datetime.today().ctime()) )
 
             #print("Alarm triggered", dddd)
             pyala.play_sound()
-            pyala.notify_sys(aa[2][0], aa[2][1], dddd)
-            pggui.message("\n" + aa[2][0] + "\n" + aa[2][1], title =  "Alarm at " + dddd)
+            pyala.notify_sys(aa, "", "")
+            pggui.message("\n" + aa[0] + "\n", title="Alarm at ") # + dddd)
 
             sys.stdout.write('\a')
             sys.stdout.flush()
 
+    def check_one(self, txt, tmpt, arra):
+
+        ''' Check one alarm '''
+
+        if not arra[0]:
+            #if self.config.debug > 1:
+            #    print("Not enabled", arra[0], arra[1], arra[2])
+            return
+        if self.config.debug > 1:
+            print("check:", arra)
+        # Is it now?
+        if arra[1] == tmpt.hour:
+            if arra[2] == tmpt.minute:
+                self.pop_alarm(arra, arra[3])
+
+        # Is it in the future?
+        if  arra[1] > tmpt.hour or \
+              arra[1] == tmpt.hour and arra[2] > tmpt.minute:
+                print("future:", arra[1], arra[2])
+                #print("future", aa)
+                #self.set_text(str(aa))
+                self.mainwin.mywin.set_title("Python Calendar -- next up: " \
+                    +  txt[0] + " at "  +  \
+                        "%02d:%02d" %(arra[1], arra[2]) )
     def eval_alarm(self):
 
         flag = False
-        tmp = datetime.datetime.today()
+        tmpt = datetime.datetime.today()
         if self.config.debug > 3:
-            print("eval_alarm", tmp.day, "-", tmp.month, "-", tmp.year,
-                                    tmp.hour, tmp.minute, tmp.second)
+            print("eval_alarm", tmpt.day, "-", tmpt.month, "-", tmpt.year,
+                                    tmpt.hour, tmpt.minute, tmpt.second)
         for aa in self.monarr:
-            #print("Data:", aa[1])
             # Is it today?
-            if aa[1][0] == tmp.day and aa[1][1] == tmp.month  \
-                    and aa[1][2] == tmp.year:
-                #if self.config.debug > 1:
-                #    print("Today", aa[1], aa[2])
-
-                # Enabled?
-                if aa[3][0][0]:
-                    if self.config.debug > 3:
-                        print("Enabled", aa[1], aa[2])
-                    # Is it now?
-                    if aa[1][3] == tmp.hour:
-                        if aa[1][4] == tmp.minute:
-                            self.pop_alarm(aa)
-
-                    # Is it in the future?
-                    if  aa[1][3] > tmp.hour or \
-                          aa[1][3] == tmp.hour and aa[1][4] > tmp.minute:
-                            print("future", aa[1][3], aa[1][4])
-                            #print("future", aa)
-                            #self.set_text(str(aa))
-                            self.mainwin.mywin.set_title("Python Calendar -- next up: " \
-                                +  aa[2][0] + " at "  +  \
-                                    str(aa[1][3]) + ":" + str(aa[1][4]))
+            if aa[1][0] == tmpt.day and aa[1][1] == tmpt.month  \
+                    and aa[1][2] == tmpt.year:
+                if self.config.debug > 2:
+                    print("Today", aa[2])
+                # Check all three
+                self.check_one(aa[2], tmpt, aa[3][0])
+                #self.check_one(aa[2],tmpt, aa[3][1])
+                #self.check_one(aa[2],tmpt, aa[3][2])
 
     def handler_tick(self):
 
