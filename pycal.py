@@ -7,6 +7,7 @@ from calendar import monthrange
 import pycalent, pycallog, pycalsql, calfile, pyala
 
 from pyvguicom import pggui, pgutils
+from calutils import *
 
 white_col = (255/255, 255/255, 255/255)
 grey_col  = (25/255, 55/255, 25/255)
@@ -40,106 +41,6 @@ daystr = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 monstr = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
             "Oct", "Nov", "Dec")
 
-def flatten(var):
-    strx = ""
-    try:
-        for aa in var:
-            strx += aa
-    except:
-        pass
-    strx = strx.replace("\\n", "\n")
-    strx = strx.replace("\\", "\n")
-    return strx
-
-def isiterable(p_object):
-
-    try:
-        it = iter(p_object)
-    except TypeError:
-        return False
-    return True
-
-def printit(varx, sp = " "):
-
-    print("printit")
-
-    if type(varx) == str:
-        print(sp, "'" + varx + "'", end = " ")
-    elif type(varx) == int:
-        print(sp, "(int)", varx, end = " ")
-    elif type(varx) == float:
-        print(sp, "(float)", varx, end = " ")
-    elif isiterable(varx):
-        for aa in varx:
-            printit(aa, sp + "  ")
-        print()
-    else:
-        print(sp, varx, end = " ")
-
-def get_rule_str(mmm, rr):
-
-    out = ""
-    mstr = "BYMONTH=" + mmm
-    if mstr in rr:
-        idx =  rr.find("BYDAY=")
-        if idx != -1:
-            idx += 6
-            #print("byday", rr[idx:])
-            idx2 =  rr[idx:].find(";")
-            if  idx2 == -1:
-                idx2 =  rr[idx:].find(";")
-            if  idx2 != -1:
-                out = rr[idx:idx+idx2]
-
-    #print("get_rule_str()", mmm, rr, "out=", out)
-    return out
-
-class CalPopup(Gtk.Window):
-
-    def __init__(self, strx):
-        Gtk.Window.__init__(self)
-        self.set_accept_focus(False); self.set_decorated(False)
-        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
-        self.connect("button-press-event", self.area_button)
-
-        self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#cfcfcf"))
-
-        vbox = Gtk.VBox(); hbox = Gtk.HBox()
-        lab = pggui.Label(strx)
-        lab.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#222222"))
-        hbox.pack_start(lab, 0, 0, 4)
-
-        vbox.pack_start(hbox, 0, 0, 4)
-        self.add(vbox)
-
-    def area_button(self, butt, arg):
-        #print("Button press in tooltip")
-        pass
-
-class Msgdlg(Gtk.Window):
-
-    def __init__(self, title, message, subject):
-        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
-        #self.set_transient_for(parent)
-        self.set_title(title)
-        self.vbox = Gtk.VBox()
-        self.vbox.pack_start(Gtk.Label.new(""), 1, 1, 4)
-        self.vbox.pack_start(Gtk.Label.new(message), 0, 0, 4)
-        self.vbox.pack_start(Gtk.Label.new(subject), 0, 0, 4)
-        self.vbox.pack_start(Gtk.Label.new(""), 1, 1, 4)
-        self.add(self.vbox)
-        self.set_default_size(300, 200)
-        #self.set_decorated(False)
-        #self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
-        self.connect("key-press-event", self.keypress)
-        self.show_all()
-
-    def keypress(self, win, key):
-        print("key", key.keyval)
-        if key.keyval == Gdk.KEY_Escape:
-            self.destroy()
-
-
 class CalCanvas(Gtk.DrawingArea):
 
     def __init__(self, config, xdate = None, statbox = None):
@@ -158,8 +59,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.sql = None
         self.moonarr = []
         self.usarr = []
-        self.donearr = []
-        self.donenext = []
+        self.donearr = self.donenext = []
         self.moon = True
         self.holy = True
         self.defc = True
@@ -1037,19 +937,20 @@ class CalCanvas(Gtk.DrawingArea):
     def pop_alarm(self, txt, arra):
 
         ''' Trigger alarms, if not done already '''
-        #return
-        if txt[0] not in self.donearr:
-            self.donearr.append(txt[0])
+
+        dddd = "%02d:%02d" % (arra[1], arra[2])
+        if txt[0] + dddd not in self.donearr:
+            self.donearr.append(txt[0] + dddd)
         else:
             return
 
         #print("Popping alarm:", txt, arra)
         self.mainwin.mywin.set_title("Python Calendar")
-        dddd = "%02d:%2d" % (arra[1], arra[2])
         self.mainwin.logwin.append_logwin("Alarm at: %s %s\r" % \
             (dddd, txt[0]))
 
-        print("Alarm triggered", dddd, arra)
+        #print("Alarm triggered", dddd, arra)
+
         if arra[3][0]:
             pyala.notify_sys(txt[0], txt[1], dddd)
         if arra[3][1]:
@@ -1057,8 +958,7 @@ class CalCanvas(Gtk.DrawingArea):
         if arra[3][2]:
             #pggui.message("\n" + txt[0] + "\n", title="Calendar Alarm")
             #threading.Thread(target=alarm_it).start()
-            ddd = Msgdlg("Calendar Alarm", txt[0], txt[1])
-
+            ddd = MsgDlg("Calendar Alarm at " + dddd, txt[0], txt[1])
         if arra[3][3]:
             sys.stdout.write('\a')
             sys.stdout.flush()
@@ -1083,12 +983,13 @@ class CalCanvas(Gtk.DrawingArea):
         if  arra[1] > tmpt.hour or \
               arra[1] == tmpt.hour and arra[2] > tmpt.minute:
 
-            if txt[0] not in self.donenext:
-                self.donenext.append(txt[0])
-                print("future:", arra[1], arra[2])
-                self.mainwin.mywin.set_title("Next alarm: " \
-                    +  "'" + txt[0][:12] + "'" + " at "  +  \
-                        "%02d:%02d" %(arra[1], arra[2]) )
+            if "Next" not in self.mainwin.mywin.get_title():
+                dddd = "%02d:%02d" % (arra[1], arra[2])
+                if txt[0] + dddd not in self.donenext:
+                    self.donenext.append(txt[0] + dddd)
+                    print("future:", dddd)
+                    self.mainwin.mywin.set_title("Next alarm: " \
+                        +  "'" + txt[0][:24] + "'" + " at " + dddd)
 
     def eval_alarm(self):
 
@@ -1105,8 +1006,8 @@ class CalCanvas(Gtk.DrawingArea):
                     print("Today", aa[2])
                 # Check all three
                 self.check_one(aa[2], tmpt, aa[3][0])
-                #self.check_one(aa[2],tmpt, aa[3][1])
-                #self.check_one(aa[2],tmpt, aa[3][2])
+                self.check_one(aa[2], tmpt, aa[3][1])
+                self.check_one(aa[2], tmpt, aa[3][2])
 
     def handler_tick(self):
 

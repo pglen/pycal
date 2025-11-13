@@ -402,6 +402,7 @@ class CalEntry(Gtk.Window):
             pass
         if event.keyval == Gdk.KEY_Escape:
             #print (" ESC ", event.keyval)
+            self.destroy()
             pass
         if event.keyval >= Gdk.KEY_1 and event.keyval <= Gdk.KEY_9:
             #print ("pedwin Alt num", event.keyval - Gdk.KEY_1)
