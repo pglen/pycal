@@ -22,28 +22,21 @@ from gi.repository import GLib
 #except:
 #    print("No notify subsystem")
 
-mydir = os.path.dirname(os.path.realpath(__file__))
+VERSION = "1.0.2"
+
+#mydir = os.path.dirname(os.path.realpath(__file__))
 #print("mydir", mydir)
-os.chdir(mydir)
+#os.chdir(mydir)
 
-try:
-    from pyvguicom import pgutils
-    moddir = os.path.dirname(os.path.realpath(pgutils.__file__))
-    #print("moddir", moddir)
-    sys.path.append(moddir)
-    #print(sys.path[-3:])
-except:
-    # Local
-    base = os.path.dirname(os.path.realpath(__file__))
-    moddir = os.path.join(base, "..", "pyvguicom")
-    moddir2 = os.path.join(base, "..", "pyvguicom", "pyvguicom")
-    #print("moddir", moddir)
-    sys.path.append(moddir)
-    sys.path.append(moddir2)
-    from pyvguicom import pgutils
+from pyvcal import calutils
+moddir = os.path.dirname(os.path.realpath(calutils.__file__))
+sys.path.append(moddir)
+from pyvcal import pyala, pycal, pycallog, calfile, comline
 
-from pyvguicom import pggui, pgutils, pgsimp, pgbox
-import pyala, pycal, pycallog, calfile
+from pyvguicom import pgutils
+moddir = os.path.dirname(os.path.realpath(pgutils.__file__))
+sys.path.append(moddir)
+from pyvguicom import pggui, pgsimp, pgbox
 
 class flydlg(Gtk.Window):
 
@@ -238,7 +231,7 @@ class MainWindow():
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.check4 = Gtk.CheckButton.new_with_label("Work  ");
+        self.check4 = Gtk.CheckButton.new_with_label("Work");
         self.check4.set_active(True)
         hbox.pack_start(self.check4, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
@@ -326,9 +319,10 @@ optx =  [
          ("t", "timing",     "b",   bool,  False, "Show timing details" ),
         ]
 
-if __name__ == "__main__":
+def  mainfunc():
 
-    import comline
+    global  config
+
     comline.prologue = "GUI for pycal."
     comline.epilogue = "Mandatory option arguments are for both short and long form."
     config = comline.parse(sys.argv, optx)
@@ -367,7 +361,6 @@ if __name__ == "__main__":
         print("Using calfname:", config.fname)
 
     calnames = "astrocal.ics", "holidays.ics"
-
     #astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
 
     #print("Started pyalagui")
@@ -384,5 +377,9 @@ if __name__ == "__main__":
     if config.debug > 2:
         print("Ended pyalagui")
     sys.exit(0)
+
+if __name__ == "__main__":
+
+    mainfunc()
 
 # EOF

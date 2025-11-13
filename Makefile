@@ -21,9 +21,16 @@ help:
 
 clean:
 	@rm -f __pycache__/*
+	@rm -rf build/*
 
 install:
 	@python3 ./install.py
+
+local-install:
+	pip install .
+
+local-uninstall:
+	pip uninstall pyvcal
 
 pack:
 	@./pack.sh
