@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 
-#from __future__ import print_function
-
-# ------------------------------------------------------------------------
-# Test client for the pyserv project. Encrypt test.
-
 import  os, sys, getopt, time, warnings, datetime
-
-#import  random, stat, os.path, , threading
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -22,15 +15,17 @@ from gi.repository import GLib
 #except:
 #    print("No notify subsystem")
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 
 #mydir = os.path.dirname(os.path.realpath(__file__))
-#print("mydir", mydir)
 #os.chdir(mydir)
+#print("mydir:", mydir)
+#for aa in sys.path:
+#    print(aa)
 
 from pyvcal import calutils
-moddir = os.path.dirname(os.path.realpath(calutils.__file__))
-sys.path.append(moddir)
+anchordir = os.path.dirname(os.path.realpath(calutils.__file__))
+sys.path.append(anchordir)
 from pyvcal import pyala, pycal, pycallog, calfile, comline
 
 from pyvguicom import pgutils
@@ -342,8 +337,8 @@ def  mainfunc():
         sys.exit(0)
 
     # Add icon files to config
-    config.icon = "images/pycal.png"
-    config.logicon = "images/pycal_log.png"
+    config.icon = "pyvcal/images/pycal.png"
+    config.logicon = "pyvcal/images/pycal_log.png"
 
     if config.debug > 5:
         for aa in dir(config):
@@ -361,7 +356,6 @@ def  mainfunc():
         print("Using calfname:", config.fname)
 
     calnames = "astrocal.ics", "holidays.ics"
-    #astrofname = os.path.join(os.path.expanduser(calfile.locdir), "astrocal.ics")
 
     #print("Started pyalagui")
     mainwin = MainWindow(config)
@@ -369,8 +363,8 @@ def  mainfunc():
     mainwin.logwin.append_logwin("Started app: %s\n" % (datetime.datetime.today().ctime()) )
     mainwin.cal.set_dbfile(config.fname, config)
 
-    mainwin.cal.set_moonfile(calnames[0])
-    mainwin.cal.set_usafile(calnames[1])
+    mainwin.cal.set_moonfile(anchordir + os.sep + "ics" + os.sep + calnames[0])
+    mainwin.cal.set_usafile(anchordir + os.sep + "ics" + os.sep + calnames[1])
 
     mainwin.cal.grab_focus()
     Gtk.main()

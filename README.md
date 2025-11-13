@@ -6,7 +6,7 @@ In (under) development. Most of it works ....
 
 Nice basis for any python calendar related project
 
-![Screen shot](images/pycal_screen.png "PyCal Screen Shot")
+![Screen shot](pyvcal/images/pycal_screen.png "PyCal Screen Shot")
 
 ## INSTALL
 

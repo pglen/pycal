@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 
-#from __future__ import print_function
-
-# ------------------------------------------------------------------------
-# Test client for the pyserv project. Encrypt test.
-
 import  os, sys
+
+import  getopt, signal, select, socket, time, struct
+import  random, stat, os.path, datetime, threading
+
+from pyvcal import calutils
+anchordir = os.path.dirname(os.path.realpath(calutils.__file__))
+sys.path.append(anchordir)
+from pyvcal import pyala, pycal, pycallog, calfile, comline
 
 from pyvguicom import pgutils
 moddir = os.path.dirname(os.path.realpath(pgutils.__file__))
 sys.path.append(moddir)
 
-import  getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading
-
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
-from gi.repository import Gdk
+#from gi.repository import Gtk
+#from gi.repository import Gdk
 
 try:
     gi.require_version('Notify', '0.7')
@@ -167,7 +167,7 @@ optx =  [
                  ("i", "interval",   "=",   int,   10,    "Time interval between scans" ),
             ]
 
-if __name__ == "__main__":
+def mainfunc():
 
     global config, sqldb
 
@@ -251,5 +251,8 @@ if __name__ == "__main__":
             print("Now: ", now)
         #time.sleep(60 - now.second)
         time.sleep(config.interval);
+
+if __name__ == "__main__":
+    mainfunc()
 
 # EOF

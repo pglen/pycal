@@ -20,8 +20,9 @@ help:
 	@echo
 
 clean:
-	find . -type d -name "__pycache__" -exec ls  {} \;
+	@find . -type d -name "__pycache__" -exec rm -f {}/* \;
 	@rm -rf build/*
+	@rm -rf pyvcal.egg-info/
 
 install:
 	@python3 ./install.py

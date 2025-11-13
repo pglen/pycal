@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-#from __future__ import print_function
-
-# ------------------------------------------------------------------------
-# Test client for the pyserv project. Encrypt test.
-
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 
@@ -13,13 +8,8 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-#gi.require_version('Notify', '0.7')
-#from gi.repository import Notify
-
-#from playsound import playsound
-
-caldir = "~/.local/share/evolution/calendar/system/"
-locdir = "~/.pycal/"
+#caldir = "~/.local/share/evolution/calendar/system/"
+#locdir = "~/.pycal/"
 
 def flatten(var):
     strx = ""

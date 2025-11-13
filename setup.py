@@ -29,17 +29,9 @@ def get_version(fname):
     #print("loc_vers:", loc_vers); sys.exit()
     return loc_vers
 
-def get_doclist():
-    doclist = []; droot = "docs/"
-    doclistx = os.listdir(droot)
-    for aa in doclistx:
-        doclist.append("docs/" + aa)
-    #print("doclist:", doclist) ; sys.exit()
-    return doclist
-
 deplist = ["pyvguicom"] ,
 
-includex = ["*", "pyvcal"]
+includex = ["pyvcal"]
 
 classx = [
           'Development Status :: Mature',
@@ -57,7 +49,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pyvcal",
-    version=get_version("pycalgui.py"),
+    version=get_version("pyvcalgui.py"),
     author="Peter Glen",
     author_email="peterglen99@gmail.com",
     description="Python Calendar.",
@@ -71,34 +63,28 @@ setuptools.setup(
     ],
     packages=setuptools.find_packages(include=includex),
 
-    scripts = ["pycalgui.py", "pycaldump.py", ],
+    scripts = ["pyvcalgui.py", "pyvcalala.py", ],
 
     include_package_data=True,
     package_data = {
-                   # "docs": get_doclist(),
-                   # "" : ["astrocal.ics2", "holiday.ics2",],
-                    "pyvcal" : get_doclist(),
-                    #['images/*.png', "astrocal.ics2", "holiday.ics2"],
+                    "pyvcal" : [
+                                "docs/*"
+                                "images/*.png"
+                                "ics/*.ics"
+                                ],
                   },
     package_dir = {
                     'pyvcal' : 'pyvcal',
                   },
-
-    #data_files =  [
-    #                ("pyvcal/images", ['images/pycal.png',])
-    #              ],
-
-    #py_modules = ['pyvcal'],
-
     install_requires=deplist,
     python_requires='>=3',
     entry_points={
-        'console_scripts': [
-                            "pycalgui=pycalgui:mainfunc",
-                            "pycaldump=pycaldump:mainfunc",
-                            ],
-    }
+        'console_scripts':
+            [
+            "pycalgui=pycalgui:mainfunc",
+            "pycalala=pycalala:mainfunc",
+            ],
+        }
 )
-
 
 # EOF
