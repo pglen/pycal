@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, time, sys, datetime, random, warnings
+import os, time, sys, datetime, random, warnings, threading
 
 from calendar import monthrange
 
@@ -116,6 +116,30 @@ class CalPopup(Gtk.Window):
         #print("Button press in tooltip")
         pass
 
+class Msgdlg(Gtk.Window):
+
+    def __init__(self, title, message, subject):
+        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
+        #self.set_transient_for(parent)
+        self.set_title(title)
+        self.vbox = Gtk.VBox()
+        self.vbox.pack_start(Gtk.Label.new(""), 1, 1, 4)
+        self.vbox.pack_start(Gtk.Label.new(message), 0, 0, 4)
+        self.vbox.pack_start(Gtk.Label.new(subject), 0, 0, 4)
+        self.vbox.pack_start(Gtk.Label.new(""), 1, 1, 4)
+        self.add(self.vbox)
+        self.set_default_size(300, 200)
+        #self.set_decorated(False)
+        #self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+        self.connect("key-press-event", self.keypress)
+        self.show_all()
+
+    def keypress(self, win, key):
+        print("key", key.keyval)
+        if key.keyval == Gdk.KEY_Escape:
+            self.destroy()
+
+
 class CalCanvas(Gtk.DrawingArea):
 
     def __init__(self, config, xdate = None, statbox = None):
@@ -135,6 +159,7 @@ class CalCanvas(Gtk.DrawingArea):
         self.moonarr = []
         self.usarr = []
         self.donearr = []
+        self.donenext = []
         self.moon = True
         self.holy = True
         self.defc = True
@@ -432,7 +457,7 @@ class CalCanvas(Gtk.DrawingArea):
     def set_date(self, dt):
 
         #print("set_date", dt)
-        pycallog.logwin.append_logwin("Set new date on cal: %s\n" % dt.ctime())
+        #pycallog.logwin.append_logwin("Set new date on cal: %s\n" % dt.ctime())
 
         self.donearr = []
         self.freeze = True
@@ -698,27 +723,6 @@ class CalCanvas(Gtk.DrawingArea):
 
         if res != "OK":         # Cancel pressed
             return
-        # See if append or ovewrite
-        #done = False
-        #if self.monarr:
-        #    for aa in range(len(self.monarr)):
-        #        flag = True
-        #        curr = self.monarr[aa]
-        #        for bb in range(len(curr[1])-1):
-        #            #print("curr", curr[1][bb], cald.xnowarr[bb])
-        #            if curr[1][bb] !=  cald.xnowarr[bb]:
-        #                flag = False
-        #                break
-        #        if flag:
-        #            done = True
-        #            #self.monarr[aa] = arrx
-        #            #print("done_caldlg: insert")
-        #if not done:
-        #    #self.monarr.append(arrx)
-        #    pass
-        #    #print("done_caldlg: append")
-        #printit(cald)
-
         if self.config.debug > 2:
             print(cald)
 
@@ -739,6 +743,9 @@ class CalCanvas(Gtk.DrawingArea):
         if self.config.debug > 2:
             print("put data:", cald.xuuid,  *arrz, *arry)
         self.sql.putdata(cald.xuuid, *arrz, *arry)
+
+        self.doneala = []; self.donenext = []
+
         self.invalidate()
 
     # --------------------------------------------------------------------
@@ -1027,55 +1034,62 @@ class CalCanvas(Gtk.DrawingArea):
 
                         cr.stroke()
 
-    def pop_alarm(self, aa, subs):
+    def pop_alarm(self, txt, arra):
 
         ''' Trigger alarms, if not done already '''
-        print("Alarm:", aa, subs)
         #return
+        if txt[0] not in self.donearr:
+            self.donearr.append(txt[0])
+        else:
+            return
 
-        done = False
-        for dd in self.donearr:
-            if dd == aa[0]:
-                done = True
-        if not done:
-            self.donearr.append(aa[0])
+        #print("Popping alarm:", txt, arra)
+        self.mainwin.mywin.set_title("Python Calendar")
+        dddd = "%02d:%2d" % (arra[1], arra[2])
+        self.mainwin.logwin.append_logwin("Alarm at: %s %s\r" % \
+            (dddd, txt[0]))
 
-            #dddd = str(aa[3][0][1]) + ":" + str(aa[3][0][2])
-            #self.mainwin.logwin.append_logwin("Alarm at: %s %s %s\r" %
-            #                        (dddd, aa[2][0], datetime.datetime.today().ctime()) )
-
-            #print("Alarm triggered", dddd)
+        print("Alarm triggered", dddd, arra)
+        if arra[3][0]:
+            pyala.notify_sys(txt[0], txt[1], dddd)
+        if arra[3][1]:
             pyala.play_sound()
-            pyala.notify_sys(aa, "", "")
-            pggui.message("\n" + aa[0] + "\n", title="Alarm at ") # + dddd)
+        if arra[3][2]:
+            #pggui.message("\n" + txt[0] + "\n", title="Calendar Alarm")
+            #threading.Thread(target=alarm_it).start()
+            ddd = Msgdlg("Calendar Alarm", txt[0], txt[1])
 
+        if arra[3][3]:
             sys.stdout.write('\a')
             sys.stdout.flush()
+        if arra[3][4]:
+            print("Email:")
 
     def check_one(self, txt, tmpt, arra):
 
         ''' Check one alarm '''
 
         if not arra[0]:
-            #if self.config.debug > 1:
-            #    print("Not enabled", arra[0], arra[1], arra[2])
             return
+
         if self.config.debug > 1:
             print("check:", arra)
         # Is it now?
         if arra[1] == tmpt.hour:
             if arra[2] == tmpt.minute:
-                self.pop_alarm(arra, arra[3])
+                self.pop_alarm(txt, arra)
 
         # Is it in the future?
         if  arra[1] > tmpt.hour or \
               arra[1] == tmpt.hour and arra[2] > tmpt.minute:
+
+            if txt[0] not in self.donenext:
+                self.donenext.append(txt[0])
                 print("future:", arra[1], arra[2])
-                #print("future", aa)
-                #self.set_text(str(aa))
-                self.mainwin.mywin.set_title("Python Calendar -- next up: " \
-                    +  txt[0] + " at "  +  \
+                self.mainwin.mywin.set_title("Next alarm: " \
+                    +  "'" + txt[0][:12] + "'" + " at "  +  \
                         "%02d:%02d" %(arra[1], arra[2]) )
+
     def eval_alarm(self):
 
         flag = False

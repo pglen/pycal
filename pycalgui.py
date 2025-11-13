@@ -54,11 +54,36 @@ class flydlg(Gtk.Window):
         self.add(Gtk.Label.new("\n\n      Press F11 to unfullscreen     \n\n") )
         self.set_modal(True)
         self.set_decorated(False)
+        self.set_keep_above(True)
         self.show_all()
-        GLib.timeout_add(1200, self.keytime)
+
+        GLib.timeout_add(2000, self.keytime)
 
     def keytime(self):
         self.destroy()
+
+class Msgdlg(Gtk.Window):
+
+    def __init__(self, title, message, subject):
+        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
+        #self.set_transient_for(parent)
+        self.set_title(title)
+        self.vbox = Gtk.VBox()
+        self.vbox.pack_start(Gtk.Label.new(""), 1, 1, 4)
+        self.vbox.pack_start(Gtk.Label.new(message), 0, 0, 4)
+        self.vbox.pack_start(Gtk.Label.new(subject), 0, 0, 4)
+        self.vbox.pack_start(Gtk.Label.new(""), 1, 1, 4)
+        self.add(self.vbox)
+        self.set_default_size(300, 200)
+        #self.set_decorated(False)
+        #self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+        self.connect("key-press-event", self.keypress)
+        self.show_all()
+
+    def keypress(self, win, key):
+        print("key", key.keyval)
+        if key.keyval == Gdk.KEY_Escape:
+            self.destroy()
 
 # ------------------------------------------------------------------------
 #  Define Application Main Window claass
