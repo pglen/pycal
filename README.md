@@ -1,20 +1,40 @@
-# Python Calendar - pycalgui
+# Python Calendar - pyvcalgui
 
-## Calendar with alarms and queue monitor ability ... plus the usual features
+## Monthly calendar with alarms
 
-In (under) development. Most of it works ....
+... Plus command line queue monitor
 
 Nice basis for any python calendar related project
 
+## Features
+
+    * Three alarms per entry
+    * Hot keys for frequent operations
+    * Configurable Notify / Popup / Sound / Command Exe
+
+## Main Calendar Screen:
+
 ![Screen shot](pyvcal/images/pycal_screen.png "PyCal Screen Shot")
 
-## INSTALL
+## Data Entry Screen:
 
-### Usual gi installs plus:
+![Screen shot](pyvcal/images/pycal_dialog.png "PyCal Entry Dialog Screen Shot")
 
-sudo apt-get install gir1.2-notify-0.7
+## Installation:
 
-# EOF
+### Usual gi install plus:
+
+    sudo apt-get install gir1.2-notify-0.7
+
+Also:
+
+    pip install pyvcal
+
+Calendar data in ~/.pycal/caldata.sql
+
+Most of it works .... still needs some TLC
+
+// # EOF
 
 
 
