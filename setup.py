@@ -38,7 +38,8 @@ def get_doclist():
     return doclist
 
 deplist = ["pyvguicom"] ,
-includex = ["pyvcal"]
+
+includex = ["*", "pyvcal"]
 
 classx = [
           'Development Status :: Mature',
@@ -65,7 +66,7 @@ setuptools.setup(
     url="https://github.com/pglen/pycal",
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        #"License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     packages=setuptools.find_packages(include=includex),
@@ -73,16 +74,15 @@ setuptools.setup(
     scripts = ["pycalgui.py", "pycaldump.py", ],
 
     include_package_data=True,
-    package_dir = {
-                    'pyvcal' : 'pyvcal',
-                    'images' : 'pyvcal/images',
-                  },
     package_data = {
                    # "docs": get_doclist(),
-                    "pyvcal" : ["astrocal.ics", "holiday.ics",],
-                    "pyvcal/images" : ['images/*.png',],
+                   # "" : ["astrocal.ics2", "holiday.ics2",],
+                    "pyvcal" : get_doclist(),
+                    #['images/*.png', "astrocal.ics2", "holiday.ics2"],
                   },
-
+    package_dir = {
+                    'pyvcal' : 'pyvcal',
+                  },
 
     #data_files =  [
     #                ("pyvcal/images", ['images/pycal.png',])

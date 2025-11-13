@@ -20,7 +20,7 @@ help:
 	@echo
 
 clean:
-	@rm -f __pycache__/*
+	find . -type d -name "__pycache__" -exec ls  {} \;
 	@rm -rf build/*
 
 install:
