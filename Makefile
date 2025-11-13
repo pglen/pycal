@@ -23,6 +23,7 @@ clean:
 	@find . -type d -name "__pycache__" -exec rm -f {}/* \;
 	@rm -rf build/*
 	@rm -rf pyvcal.egg-info/
+	@rm -f README.preview.html
 
 install:
 	@python3 ./install.py

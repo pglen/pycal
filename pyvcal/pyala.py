@@ -75,6 +75,9 @@ def notify_sys(alname, alsub, ddd = ""):
     nnn.set_timeout(0)
     nnn.show()
 
+
+'''
+
 def is_alarm_time(td2, aa):
 
     ret = False
@@ -251,5 +254,6 @@ if __name__ == "__main__":
             print("Now: ", now)
         #time.sleep(60 - now.second)
         time.sleep(config.interval);
+'''
 
 # EOF

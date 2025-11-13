@@ -1,14 +1,7 @@
 import setuptools
 
 descx = '''
-
   Python calendar
-
-    #"calfile.py",  "calutils.py",  "pyala.py",
-    #"pycal.py", "calfsel.py", "comline.py", "pycalent.py",
-    #"pycallog.py",  "pycalsql.py",
-    #],
-
 '''
 
 import os, sys
