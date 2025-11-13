@@ -7,6 +7,8 @@
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+.PHONY: docs
+
 all:
 	@echo "Type 'make help' for a list of targets"
 
@@ -43,11 +45,18 @@ git:
 	git push
 	#git push local
 
+PPP=PYTHONPATH=pyvcal:./:../pyvguicom/pyvguicom python3 -W ignore::DeprecationWarning `which pdoc` --force --html
+
+docs:
+	@${PPP} -o pyvcal/docs/ pyvcalgui.py
+	@${PPP} -o pyvcal/docs/ pyvcal/calfile.py
+	@${PPP} -o pyvcal/docs/ pyvcal/comline.py
+	@${PPP} -o pyvcal/docs/ pyvcal/pycalent.py
+	@${PPP} -o pyvcal/docs/ pyvcal/pycalsql.py
+	@${PPP} -o pyvcal/docs/ pyvcal/calfsel.py
+	@${PPP} -o pyvcal/docs/ pyvcal/pycallog.py
+	@${PPP} -o pyvcal/docs/ pyvcal/calutils.py
+	@${PPP} -o pyvcal/docs/ pyvcal/pyala.py
+	@${PPP} -o pyvcal/docs/ pyvcal/pycal.py
+
 # End of Makefile
-
-
-
-
-
-
-

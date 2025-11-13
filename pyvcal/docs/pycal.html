@@ -1,0 +1,3254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>pycal API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pycal</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python3
+
+import os, time, sys, datetime, random, warnings, threading
+
+from calendar import monthrange
+
+import pycalent, pycallog, pycalsql, calfile, pyala
+
+from pyvguicom import pggui, pgutils
+from calutils import *
+
+white_col = (255/255, 255/255, 255/255)
+grey_col  = (25/255, 55/255, 25/255)
+lgrey_col = (125/255, 125/255, 125/255)
+blue_col  = (230/255, 230/255, 255/255)
+dblue_col = (88/255, 88/255, 100/255)
+lgree_col = (150/255, 255/255, 150/255)
+
+# Spec:
+
+&#39;&#39;&#39;MINYEAR &lt;= year &lt;= MAXYEAR,
+        1 &lt;= month &lt;= 12,
+        1 &lt;= day &lt;= number of days in the given month and year,
+        0 &lt;= hour &lt; 24,
+        0 &lt;= minute &lt; 60,
+        0 &lt;= second &lt; 60,
+        0 &lt;= microsecond &lt; 1000000,&#39;&#39;&#39;
+
+import gi; gi.require_version(&#34;Gtk&#34;, &#34;3.0&#34;)
+from gi.repository import Gtk, Gdk
+from gi.repository import GObject
+from gi.repository import GLib
+from gi.repository import Pango
+from gi.repository import cairo
+
+gi.require_version(&#39;PangoCairo&#39;, &#39;1.0&#39;)
+from gi.repository import PangoCairo
+
+dayidx = &#34;MO&#34;, &#34;TU&#34;, &#34;WE&#34;, &#34;TH&#34;, &#34;FR&#34;, &#34;SA&#34;, &#34;SU&#34;
+daystr = (&#34;Mon&#34;, &#34;Tue&#34;, &#34;Wed&#34;, &#34;Thu&#34;, &#34;Fri&#34;, &#34;Sat&#34;, &#34;Sun&#34;)
+monstr = (&#34;Jan&#34;, &#34;Feb&#34;, &#34;Mar&#34;, &#34;Apr&#34;, &#34;May&#34;, &#34;Jun&#34;, &#34;Jul&#34;, &#34;Aug&#34;, &#34;Sep&#34;,
+            &#34;Oct&#34;, &#34;Nov&#34;, &#34;Dec&#34;)
+
+class CalCanvas(Gtk.DrawingArea):
+
+    def __init__(self, config, xdate = None, statbox = None):
+        Gtk.DrawingArea.__init__(self)
+        self.statbox = statbox
+        self.config = config
+        self.mouevent = self.dlg = None
+        self.xtext = self.darr = self.monarr = self.coll = []
+        self.old_hx = 0; self.old_hy = 0; self.fired = 0;
+        self.popped = self.cnt = 0
+        self.shx, self.shy = (-1, -1)
+        self.drag = self.resize = None
+        self.dragcoord = (0,0)
+        self.size2 = (0,0)
+        self.noop_down = False
+        self.sql = None
+        self.moonarr = []
+        self.usarr = []
+        self.donearr = self.donenext = []
+        self.moon = True
+        self.holy = True
+        self.defc = True
+        self.scrollday = 0
+        self.ign = 0
+
+        if not xdate:
+            self.set_date(datetime.datetime.today())
+        else:
+            self.set_date(date)
+
+        tmp = datetime.datetime.today()
+        self.zdate = datetime.datetime(tmp.year, tmp.month, tmp.day)
+
+        self.set_can_focus(True)
+        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
+
+        self.connect(&#34;draw&#34;, self.draw_event)
+        self.connect(&#34;motion-notify-event&#34;, self.area_motion)
+        self.connect(&#34;button-press-event&#34;, self.area_button)
+        self.connect(&#34;button-release-event&#34;, self.area_button)
+        self.connect(&#34;key-press-event&#34;, self.keypress)
+
+        self.fd = Pango.FontDescription()
+        self.pangolayout = self.create_pango_layout(&#34;a&#34;)
+        self._cursors()
+
+        global handler_tick
+        GLib.timeout_add(1000, self.handler_tick) #, self)
+
+    def keypress(self, win, event):
+
+        ret = False
+        #print (&#34;key&#34;, event.string, &#34;val&#34;, event.keyval, &#34;state&#34;, event.state)
+        #print(&#34;hw&#34;, event.hardware_keycode)
+
+        #if  event.state &amp; Gdk.ModifierType.SHIFT_MASK:
+        #    print(&#34;SHIFT&#34;)
+        #if  event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+        #    print(&#34;CONTROL&#34;)
+        #if  event.state &amp; Gdk.ModifierType.MOD1_MASK:
+        #    print(&#34;ALT&#34;)
+
+        if event.keyval == Gdk.KEY_Up:
+            #print(&#34;Up&#34;)
+            ret = True
+        if event.keyval == Gdk.KEY_Down:
+            #print(&#34;Down&#34;)
+            ret = True
+        if event.keyval == Gdk.KEY_Left:
+            #print(&#34;Left&#34;)
+            ret = True
+        if event.keyval == Gdk.KEY_Right:
+            #print(&#34;Right&#34;)
+            ret = True
+
+        return ret
+
+    def invalidate(self):
+        #print(&#34;Invalidate calendar&#34;)
+        self.set_date(self.xdate)
+
+    # --------------------------------------------------------------------
+    def set_dbfile(self, dbfile, config):
+        self.dbfile = dbfile
+        try:
+            self.sql = pycalsql.CalSQLite(self.dbfile, config)
+        except:
+            print(&#34;Cannot make/open calendar database.&#34;)
+        self.monarr = self.get_month_data()
+
+    def set_moonfile(self, moonfile):
+        self.moonarr = calfile.eval_file(moonfile)
+        self.monarr += self.get_cal_data(self.moonarr)
+
+    def set_usafile(self, usafile):
+        self.usarr = calfile.eval_file(usafile, 0)
+        self.monarr += self.get_cal_data(self.usarr)
+
+    def set_holfile(self, holfile):
+        self.holarr = calfile.eval_file(holfile)
+        self.monarr += self.get_cal_data(self.holarr )
+
+    def _cursors(self):
+        disp =  self.get_display()
+        self.hand = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.HAND1)
+        self.arrow = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.ARROW)
+        self.sizing =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.SIZING)
+        self.cross =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.TCROSS)
+        self.hair =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.CROSSHAIR)
+
+    # Internal function to set up current month
+
+    def __calc_curr(self):
+
+        # Pre-calculate stuff (will be updated on paint)
+        self.rect = self.get_allocation()
+        self.head =  self.rect.height // 10
+        newheight = self.rect.height - self.head
+
+        pitchx = (self.rect.width) // 7; pitchy = newheight // 6;
+        newheight = self.rect.height - self.head
+
+        #print(&#34;show date:&#34;, self.xdate, daystr[self.xdate.weekday()])
+        ydate =  datetime.datetime(self.xdate.year, self.xdate.month, 1)
+        self.smonday = ydate.weekday()
+
+        #print (&#34;ydate&#34;, ydate, &#34;Month starts: &#34;, daystr[self.smonday])
+        self.mlen = monthrange(self.xdate.year, self.xdate.month)[1]
+        #print (&#34;mlen&#34;, self.mlen)
+
+        mmm  =  self.xdate.month-1; yyy  = self.xdate.year
+        if mmm == 0:
+            mmm = 12;  yyy -= 1
+        self.mlen2 = monthrange(yyy, mmm)[1]
+        #print (&#34;mlen&#34;, self.mlen, &#34;mlen2&#34;, self.mlen2)
+
+        # Simulate new data
+        self.xtext = []
+        for aa in range(7):
+            self.xtext.append( [] )
+            last = self.xtext[len(self.xtext)-1]
+
+            &#39;&#39;&#39;for bb in range(6):
+                last.append( [] )
+                # Pre fill random strings
+                for cc in range(random.randint(2,12)):
+                    last2 = last[len(last)-1]
+                    xstr = &#34;%d - %d : %d &#34; % (aa, bb, cc)
+                    xstr += pgutils.randstr(random.randint(5,140))
+                    last2.append(xstr)
+             &#39;&#39;&#39;
+        self.darr = []
+        for aa in range(7):
+            self.darr.append( [] )
+            lastd = self.darr[len(self.darr)-1]
+            for bb in range(6):
+                # Manipulate count as month parameters
+                nnn = aa  + (bb * 7) - self.smonday; ttt = None; pad = 0;
+                if nnn &lt;  0:
+                    pad = 1
+                    nnn = self.mlen2 + nnn
+                    m2 = self.xdate.month - 1; y2 = self.xdate.year
+                    if m2 &lt; 1: y2 -= 1; m2 = 12
+                    ttt = datetime.datetime(y2, m2, nnn+1)
+                elif nnn &gt;= self.mlen:
+                    pad = 2
+                    nnn %= self.mlen
+                    m2 = self.xdate.month + 1; y2 = self.xdate.year
+                    if m2 &gt; 12: y2 += 1; m2 = 1
+                    ttt = datetime.datetime(y2, m2, nnn+1)
+                else:
+                    pad = 0
+                    ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn+1)
+
+                xx = aa * pitchx;  yy = bb * pitchy + self.head
+                lastd.append((nnn, ttt, pad, xx, yy))
+
+        #print(self.xtext)
+
+    # --------------------------------------------------------------------
+    def get_month_data(self):
+
+        arr = []
+        if not self.sql:
+            return arr
+
+        # Get padded (OK) days
+        for aa in range(7):
+            lastd = self.darr[aa]
+            for bb in lastd:
+                if bb[2]:
+                    continue
+                ddd = bb[1]
+                key = &#34;%02d-%02d-%02d %%&#34; % (ddd.day, ddd.month, ddd.year)
+                # Get it from the DB
+                arr2 = self.sql.get(key)
+                if not arr2:
+                    continue
+                #print(&#34;sql.get key&#34;, key, &#34;got sql&#34;, arr2)
+                for aa in arr2:
+                    #print(&#34;sql.got&#34;, aa)
+                    ttt = aa[1].split(&#34; &#34;)
+                    (dd, mm, yy) = ttt[0].split(&#34;-&#34;)
+                    (HH, MM) = ttt[1].split(&#34;:&#34;)
+                    dur = ttt[2]
+                    arr3, arr4, arr5, arr6, arr7 = self.sql.getdata(aa[2])
+                    #print(&#34;sql.getdata:&#34;, arr3, arr4, arr5, arr6, arr7)
+                    defa = ( False, 0, 0, [False, False, False, False, False])
+                    if arr3:
+                        arr3 = eval(arr3)
+                    else:
+                        arr3 = defa[:]
+                    if arr4:
+                        arr4 = eval(arr4)
+                    else:
+                        arr4 = defa[:]
+                    if arr5:
+                        arr5 = eval(arr5)
+                    else:
+                        arr5 = defa[:]
+                    if arr6:
+                        arr6 = eval(arr6)
+                    else:
+                        arr6 = False
+
+                    def unpackx(*arrx):
+                        res = arrx
+                        return res
+                    carr = [aa[2],
+                                [int(dd), int(mm),
+                                int(yy), int(HH), int(MM), int(dur)],
+                                [*aa[3:]], [ arr3, arr4, arr5 ], arr6, arr7 ]
+                    if self.config.debug &gt; 3:
+                         print(&#34;reading carr&#34;, carr)
+                    arr.append(carr)
+        return arr
+
+    # --------------------------------------------------------------------
+    def get_cal_data(self, arrx):
+
+        #print(&#34;get_cal_data() arrx&#34;, arrx)
+        arr = []
+
+        # Blank the alarm fields
+        arr3 = [ False, 0, 0, [False, False, False, False, False]]
+        arr4 = [ False, 0, 0, [False, False, False, False, False]]
+        arr5 = [ False, 0, 0, [False, False, False, False, False]]
+
+        # Process rules for the month
+        for aa in arrx:
+            if aa[6]:
+                rr =  flatten(aa[6])
+                if &#34;FREQ=YEARLY&#34; in rr:
+                    rule = get_rule_str(str(self.xdate.month), rr)
+                    if rule:
+                        zdate = None
+                        #print(&#34;byday args:&#34;, rr, &#34;&#39;&#34; + rule + &#34;&#39;&#34;)
+                        roffs = int(rule[:-2])
+                        dd = 0; cnt = 0
+                        for cc in dayidx:
+                            if cc == rule[-2:]:
+                                dd = cnt
+                                break
+                            cnt += 1
+                        #print(&#34;day&#34;, roffs, &#34;num&#34;, rule[-2:], &#34;dd&#34;, dd)
+                        mr = monthrange(self.xdate.year, self.xdate.month)[1]
+                        if roffs &gt;= 0:
+                            for bb in range(1, mr + 1):
+                                zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                                #print(&#34;zdate&#34;, zdate, zdate.weekday())
+                                if zdate.weekday() == dd:
+                                    #print (&#34;encountered&#34;, zdate, zdate.weekday())
+                                    roffs -= 1
+                                    if roffs == 0:
+                                        #print (&#34;Set&#34;, zdate, zdate.weekday(), aa[0])
+                                        break
+                        else:
+                            for bb in range(mr, 0, -1):
+                                zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                                #print(&#34;zdate&#34;, zdate, zdate.weekday())
+                                if zdate.weekday() == dd:
+                                    #print (&#34;encountered&#34;, zdate, zdate.weekday())
+                                    roffs += 1
+                                    if roffs == 0:
+                                        #print (&#34;Set&#34;, zdate, zdate.weekday(), aa[0])
+                                        break
+
+                        if zdate:
+                            carr = [&#34;&#34;, [ zdate.day, zdate.month, zdate.year,
+                                                zdate.hour, zdate.minute, 0 ],
+                                   [flatten(aa[0]), &#34;&#34;, &#34;&#34;, flatten(aa[5]) ],
+                                   [ arr3, arr4, arr5 ]  ]
+                            arr.append(carr)
+
+            try:
+                if self.xdate.year == aa[1].year and \
+                        self.xdate.month == aa[1].month:
+
+                    #print(&#34;day arr&#34;, aa)
+                    #print(aa[1].year, aa[1].month, aa[1].day, &#34;\nsum:&#34;,
+                    #                flatten(aa[0]), &#34;\ndesc:&#34;, flatten(aa[5]) )
+
+                    carr = [&#34;&#34;, [ aa[1].day, aa[1].month, aa[1].year,
+                                            aa[1].hour, aa[1].minute, 0 ],
+                               [flatten(aa[0]), &#34;&#34;, &#34;&#34;, flatten(aa[5]) ],
+                               [ arr3, arr4, arr5 ]  ]
+                    arr.append(carr)
+
+            except:
+                print(&#34;Cannot parse:&#34;, sys.exc_info())
+                print( &#34;aa&#34;, aa)
+        return arr
+
+    def set_date(self, dt):
+
+        #print(&#34;set_date&#34;, dt)
+        #pycallog.logwin.append_logwin(&#34;Set new date on cal: %s\n&#34; % dt.ctime())
+
+        self.donearr = []
+        self.freeze = True
+        self.xdate = dt
+        self.__calc_curr()
+        self.freeze = False
+
+        self.monarr = self.get_month_data()
+
+        if self.moon:
+            self.monarr += self.get_cal_data(self.moonarr)
+
+        if self.holy:
+            self.monarr += self.get_cal_data(self.usarr)
+
+        self.queue_draw()
+
+    # Return where the hit is
+    def hit_test(self, px, py):
+        newheight = self.rect.height - self.head
+        pitchx = (self.rect.width) // 7;
+        pitchy = newheight // 6;
+        py2 = int(py) - self.head
+        #print(&#34;px&#34;, px, &#34;pitchy&#34;, pitchy)
+        aa = 0; bb = 0
+        try: aa = int(px) // pitchx;
+        except: pass
+        try: bb =  py2 // pitchy;
+        except: pass
+        return aa, bb
+
+    def dest_me(self):
+        print(&#34;Destroying ...&#34;)
+        #self.get_root_window().set_cursor(self.arrow)
+
+    def show_status(self, strx):
+        if self.statusbar:
+            self.statusbar.set_text(strx)
+
+    def keytime(self):
+        #print( &#34;keytime raw&#34;, time.time(), self.fired)
+        if self.dlg:
+            return
+
+        if self.fired ==  1:
+            if not self.popped:
+                mx, my = self.get_pointer()
+                #print(&#34;mx, my &#34;, mx, my)
+
+                # Is mouse in cal?
+                if mx &gt; 0 and my &gt; self.head and mx &lt; self.rect.width and my &lt; self.rect.height:
+                    self.popped = True
+                    hx, hy = self.hit_test(mx, my)
+                    strx = &#34;%d %d \n&#34; % (hx, hy)
+                    try:
+                        arr = self.xtext[hx][hy]
+                        for sss in arr:
+                            if len(sss) &gt; 36:
+                                sss = sss[:34] + &#34; ... &#34;
+                            strx += sss + &#34;\n&#34;
+
+                        self.tt = CalPopup(strx)
+
+                        # Calculate self absolute (screen) position
+                        posx, posy = self.mainwin.mywin.get_position()
+                        #print(&#34;posx, posy&#34;, posx, posy)
+
+                        self.tt.move(posx + mx, posy + my + self.head)
+                        #self.tt.move(posx + mx - 12, posy + my + self.head - 12)
+                        self.tt.show_all()
+                    except:
+                        #print(sys.exc_info())
+                        #pgutils.put_exception(&#34;key_time&#34;)
+                        pass
+
+        self.fired -= 1
+
+    def area_motion(self, area, event):
+        #print (&#34;motion event&#34;, event.state, event.x, event.y)
+        self.mouevent = event
+
+        &#39;&#39;&#39;if event.state &amp; Gdk.ModifierType.SHIFT_MASK:
+                    print( &#34;Shift ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+                if event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+                    print( &#34;Ctrl ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+                if event.state &amp; Gdk.ModifierType.MOD1_MASK :
+                    print( &#34;Alt ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+                &#39;&#39;&#39;
+
+        if self.popped:
+            try:
+                self.tt.destroy()
+            except:
+                #pgutils.put_exception(&#34;motion popped&#34;)
+                #print(sys.exc_info())
+                pass
+
+            self.popped = False
+        else:
+            self.fired += 1
+            GLib.timeout_add(600, self.keytime)
+
+        hx, hy = self.hit_test(int(event.x), int(event.y))
+        #print(&#34;hx&#34;, hx, self.old_hx, &#34;hy&#34;, hy,self.old_hy)
+        #print(&#34;Hit&#34;, hx, hy, self.xtext[hx + 7 * hy])
+
+        if (self.old_hx != hx or self.old_hy != hy):
+            #print(&#34;Delta&#34;, hx, hy)
+            self.scrollday = 0
+            self.queue_draw()
+
+        self.old_hx = hx; self.old_hy = hy
+
+    # --------------------------------------------------------------------
+
+    def area_button(self, area, event):
+        self.mouevent = event
+        #self.mouse = Rectangle(event.x, event.y, 4, 4)
+        #print( &#34;Button&#34;, event.button, &#34;state&#34;, event.state, &#34; x =&#34;, event.x, &#34;y =&#34;, event.y)
+
+        mods = event.state &amp; Gtk.accelerator_get_default_mod_mask()
+
+        if(mods &amp; Gdk.ModifierType.MOD1_MASK):
+            #print(&#34;Modifier ALT&#34;,  event.state)
+            pass
+        if event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+            #print( &#34;Ctrl ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+            pass
+        elif  event.type == Gdk.EventType.BUTTON_PRESS:
+            #print(&#34;Single click&#34;, event.button)
+            if event.button == 1:
+                hit = pggui.Rectangle(event.x, event.y, 2, 2)
+
+                if self.tri_2 != []:
+                    #print(&#34;Got tri2&#34;, self.tri_2)
+                    rrr = pggui.Rectangle(self.tri_2)
+                    if rrr.intersect(hit)[0]:
+                        #print(&#34;Click in tri 2&#34;)
+                        self.scrollday += 1
+                        self.invalidate()
+                        self.ign += 1
+                        return
+
+                if self.tri_1 != []:
+                    #print(&#34;Got tri1&#34;, self.tri_1)
+                    rrr = pggui.Rectangle(self.tri_1)
+                    if rrr.intersect(hit)[0]:
+                        #print(&#34;Click in tri 1&#34;)
+                        if  self.scrollday &gt; 0:
+                            self.scrollday -= 1
+                        self.invalidate()
+                        self.ign += 1
+                        return
+
+                self.ign = 0
+                self.shx, self.shy = self.hit_test(event.x, event.y)
+
+            if event.button == 3:
+                if self.popped:
+                    try:    self.tt.destroy()
+                    except: pass
+                hx, hy = self.hit_test(event.x, event.y)
+                #print(&#34;hx, hY&#34;, hx, hy)
+                (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+                sdd = ttt.strftime(&#34;%a %d-%b-%Y&#34;)
+                warnings.simplefilter(&#34;ignore&#34;)
+                self.menu = pggui.Menu((&#34;Selection: %s&#34; % sdd, &#34;New Calendar Entry&#34;,
+                                            &#34;Edit entry&#34;, &#34;Delete Entry&#34;),
+                                                self.menucb, event)
+                warnings.simplefilter(&#34;default&#34;)
+
+            self.queue_draw()
+
+        elif  event.type == Gdk.EventType.BUTTON_RELEASE:
+            self.drag = None
+            self.resize = None
+            self.noop_down = False
+            #self.get_root_window().set_cursor(self.arrow)
+
+        elif  event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+
+            if self.ign:
+                self.ign -= 1
+                return
+
+            #print(&#34;DBL click&#34;, event.x, event.y)
+            if event.button == 1:
+                if self.popped:
+                    try:    self.tt.destroy()
+                    except: pass
+                    self.popped = False
+
+                hx, hy = self.hit_test(event.x, event.y)
+                (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+                if not pad:
+                    self.dlg = pycalent.CalEntry( \
+                                event.x, event.y, self, self.done_caldlg)
+
+    def menucb(self, txt, cnt):
+        #print (&#34; txt cnt&#34;, txt, txt)
+        xxx = self.menu.event.x;  yyy = self.menu.event.y
+
+        hx, hy = self.hit_test(xxx, yyy)
+        (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+
+        if cnt == 1:
+            #print(&#34;New entry&#34;)
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+                self.popped = False
+            if not pad:
+                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg, True)
+        if cnt == 2:
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+                self.popped = False
+            if self.config.debug &gt; 3:
+                print(&#34;Editing entry:&#34;,  nnn, &#34;-&#34;, ttt, &#34;-&#34;, pad, xx, yy)
+            if not pad:
+                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
+
+        if cnt == 3:
+            # This was the font height on draw ...
+            hhh2 = self.rect.height / 60; hhh2 = min(hhh2, 12) + 6
+            xdarr = self.get_daydat(ttt)
+            xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
+            idx = int(((yyy - (hhh2 + 4)) - yy) // hhh2) + self.scrollday
+            #print(&#34;len&#34;, len(xdarrs), &#34;idx&#34;, idx)
+            msg = &#34;\n&#34;
+            if idx &gt;= len(xdarrs):
+                pggui.message(      &#34;\nNot pointing to valid Item or&#34;
+                                    &#34;\nItem not in personal calendar.&#34;
+                                    &#34;\nPlease select a deletable item.&#34;)
+                return
+            else:
+                xdat = xdarrs[idx]
+                if self.config.debug &gt; 3:
+                    print(&#34;Deleting entry&#34;, xdat)
+                sdd = ttt.strftime(&#34;%a %d-%b-%Y&#34;)
+                sdd +=  &#34; %02d:%02d&#34; %  (xdat[1][3], xdat[1][4])
+                msg += &#34;%s\n\n%s ? &#34; % (sdd, xdat[2][0])
+                #msg += &#34;%s\n\n%s\n%s&#34; % (sdd, xdat[2][0], xdat[2][1])
+
+            warnings.simplefilter(&#34;ignore&#34;)
+            ret = pggui.yes_no(msg, title = &#34; Confirm Delete Item &#34;)
+            warnings.simplefilter(&#34;default&#34;)
+
+            if ret == Gtk.ResponseType.YES:
+                #print(&#34;deleting&#34;, xdat[0])
+                ret = self.sql.rmone(xdat[0])
+                #if not ret:
+                #    pggui.message(      &#34;\nCannot delete %s&#34; % xdat[2][0])
+                self.invalidate()
+
+        #if cnt == 4:
+        #    print(&#34;Editing day&#34;)
+
+    def done_caldlg(self, res, cald):
+
+        &#39;&#39;&#39;  Got data save it &#39;&#39;&#39;
+
+        if res != &#34;OK&#34;:         # Cancel pressed
+            return
+        if self.config.debug &gt; 2:
+            print(cald)
+
+        # Save to SQLite database
+        key = self.make_key(cald.xnowarr)
+
+        if self.config.debug &gt; 2:
+            print(&#34;put:&#34;, key, cald.xuuid, *cald.txtarr, cald.scope)
+        #if self.newx:
+        self.sql.put(key, cald.xuuid, *cald.txtarr, cald.scope)
+
+        arrz = []
+        for aa in cald.xalarr:
+            arrz.append(str(aa))
+        arry = []
+        for aa in cald.xscript:
+            arry.append(str(aa))
+        if self.config.debug &gt; 2:
+            print(&#34;put data:&#34;, cald.xuuid,  *arrz, *arry)
+        self.sql.putdata(cald.xuuid, *arrz, *arry)
+
+        self.doneala = []; self.donenext = []
+
+        self.invalidate()
+
+    # --------------------------------------------------------------------
+
+    def make_key(self, sss):
+        key = &#34;&#34;
+        for bb in range(3):
+            key += &#34;%02d-&#34; % (int(sss[bb]))
+        key = str.strip(key, &#34;-&#34;)
+        key += &#34; &#34;
+        for bb in range(2):
+            key += &#34;%02d:&#34; % (int(sss[bb+3]))
+        key = str.strip(key, &#34;:&#34;)
+        key += &#34; %02d&#34; % (int(sss[5]))
+        return key
+
+    def get_daydat(self, ddd):
+        arr = []
+        #print (&#34;get_daydat for&#34;, ddd)
+        # Get it for arr
+        for aa in self.monarr:
+            last = aa[1]
+            if int(last[0]) == ddd.day and \
+                int(last[1]) == ddd.month and \
+                    int(last[2]) == ddd.year:
+                #print(&#34;Date match&#34;, last)
+                arr.append(aa)
+            else:
+                pass
+                #print(&#34;no match&#34;, last[0], last[1], last[2])
+                #print(&#34;with&#34;, ddd.day, ddd.month, ddd.year)
+
+        return arr
+
+    def decode_text(self, txt):
+        strx = &#34;&#34;
+        txt2 = txt.encode(&#34;ascii&#34;, &#34;ignore&#34;)
+        for aa in txt2:
+            if ord(aa) &lt; 128:
+                strx += aa
+        return strx
+        #return strx.decode(&#34;cp437&#34;)
+
+    def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
+
+        (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
+
+        if pad:
+            return
+
+        self.cr.rectangle(xxx, yyy, www, hhh)
+        self.cr.clip()
+
+        hhh2 = self.rect.height / 60
+        hhh2 = min(hhh2, 12)
+
+        self.cr.set_source_rgba(*grey_col)
+        self.fd.set_family(&#34;Arial&#34;)
+
+        self.fd.set_size(hhh2 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+        prog = yyy
+
+        arrd = self.get_daydat(ttt)
+        arrsd = sorted(arrd, key=lambda val: val[1][3] * 60 + val[1][4] )
+        if self.shx == aa and self.shy == bb:
+            tmpscroll = self.scrollday
+        else:
+            tmpscroll = 0
+
+        if len(arrsd):
+            try:
+                for sss in arrsd[tmpscroll:]:
+                    #print(&#34;sss&#34;, sss[3][3], sss[3][4])
+                    txt = &#34;%02d:%02d &#34; % (int(sss[1][3]), int(sss[1][4]))
+                    if sss[2][0]:
+                        txt += str(sss[2][0])
+                    else:
+                        txt += &#34;Empty Subject Line &#34; # + sss[0]
+                    #print(&#34;printing&#34;, txt, &#34;len:&#34;, len(txt), &#34;ulen&#34;, len(txt.encode(&#34;UTF8&#34;)) )
+                    if sys.version_info[0] &lt; 3:
+                        txt2 = self.decode_text(txt)
+                        print(&#34;ver 2&#34;, txt2)
+                        self.pangolayout.set_text(txt2, len(txt2))
+                    else:
+                        self.pangolayout.set_text(txt, len(txt.encode(&#34;UTF8&#34;)) )
+
+                    txx, tyy = self.pangolayout.get_pixel_size()
+                    self.cr.move_to(xxx, prog)
+                    prog += tyy
+                    PangoCairo.show_layout(self.cr, self.pangolayout)
+
+            except:
+                #print(&#34;fill_day&#34;, sys.exc_info())
+                pgutils.put_exception(&#34;Fill_day&#34;)
+                pass
+
+        self.cr.new_path()
+        self.cr.reset_clip()
+
+    def draw_event(self, doc, cr):
+
+        if self.freeze:
+            return
+
+        border = 4
+        #print (&#34;Painting .. &#34;, self.cnt)
+        self.cnt += 1
+
+        #ctx = self.get_style_context()
+        #fg_color = ctx.get_color(Gtk.StateFlags.NORMAL)
+        #bg_color = ctx.get_background_color(Gtk.StateFlags.NORMAL)
+
+        self.layout = PangoCairo.create_layout(cr)
+        self.rect = self.get_allocation()
+        self.cr = cr
+        self.cr2 = pggui.CairoHelper(cr)
+
+        # Paint white, ignore system BG
+        cr.set_source_rgba(*white_col)
+        #cr.rectangle( border, border, self.rect.width - border * 2, self.rect.height - border * 2);
+        cr.rectangle( 0, 0, self.rect.width, self.rect.height);
+        cr.fill()
+
+        self.head =  self.rect.height // 10
+        newheight = self.rect.height - self.head
+        pitchx = (self.rect.width) // 7;
+        pitchy = newheight // 6;
+
+        # Month, year
+        cr.set_source_rgba(*grey_col)
+        self.fd.set_family(&#34;Arial&#34;)
+        self.fd.set_size(self.rect.height / 30 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+
+        mmm = self.xdate.month - 1
+        hhh = monstr[mmm] + &#34;, &#34; + str(self.xdate.year)
+        self.pangolayout.set_text(hhh, len(hhh))
+        txx, tyy = self.pangolayout.get_pixel_size()
+        cr.move_to(self.rect.width/2 - txx/2, border)
+        PangoCairo.show_layout(cr, self.pangolayout)
+
+        # Weekdays
+        cr.set_source_rgba(*lgrey_col)
+        self.fd.set_size(self.rect.height / 35 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+        for aa in range(7):
+            xx = aa * pitchx
+            self.pangolayout.set_text(daystr[aa], len(daystr[aa]))
+            txx, tyy = self.pangolayout.get_pixel_size()
+            cr.move_to(xx + border + (pitchx/2 - txx/2), self.head - tyy - border)
+            PangoCairo.show_layout(cr, self.pangolayout)
+
+        # Horiz grid
+        cr.set_source_rgba(*lgrey_col)
+        cr.set_line_width(1)
+
+        for aa in range(8):
+            xx = aa * pitchx + self.rect.x
+            cr.move_to(xx, self.head)
+            cr.line_to(xx, self.rect.height)
+        cr.stroke()
+
+        # Vert grid
+        for aa in range(6):
+            yy = aa * pitchy
+            cr.move_to(self.rect.x, yy + self.head)
+            cr.line_to(self.rect.width, yy + self.head)
+        cr.stroke()
+
+        self.tri_2 = [] ; self.tri_1 = []
+        cr.set_source_rgba(*dblue_col)
+
+        for aa in range(7):
+            for bb in range(6):
+                # Init
+                #ttt = datetime.datetime.today(); nnn = 0; pad = 0
+                (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
+                xx = aa * pitchx;  yy = bb * pitchy + self.head
+
+                warnings.simplefilter(&#34;ignore&#34;)
+                xx2, yy2 = self.get_pointer()
+                warnings.simplefilter(&#34;default&#34;)
+                mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
+
+                # Save it back to built array
+                self.darr[aa][bb] = ((nnn, ttt, pad, xx, yy))
+
+                nnn += 1
+                rrr, ggg, bbb = (255., 255., 255.)
+
+                if not pad:
+                    if hx == mx and hy == my:
+                        #print(&#34;Mouse over day:&#34;, mx, my)
+                        if self.zdate == ttt:
+                            rrr, ggg, bbb = (200/255, 230/255, 200/255)
+                        elif self.shx == aa and self.shy == bb:
+                            # Selected
+                            rrr, ggg, bbb = (200/255, 220/255, 220/255)
+                        else:
+                            rrr, ggg, bbb = (240/255, 240/255, 240/255)
+
+                    elif self.zdate == ttt:
+                        #print(&#34;Today&#34;, ttt)
+                        rrr, ggg, bbb = lgree_col
+                    elif self.shx == aa and self.shy == bb:
+                        rrr, ggg, bbb = (215/255, 235/255, 235/255)
+                    else:
+                        # Default
+                        rrr, ggg, bbb = white_col
+                else:
+                    #if self.shx == aa and self.shy == bb:
+                    #    self.cr.set_source_rgba(255/255, 235/255, 235/255)
+                    #else:
+                    rrr, ggg, bbb = (230/255, 230/255, 255/255)
+
+                self.cr.set_source_rgba(rrr, ggg, bbb)
+                cr.rectangle(xx + border/2, yy + border/2,
+                                    pitchx - border, pitchy - border)
+                cr.fill()
+
+                # Paint upper left
+                cr.move_to(xx + border, yy)
+                sss = str(nnn) # + &#34;  &#34; + ttt.strftime(&#34;%m-%d-%y&#34;)
+                cr.set_source_rgba(100/255, 100/255, 255/255)
+                self.fd.set_family(&#34;Arial&#34;)
+                self.fd.set_size(12 * Pango.SCALE);
+                self.pangolayout.set_font_description(self.fd)
+                self.pangolayout.set_text(sss, len(sss))
+                txx, tyy = self.pangolayout.get_pixel_size()
+                PangoCairo.show_layout(cr, self.pangolayout)
+
+                self.fill_day(aa, bb, ttt, xx + border, yy + border + tyy,
+                                        pitchx - 2*border, pitchy - 2*border - tyy)
+                &#39;&#39;&#39;
+                # Draw quarter ticks
+                cr.set_source_rgba(10/255, 10/255, 125/255)
+                tth = (pitchy - 2*border) / 4
+                for aaa in range(4):
+                    cr.move_to(xx +2, yy + tth * (aaa + 1))
+                    cr.line_to(xx+10, yy + tth * (aaa + 1))
+                &#39;&#39;&#39;
+                ww = pitchx; hh = pitchy
+
+                if not pad:
+                    if self.shx == aa and self.shy == bb:
+                        # Draw nav arrows
+                        self.cr.set_source_rgba(238/255, 255/255, 238/255)
+                        xxx =  xx + border/2 + 11 * pitchx/12
+                        yyy =  yy + border/2 + 5*pitchy/8
+                        www =  pitchx - border - 11*pitchx/12
+                        hhh =  pitchy - border - 5*pitchy/8
+                        #cr.rectangle(xxx, yyy, www, hhh)
+                        #cr.fill()
+
+                        # Draw triangles
+                        cr.set_line_width(1)
+                        self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                        self.tri_1 = [xxx, yyy, www, hhh/3]
+                        self.cr2.tri(self.tri_1)
+                        cr.fill()
+                        self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                        self.cr2.tri(self.tri_1)
+                        cr.stroke()
+
+                        # Draw triangles2
+                        self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                        self.tri_2 = [xxx, yyy + 2*hhh/3, www, hhh/3]
+                        self.cr2.tri2(self.tri_2)
+                        cr.fill()
+                        self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                        self.cr2.tri2(self.tri_2)
+                        cr.stroke()
+
+                        # Draw corners
+                        cr.set_source_rgba(10/255, 10/255, 125/255)
+                        cr.move_to(xx+2, yy+hh-2)
+                        cr.line_to(xx+2, yy+hh-hh/4)
+                        cr.move_to(xx+2, yy+hh - 2)
+                        cr.line_to(xx+ww/4, yy +hh- 2)
+
+                        cr.move_to(xx+ww-2, yy + 2)
+                        cr.line_to(xx+ww-2, yy + hh/4)
+                        cr.move_to(xx+ww-2, yy + 2)
+                        cr.line_to(xx+ww-ww/4, yy + 2)
+
+                        cr.stroke()
+
+    def pop_alarm(self, txt, arra):
+
+        &#39;&#39;&#39; Trigger alarms, if not done already &#39;&#39;&#39;
+
+        dddd = &#34;%02d:%02d&#34; % (arra[1], arra[2])
+        if txt[0] + dddd not in self.donearr:
+            self.donearr.append(txt[0] + dddd)
+        else:
+            return
+
+        #print(&#34;Popping alarm:&#34;, txt, arra)
+        self.mainwin.mywin.set_title(&#34;Python Calendar&#34;)
+        self.mainwin.logwin.append_logwin(&#34;Alarm at: %s %s\r&#34; % \
+            (dddd, txt[0]))
+
+        #print(&#34;Alarm triggered&#34;, dddd, arra)
+
+        if arra[3][0]:
+            pyala.notify_sys(txt[0], txt[1], dddd)
+        if arra[3][1]:
+            pyala.play_sound()
+        if arra[3][2]:
+            #pggui.message(&#34;\n&#34; + txt[0] + &#34;\n&#34;, title=&#34;Calendar Alarm&#34;)
+            #threading.Thread(target=alarm_it).start()
+            ddd = MsgDlg(&#34;Calendar Alarm at &#34; + dddd, txt[0], txt[1])
+        if arra[3][3]:
+            sys.stdout.write(&#39;\a&#39;)
+            sys.stdout.flush()
+        if arra[3][4]:
+            print(&#34;Email:&#34;)
+
+    def check_one(self, txt, tmpt, arra):
+
+        &#39;&#39;&#39; Check one alarm &#39;&#39;&#39;
+
+        if not arra[0]:
+            return
+
+        if self.config.debug &gt; 1:
+            print(&#34;check:&#34;, arra)
+        # Is it now?
+        if arra[1] == tmpt.hour:
+            if arra[2] == tmpt.minute:
+                self.pop_alarm(txt, arra)
+
+        # Is it in the future?
+        if  arra[1] &gt; tmpt.hour or \
+              arra[1] == tmpt.hour and arra[2] &gt; tmpt.minute:
+
+            if &#34;Next&#34; not in self.mainwin.mywin.get_title():
+                dddd = &#34;%02d:%02d&#34; % (arra[1], arra[2])
+                if txt[0] + dddd not in self.donenext:
+                    self.donenext.append(txt[0] + dddd)
+                    print(&#34;future:&#34;, dddd)
+                    self.mainwin.mywin.set_title(&#34;Next alarm: &#34; \
+                        +  &#34;&#39;&#34; + txt[0][:24] + &#34;&#39;&#34; + &#34; at &#34; + dddd)
+
+    def eval_alarm(self):
+
+        flag = False
+        tmpt = datetime.datetime.today()
+        if self.config.debug &gt; 3:
+            print(&#34;eval_alarm&#34;, tmpt.day, &#34;-&#34;, tmpt.month, &#34;-&#34;, tmpt.year,
+                                    tmpt.hour, tmpt.minute, tmpt.second)
+        for aa in self.monarr:
+            # Is it today?
+            if aa[1][0] == tmpt.day and aa[1][1] == tmpt.month  \
+                    and aa[1][2] == tmpt.year:
+                if self.config.debug &gt; 2:
+                    print(&#34;Today&#34;, aa[2])
+                # Check all three
+                self.check_one(aa[2], tmpt, aa[3][0])
+                self.check_one(aa[2], tmpt, aa[3][1])
+                self.check_one(aa[2], tmpt, aa[3][2])
+
+    def handler_tick(self):
+
+        if self.config.debug &gt; 4:
+            print(&#34;handler_tick&#34;)
+        self.eval_alarm()
+        return True
+
+        #try:
+        #    GLib.timeout_add(1000, handler_tick, main_class)
+        #except:
+        #    print(&#34;Exception in setting timer handler&#34;, sys.exc_info())
+
+
+if __name__ == &#34;__main__&#34;:
+    print(&#34;This is a module file, use pycalgui.py&#34;)
+
+# EOF</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="pycal.lgree_col"><code class="name">var <span class="ident">lgree_col</span></code></dt>
+<dd>
+<div class="desc"><p>MINYEAR &lt;= year &lt;= MAXYEAR,
+1 &lt;= month &lt;= 12,
+1 &lt;= day &lt;= number of days in the given month and year,
+0 &lt;= hour &lt; 24,
+0 &lt;= minute &lt; 60,
+0 &lt;= second &lt; 60,
+0 &lt;= microsecond &lt; 1000000,</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pycal.CalCanvas"><code class="flex name class">
+<span>class <span class="ident">CalCanvas</span></span>
+<span>(</span><span>config, xdate=None, statbox=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>:Constructors:</p>
+<p>::</p>
+<pre><code>DrawingArea(**properties)
+new() -&gt; Gtk.Widget
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CalCanvas(Gtk.DrawingArea):
+
+    def __init__(self, config, xdate = None, statbox = None):
+        Gtk.DrawingArea.__init__(self)
+        self.statbox = statbox
+        self.config = config
+        self.mouevent = self.dlg = None
+        self.xtext = self.darr = self.monarr = self.coll = []
+        self.old_hx = 0; self.old_hy = 0; self.fired = 0;
+        self.popped = self.cnt = 0
+        self.shx, self.shy = (-1, -1)
+        self.drag = self.resize = None
+        self.dragcoord = (0,0)
+        self.size2 = (0,0)
+        self.noop_down = False
+        self.sql = None
+        self.moonarr = []
+        self.usarr = []
+        self.donearr = self.donenext = []
+        self.moon = True
+        self.holy = True
+        self.defc = True
+        self.scrollday = 0
+        self.ign = 0
+
+        if not xdate:
+            self.set_date(datetime.datetime.today())
+        else:
+            self.set_date(date)
+
+        tmp = datetime.datetime.today()
+        self.zdate = datetime.datetime(tmp.year, tmp.month, tmp.day)
+
+        self.set_can_focus(True)
+        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
+
+        self.connect(&#34;draw&#34;, self.draw_event)
+        self.connect(&#34;motion-notify-event&#34;, self.area_motion)
+        self.connect(&#34;button-press-event&#34;, self.area_button)
+        self.connect(&#34;button-release-event&#34;, self.area_button)
+        self.connect(&#34;key-press-event&#34;, self.keypress)
+
+        self.fd = Pango.FontDescription()
+        self.pangolayout = self.create_pango_layout(&#34;a&#34;)
+        self._cursors()
+
+        global handler_tick
+        GLib.timeout_add(1000, self.handler_tick) #, self)
+
+    def keypress(self, win, event):
+
+        ret = False
+        #print (&#34;key&#34;, event.string, &#34;val&#34;, event.keyval, &#34;state&#34;, event.state)
+        #print(&#34;hw&#34;, event.hardware_keycode)
+
+        #if  event.state &amp; Gdk.ModifierType.SHIFT_MASK:
+        #    print(&#34;SHIFT&#34;)
+        #if  event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+        #    print(&#34;CONTROL&#34;)
+        #if  event.state &amp; Gdk.ModifierType.MOD1_MASK:
+        #    print(&#34;ALT&#34;)
+
+        if event.keyval == Gdk.KEY_Up:
+            #print(&#34;Up&#34;)
+            ret = True
+        if event.keyval == Gdk.KEY_Down:
+            #print(&#34;Down&#34;)
+            ret = True
+        if event.keyval == Gdk.KEY_Left:
+            #print(&#34;Left&#34;)
+            ret = True
+        if event.keyval == Gdk.KEY_Right:
+            #print(&#34;Right&#34;)
+            ret = True
+
+        return ret
+
+    def invalidate(self):
+        #print(&#34;Invalidate calendar&#34;)
+        self.set_date(self.xdate)
+
+    # --------------------------------------------------------------------
+    def set_dbfile(self, dbfile, config):
+        self.dbfile = dbfile
+        try:
+            self.sql = pycalsql.CalSQLite(self.dbfile, config)
+        except:
+            print(&#34;Cannot make/open calendar database.&#34;)
+        self.monarr = self.get_month_data()
+
+    def set_moonfile(self, moonfile):
+        self.moonarr = calfile.eval_file(moonfile)
+        self.monarr += self.get_cal_data(self.moonarr)
+
+    def set_usafile(self, usafile):
+        self.usarr = calfile.eval_file(usafile, 0)
+        self.monarr += self.get_cal_data(self.usarr)
+
+    def set_holfile(self, holfile):
+        self.holarr = calfile.eval_file(holfile)
+        self.monarr += self.get_cal_data(self.holarr )
+
+    def _cursors(self):
+        disp =  self.get_display()
+        self.hand = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.HAND1)
+        self.arrow = Gdk.Cursor.new_for_display(disp, Gdk.CursorType.ARROW)
+        self.sizing =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.SIZING)
+        self.cross =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.TCROSS)
+        self.hair =  Gdk.Cursor.new_for_display(disp, Gdk.CursorType.CROSSHAIR)
+
+    # Internal function to set up current month
+
+    def __calc_curr(self):
+
+        # Pre-calculate stuff (will be updated on paint)
+        self.rect = self.get_allocation()
+        self.head =  self.rect.height // 10
+        newheight = self.rect.height - self.head
+
+        pitchx = (self.rect.width) // 7; pitchy = newheight // 6;
+        newheight = self.rect.height - self.head
+
+        #print(&#34;show date:&#34;, self.xdate, daystr[self.xdate.weekday()])
+        ydate =  datetime.datetime(self.xdate.year, self.xdate.month, 1)
+        self.smonday = ydate.weekday()
+
+        #print (&#34;ydate&#34;, ydate, &#34;Month starts: &#34;, daystr[self.smonday])
+        self.mlen = monthrange(self.xdate.year, self.xdate.month)[1]
+        #print (&#34;mlen&#34;, self.mlen)
+
+        mmm  =  self.xdate.month-1; yyy  = self.xdate.year
+        if mmm == 0:
+            mmm = 12;  yyy -= 1
+        self.mlen2 = monthrange(yyy, mmm)[1]
+        #print (&#34;mlen&#34;, self.mlen, &#34;mlen2&#34;, self.mlen2)
+
+        # Simulate new data
+        self.xtext = []
+        for aa in range(7):
+            self.xtext.append( [] )
+            last = self.xtext[len(self.xtext)-1]
+
+            &#39;&#39;&#39;for bb in range(6):
+                last.append( [] )
+                # Pre fill random strings
+                for cc in range(random.randint(2,12)):
+                    last2 = last[len(last)-1]
+                    xstr = &#34;%d - %d : %d &#34; % (aa, bb, cc)
+                    xstr += pgutils.randstr(random.randint(5,140))
+                    last2.append(xstr)
+             &#39;&#39;&#39;
+        self.darr = []
+        for aa in range(7):
+            self.darr.append( [] )
+            lastd = self.darr[len(self.darr)-1]
+            for bb in range(6):
+                # Manipulate count as month parameters
+                nnn = aa  + (bb * 7) - self.smonday; ttt = None; pad = 0;
+                if nnn &lt;  0:
+                    pad = 1
+                    nnn = self.mlen2 + nnn
+                    m2 = self.xdate.month - 1; y2 = self.xdate.year
+                    if m2 &lt; 1: y2 -= 1; m2 = 12
+                    ttt = datetime.datetime(y2, m2, nnn+1)
+                elif nnn &gt;= self.mlen:
+                    pad = 2
+                    nnn %= self.mlen
+                    m2 = self.xdate.month + 1; y2 = self.xdate.year
+                    if m2 &gt; 12: y2 += 1; m2 = 1
+                    ttt = datetime.datetime(y2, m2, nnn+1)
+                else:
+                    pad = 0
+                    ttt = datetime.datetime(self.xdate.year, self.xdate.month, nnn+1)
+
+                xx = aa * pitchx;  yy = bb * pitchy + self.head
+                lastd.append((nnn, ttt, pad, xx, yy))
+
+        #print(self.xtext)
+
+    # --------------------------------------------------------------------
+    def get_month_data(self):
+
+        arr = []
+        if not self.sql:
+            return arr
+
+        # Get padded (OK) days
+        for aa in range(7):
+            lastd = self.darr[aa]
+            for bb in lastd:
+                if bb[2]:
+                    continue
+                ddd = bb[1]
+                key = &#34;%02d-%02d-%02d %%&#34; % (ddd.day, ddd.month, ddd.year)
+                # Get it from the DB
+                arr2 = self.sql.get(key)
+                if not arr2:
+                    continue
+                #print(&#34;sql.get key&#34;, key, &#34;got sql&#34;, arr2)
+                for aa in arr2:
+                    #print(&#34;sql.got&#34;, aa)
+                    ttt = aa[1].split(&#34; &#34;)
+                    (dd, mm, yy) = ttt[0].split(&#34;-&#34;)
+                    (HH, MM) = ttt[1].split(&#34;:&#34;)
+                    dur = ttt[2]
+                    arr3, arr4, arr5, arr6, arr7 = self.sql.getdata(aa[2])
+                    #print(&#34;sql.getdata:&#34;, arr3, arr4, arr5, arr6, arr7)
+                    defa = ( False, 0, 0, [False, False, False, False, False])
+                    if arr3:
+                        arr3 = eval(arr3)
+                    else:
+                        arr3 = defa[:]
+                    if arr4:
+                        arr4 = eval(arr4)
+                    else:
+                        arr4 = defa[:]
+                    if arr5:
+                        arr5 = eval(arr5)
+                    else:
+                        arr5 = defa[:]
+                    if arr6:
+                        arr6 = eval(arr6)
+                    else:
+                        arr6 = False
+
+                    def unpackx(*arrx):
+                        res = arrx
+                        return res
+                    carr = [aa[2],
+                                [int(dd), int(mm),
+                                int(yy), int(HH), int(MM), int(dur)],
+                                [*aa[3:]], [ arr3, arr4, arr5 ], arr6, arr7 ]
+                    if self.config.debug &gt; 3:
+                         print(&#34;reading carr&#34;, carr)
+                    arr.append(carr)
+        return arr
+
+    # --------------------------------------------------------------------
+    def get_cal_data(self, arrx):
+
+        #print(&#34;get_cal_data() arrx&#34;, arrx)
+        arr = []
+
+        # Blank the alarm fields
+        arr3 = [ False, 0, 0, [False, False, False, False, False]]
+        arr4 = [ False, 0, 0, [False, False, False, False, False]]
+        arr5 = [ False, 0, 0, [False, False, False, False, False]]
+
+        # Process rules for the month
+        for aa in arrx:
+            if aa[6]:
+                rr =  flatten(aa[6])
+                if &#34;FREQ=YEARLY&#34; in rr:
+                    rule = get_rule_str(str(self.xdate.month), rr)
+                    if rule:
+                        zdate = None
+                        #print(&#34;byday args:&#34;, rr, &#34;&#39;&#34; + rule + &#34;&#39;&#34;)
+                        roffs = int(rule[:-2])
+                        dd = 0; cnt = 0
+                        for cc in dayidx:
+                            if cc == rule[-2:]:
+                                dd = cnt
+                                break
+                            cnt += 1
+                        #print(&#34;day&#34;, roffs, &#34;num&#34;, rule[-2:], &#34;dd&#34;, dd)
+                        mr = monthrange(self.xdate.year, self.xdate.month)[1]
+                        if roffs &gt;= 0:
+                            for bb in range(1, mr + 1):
+                                zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                                #print(&#34;zdate&#34;, zdate, zdate.weekday())
+                                if zdate.weekday() == dd:
+                                    #print (&#34;encountered&#34;, zdate, zdate.weekday())
+                                    roffs -= 1
+                                    if roffs == 0:
+                                        #print (&#34;Set&#34;, zdate, zdate.weekday(), aa[0])
+                                        break
+                        else:
+                            for bb in range(mr, 0, -1):
+                                zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                                #print(&#34;zdate&#34;, zdate, zdate.weekday())
+                                if zdate.weekday() == dd:
+                                    #print (&#34;encountered&#34;, zdate, zdate.weekday())
+                                    roffs += 1
+                                    if roffs == 0:
+                                        #print (&#34;Set&#34;, zdate, zdate.weekday(), aa[0])
+                                        break
+
+                        if zdate:
+                            carr = [&#34;&#34;, [ zdate.day, zdate.month, zdate.year,
+                                                zdate.hour, zdate.minute, 0 ],
+                                   [flatten(aa[0]), &#34;&#34;, &#34;&#34;, flatten(aa[5]) ],
+                                   [ arr3, arr4, arr5 ]  ]
+                            arr.append(carr)
+
+            try:
+                if self.xdate.year == aa[1].year and \
+                        self.xdate.month == aa[1].month:
+
+                    #print(&#34;day arr&#34;, aa)
+                    #print(aa[1].year, aa[1].month, aa[1].day, &#34;\nsum:&#34;,
+                    #                flatten(aa[0]), &#34;\ndesc:&#34;, flatten(aa[5]) )
+
+                    carr = [&#34;&#34;, [ aa[1].day, aa[1].month, aa[1].year,
+                                            aa[1].hour, aa[1].minute, 0 ],
+                               [flatten(aa[0]), &#34;&#34;, &#34;&#34;, flatten(aa[5]) ],
+                               [ arr3, arr4, arr5 ]  ]
+                    arr.append(carr)
+
+            except:
+                print(&#34;Cannot parse:&#34;, sys.exc_info())
+                print( &#34;aa&#34;, aa)
+        return arr
+
+    def set_date(self, dt):
+
+        #print(&#34;set_date&#34;, dt)
+        #pycallog.logwin.append_logwin(&#34;Set new date on cal: %s\n&#34; % dt.ctime())
+
+        self.donearr = []
+        self.freeze = True
+        self.xdate = dt
+        self.__calc_curr()
+        self.freeze = False
+
+        self.monarr = self.get_month_data()
+
+        if self.moon:
+            self.monarr += self.get_cal_data(self.moonarr)
+
+        if self.holy:
+            self.monarr += self.get_cal_data(self.usarr)
+
+        self.queue_draw()
+
+    # Return where the hit is
+    def hit_test(self, px, py):
+        newheight = self.rect.height - self.head
+        pitchx = (self.rect.width) // 7;
+        pitchy = newheight // 6;
+        py2 = int(py) - self.head
+        #print(&#34;px&#34;, px, &#34;pitchy&#34;, pitchy)
+        aa = 0; bb = 0
+        try: aa = int(px) // pitchx;
+        except: pass
+        try: bb =  py2 // pitchy;
+        except: pass
+        return aa, bb
+
+    def dest_me(self):
+        print(&#34;Destroying ...&#34;)
+        #self.get_root_window().set_cursor(self.arrow)
+
+    def show_status(self, strx):
+        if self.statusbar:
+            self.statusbar.set_text(strx)
+
+    def keytime(self):
+        #print( &#34;keytime raw&#34;, time.time(), self.fired)
+        if self.dlg:
+            return
+
+        if self.fired ==  1:
+            if not self.popped:
+                mx, my = self.get_pointer()
+                #print(&#34;mx, my &#34;, mx, my)
+
+                # Is mouse in cal?
+                if mx &gt; 0 and my &gt; self.head and mx &lt; self.rect.width and my &lt; self.rect.height:
+                    self.popped = True
+                    hx, hy = self.hit_test(mx, my)
+                    strx = &#34;%d %d \n&#34; % (hx, hy)
+                    try:
+                        arr = self.xtext[hx][hy]
+                        for sss in arr:
+                            if len(sss) &gt; 36:
+                                sss = sss[:34] + &#34; ... &#34;
+                            strx += sss + &#34;\n&#34;
+
+                        self.tt = CalPopup(strx)
+
+                        # Calculate self absolute (screen) position
+                        posx, posy = self.mainwin.mywin.get_position()
+                        #print(&#34;posx, posy&#34;, posx, posy)
+
+                        self.tt.move(posx + mx, posy + my + self.head)
+                        #self.tt.move(posx + mx - 12, posy + my + self.head - 12)
+                        self.tt.show_all()
+                    except:
+                        #print(sys.exc_info())
+                        #pgutils.put_exception(&#34;key_time&#34;)
+                        pass
+
+        self.fired -= 1
+
+    def area_motion(self, area, event):
+        #print (&#34;motion event&#34;, event.state, event.x, event.y)
+        self.mouevent = event
+
+        &#39;&#39;&#39;if event.state &amp; Gdk.ModifierType.SHIFT_MASK:
+                    print( &#34;Shift ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+                if event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+                    print( &#34;Ctrl ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+                if event.state &amp; Gdk.ModifierType.MOD1_MASK :
+                    print( &#34;Alt ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+                &#39;&#39;&#39;
+
+        if self.popped:
+            try:
+                self.tt.destroy()
+            except:
+                #pgutils.put_exception(&#34;motion popped&#34;)
+                #print(sys.exc_info())
+                pass
+
+            self.popped = False
+        else:
+            self.fired += 1
+            GLib.timeout_add(600, self.keytime)
+
+        hx, hy = self.hit_test(int(event.x), int(event.y))
+        #print(&#34;hx&#34;, hx, self.old_hx, &#34;hy&#34;, hy,self.old_hy)
+        #print(&#34;Hit&#34;, hx, hy, self.xtext[hx + 7 * hy])
+
+        if (self.old_hx != hx or self.old_hy != hy):
+            #print(&#34;Delta&#34;, hx, hy)
+            self.scrollday = 0
+            self.queue_draw()
+
+        self.old_hx = hx; self.old_hy = hy
+
+    # --------------------------------------------------------------------
+
+    def area_button(self, area, event):
+        self.mouevent = event
+        #self.mouse = Rectangle(event.x, event.y, 4, 4)
+        #print( &#34;Button&#34;, event.button, &#34;state&#34;, event.state, &#34; x =&#34;, event.x, &#34;y =&#34;, event.y)
+
+        mods = event.state &amp; Gtk.accelerator_get_default_mod_mask()
+
+        if(mods &amp; Gdk.ModifierType.MOD1_MASK):
+            #print(&#34;Modifier ALT&#34;,  event.state)
+            pass
+        if event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+            #print( &#34;Ctrl ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+            pass
+        elif  event.type == Gdk.EventType.BUTTON_PRESS:
+            #print(&#34;Single click&#34;, event.button)
+            if event.button == 1:
+                hit = pggui.Rectangle(event.x, event.y, 2, 2)
+
+                if self.tri_2 != []:
+                    #print(&#34;Got tri2&#34;, self.tri_2)
+                    rrr = pggui.Rectangle(self.tri_2)
+                    if rrr.intersect(hit)[0]:
+                        #print(&#34;Click in tri 2&#34;)
+                        self.scrollday += 1
+                        self.invalidate()
+                        self.ign += 1
+                        return
+
+                if self.tri_1 != []:
+                    #print(&#34;Got tri1&#34;, self.tri_1)
+                    rrr = pggui.Rectangle(self.tri_1)
+                    if rrr.intersect(hit)[0]:
+                        #print(&#34;Click in tri 1&#34;)
+                        if  self.scrollday &gt; 0:
+                            self.scrollday -= 1
+                        self.invalidate()
+                        self.ign += 1
+                        return
+
+                self.ign = 0
+                self.shx, self.shy = self.hit_test(event.x, event.y)
+
+            if event.button == 3:
+                if self.popped:
+                    try:    self.tt.destroy()
+                    except: pass
+                hx, hy = self.hit_test(event.x, event.y)
+                #print(&#34;hx, hY&#34;, hx, hy)
+                (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+                sdd = ttt.strftime(&#34;%a %d-%b-%Y&#34;)
+                warnings.simplefilter(&#34;ignore&#34;)
+                self.menu = pggui.Menu((&#34;Selection: %s&#34; % sdd, &#34;New Calendar Entry&#34;,
+                                            &#34;Edit entry&#34;, &#34;Delete Entry&#34;),
+                                                self.menucb, event)
+                warnings.simplefilter(&#34;default&#34;)
+
+            self.queue_draw()
+
+        elif  event.type == Gdk.EventType.BUTTON_RELEASE:
+            self.drag = None
+            self.resize = None
+            self.noop_down = False
+            #self.get_root_window().set_cursor(self.arrow)
+
+        elif  event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+
+            if self.ign:
+                self.ign -= 1
+                return
+
+            #print(&#34;DBL click&#34;, event.x, event.y)
+            if event.button == 1:
+                if self.popped:
+                    try:    self.tt.destroy()
+                    except: pass
+                    self.popped = False
+
+                hx, hy = self.hit_test(event.x, event.y)
+                (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+                if not pad:
+                    self.dlg = pycalent.CalEntry( \
+                                event.x, event.y, self, self.done_caldlg)
+
+    def menucb(self, txt, cnt):
+        #print (&#34; txt cnt&#34;, txt, txt)
+        xxx = self.menu.event.x;  yyy = self.menu.event.y
+
+        hx, hy = self.hit_test(xxx, yyy)
+        (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+
+        if cnt == 1:
+            #print(&#34;New entry&#34;)
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+                self.popped = False
+            if not pad:
+                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg, True)
+        if cnt == 2:
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+                self.popped = False
+            if self.config.debug &gt; 3:
+                print(&#34;Editing entry:&#34;,  nnn, &#34;-&#34;, ttt, &#34;-&#34;, pad, xx, yy)
+            if not pad:
+                self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
+
+        if cnt == 3:
+            # This was the font height on draw ...
+            hhh2 = self.rect.height / 60; hhh2 = min(hhh2, 12) + 6
+            xdarr = self.get_daydat(ttt)
+            xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
+            idx = int(((yyy - (hhh2 + 4)) - yy) // hhh2) + self.scrollday
+            #print(&#34;len&#34;, len(xdarrs), &#34;idx&#34;, idx)
+            msg = &#34;\n&#34;
+            if idx &gt;= len(xdarrs):
+                pggui.message(      &#34;\nNot pointing to valid Item or&#34;
+                                    &#34;\nItem not in personal calendar.&#34;
+                                    &#34;\nPlease select a deletable item.&#34;)
+                return
+            else:
+                xdat = xdarrs[idx]
+                if self.config.debug &gt; 3:
+                    print(&#34;Deleting entry&#34;, xdat)
+                sdd = ttt.strftime(&#34;%a %d-%b-%Y&#34;)
+                sdd +=  &#34; %02d:%02d&#34; %  (xdat[1][3], xdat[1][4])
+                msg += &#34;%s\n\n%s ? &#34; % (sdd, xdat[2][0])
+                #msg += &#34;%s\n\n%s\n%s&#34; % (sdd, xdat[2][0], xdat[2][1])
+
+            warnings.simplefilter(&#34;ignore&#34;)
+            ret = pggui.yes_no(msg, title = &#34; Confirm Delete Item &#34;)
+            warnings.simplefilter(&#34;default&#34;)
+
+            if ret == Gtk.ResponseType.YES:
+                #print(&#34;deleting&#34;, xdat[0])
+                ret = self.sql.rmone(xdat[0])
+                #if not ret:
+                #    pggui.message(      &#34;\nCannot delete %s&#34; % xdat[2][0])
+                self.invalidate()
+
+        #if cnt == 4:
+        #    print(&#34;Editing day&#34;)
+
+    def done_caldlg(self, res, cald):
+
+        &#39;&#39;&#39;  Got data save it &#39;&#39;&#39;
+
+        if res != &#34;OK&#34;:         # Cancel pressed
+            return
+        if self.config.debug &gt; 2:
+            print(cald)
+
+        # Save to SQLite database
+        key = self.make_key(cald.xnowarr)
+
+        if self.config.debug &gt; 2:
+            print(&#34;put:&#34;, key, cald.xuuid, *cald.txtarr, cald.scope)
+        #if self.newx:
+        self.sql.put(key, cald.xuuid, *cald.txtarr, cald.scope)
+
+        arrz = []
+        for aa in cald.xalarr:
+            arrz.append(str(aa))
+        arry = []
+        for aa in cald.xscript:
+            arry.append(str(aa))
+        if self.config.debug &gt; 2:
+            print(&#34;put data:&#34;, cald.xuuid,  *arrz, *arry)
+        self.sql.putdata(cald.xuuid, *arrz, *arry)
+
+        self.doneala = []; self.donenext = []
+
+        self.invalidate()
+
+    # --------------------------------------------------------------------
+
+    def make_key(self, sss):
+        key = &#34;&#34;
+        for bb in range(3):
+            key += &#34;%02d-&#34; % (int(sss[bb]))
+        key = str.strip(key, &#34;-&#34;)
+        key += &#34; &#34;
+        for bb in range(2):
+            key += &#34;%02d:&#34; % (int(sss[bb+3]))
+        key = str.strip(key, &#34;:&#34;)
+        key += &#34; %02d&#34; % (int(sss[5]))
+        return key
+
+    def get_daydat(self, ddd):
+        arr = []
+        #print (&#34;get_daydat for&#34;, ddd)
+        # Get it for arr
+        for aa in self.monarr:
+            last = aa[1]
+            if int(last[0]) == ddd.day and \
+                int(last[1]) == ddd.month and \
+                    int(last[2]) == ddd.year:
+                #print(&#34;Date match&#34;, last)
+                arr.append(aa)
+            else:
+                pass
+                #print(&#34;no match&#34;, last[0], last[1], last[2])
+                #print(&#34;with&#34;, ddd.day, ddd.month, ddd.year)
+
+        return arr
+
+    def decode_text(self, txt):
+        strx = &#34;&#34;
+        txt2 = txt.encode(&#34;ascii&#34;, &#34;ignore&#34;)
+        for aa in txt2:
+            if ord(aa) &lt; 128:
+                strx += aa
+        return strx
+        #return strx.decode(&#34;cp437&#34;)
+
+    def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
+
+        (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
+
+        if pad:
+            return
+
+        self.cr.rectangle(xxx, yyy, www, hhh)
+        self.cr.clip()
+
+        hhh2 = self.rect.height / 60
+        hhh2 = min(hhh2, 12)
+
+        self.cr.set_source_rgba(*grey_col)
+        self.fd.set_family(&#34;Arial&#34;)
+
+        self.fd.set_size(hhh2 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+        prog = yyy
+
+        arrd = self.get_daydat(ttt)
+        arrsd = sorted(arrd, key=lambda val: val[1][3] * 60 + val[1][4] )
+        if self.shx == aa and self.shy == bb:
+            tmpscroll = self.scrollday
+        else:
+            tmpscroll = 0
+
+        if len(arrsd):
+            try:
+                for sss in arrsd[tmpscroll:]:
+                    #print(&#34;sss&#34;, sss[3][3], sss[3][4])
+                    txt = &#34;%02d:%02d &#34; % (int(sss[1][3]), int(sss[1][4]))
+                    if sss[2][0]:
+                        txt += str(sss[2][0])
+                    else:
+                        txt += &#34;Empty Subject Line &#34; # + sss[0]
+                    #print(&#34;printing&#34;, txt, &#34;len:&#34;, len(txt), &#34;ulen&#34;, len(txt.encode(&#34;UTF8&#34;)) )
+                    if sys.version_info[0] &lt; 3:
+                        txt2 = self.decode_text(txt)
+                        print(&#34;ver 2&#34;, txt2)
+                        self.pangolayout.set_text(txt2, len(txt2))
+                    else:
+                        self.pangolayout.set_text(txt, len(txt.encode(&#34;UTF8&#34;)) )
+
+                    txx, tyy = self.pangolayout.get_pixel_size()
+                    self.cr.move_to(xxx, prog)
+                    prog += tyy
+                    PangoCairo.show_layout(self.cr, self.pangolayout)
+
+            except:
+                #print(&#34;fill_day&#34;, sys.exc_info())
+                pgutils.put_exception(&#34;Fill_day&#34;)
+                pass
+
+        self.cr.new_path()
+        self.cr.reset_clip()
+
+    def draw_event(self, doc, cr):
+
+        if self.freeze:
+            return
+
+        border = 4
+        #print (&#34;Painting .. &#34;, self.cnt)
+        self.cnt += 1
+
+        #ctx = self.get_style_context()
+        #fg_color = ctx.get_color(Gtk.StateFlags.NORMAL)
+        #bg_color = ctx.get_background_color(Gtk.StateFlags.NORMAL)
+
+        self.layout = PangoCairo.create_layout(cr)
+        self.rect = self.get_allocation()
+        self.cr = cr
+        self.cr2 = pggui.CairoHelper(cr)
+
+        # Paint white, ignore system BG
+        cr.set_source_rgba(*white_col)
+        #cr.rectangle( border, border, self.rect.width - border * 2, self.rect.height - border * 2);
+        cr.rectangle( 0, 0, self.rect.width, self.rect.height);
+        cr.fill()
+
+        self.head =  self.rect.height // 10
+        newheight = self.rect.height - self.head
+        pitchx = (self.rect.width) // 7;
+        pitchy = newheight // 6;
+
+        # Month, year
+        cr.set_source_rgba(*grey_col)
+        self.fd.set_family(&#34;Arial&#34;)
+        self.fd.set_size(self.rect.height / 30 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+
+        mmm = self.xdate.month - 1
+        hhh = monstr[mmm] + &#34;, &#34; + str(self.xdate.year)
+        self.pangolayout.set_text(hhh, len(hhh))
+        txx, tyy = self.pangolayout.get_pixel_size()
+        cr.move_to(self.rect.width/2 - txx/2, border)
+        PangoCairo.show_layout(cr, self.pangolayout)
+
+        # Weekdays
+        cr.set_source_rgba(*lgrey_col)
+        self.fd.set_size(self.rect.height / 35 * Pango.SCALE);
+        self.pangolayout.set_font_description(self.fd)
+        for aa in range(7):
+            xx = aa * pitchx
+            self.pangolayout.set_text(daystr[aa], len(daystr[aa]))
+            txx, tyy = self.pangolayout.get_pixel_size()
+            cr.move_to(xx + border + (pitchx/2 - txx/2), self.head - tyy - border)
+            PangoCairo.show_layout(cr, self.pangolayout)
+
+        # Horiz grid
+        cr.set_source_rgba(*lgrey_col)
+        cr.set_line_width(1)
+
+        for aa in range(8):
+            xx = aa * pitchx + self.rect.x
+            cr.move_to(xx, self.head)
+            cr.line_to(xx, self.rect.height)
+        cr.stroke()
+
+        # Vert grid
+        for aa in range(6):
+            yy = aa * pitchy
+            cr.move_to(self.rect.x, yy + self.head)
+            cr.line_to(self.rect.width, yy + self.head)
+        cr.stroke()
+
+        self.tri_2 = [] ; self.tri_1 = []
+        cr.set_source_rgba(*dblue_col)
+
+        for aa in range(7):
+            for bb in range(6):
+                # Init
+                #ttt = datetime.datetime.today(); nnn = 0; pad = 0
+                (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
+                xx = aa * pitchx;  yy = bb * pitchy + self.head
+
+                warnings.simplefilter(&#34;ignore&#34;)
+                xx2, yy2 = self.get_pointer()
+                warnings.simplefilter(&#34;default&#34;)
+                mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
+
+                # Save it back to built array
+                self.darr[aa][bb] = ((nnn, ttt, pad, xx, yy))
+
+                nnn += 1
+                rrr, ggg, bbb = (255., 255., 255.)
+
+                if not pad:
+                    if hx == mx and hy == my:
+                        #print(&#34;Mouse over day:&#34;, mx, my)
+                        if self.zdate == ttt:
+                            rrr, ggg, bbb = (200/255, 230/255, 200/255)
+                        elif self.shx == aa and self.shy == bb:
+                            # Selected
+                            rrr, ggg, bbb = (200/255, 220/255, 220/255)
+                        else:
+                            rrr, ggg, bbb = (240/255, 240/255, 240/255)
+
+                    elif self.zdate == ttt:
+                        #print(&#34;Today&#34;, ttt)
+                        rrr, ggg, bbb = lgree_col
+                    elif self.shx == aa and self.shy == bb:
+                        rrr, ggg, bbb = (215/255, 235/255, 235/255)
+                    else:
+                        # Default
+                        rrr, ggg, bbb = white_col
+                else:
+                    #if self.shx == aa and self.shy == bb:
+                    #    self.cr.set_source_rgba(255/255, 235/255, 235/255)
+                    #else:
+                    rrr, ggg, bbb = (230/255, 230/255, 255/255)
+
+                self.cr.set_source_rgba(rrr, ggg, bbb)
+                cr.rectangle(xx + border/2, yy + border/2,
+                                    pitchx - border, pitchy - border)
+                cr.fill()
+
+                # Paint upper left
+                cr.move_to(xx + border, yy)
+                sss = str(nnn) # + &#34;  &#34; + ttt.strftime(&#34;%m-%d-%y&#34;)
+                cr.set_source_rgba(100/255, 100/255, 255/255)
+                self.fd.set_family(&#34;Arial&#34;)
+                self.fd.set_size(12 * Pango.SCALE);
+                self.pangolayout.set_font_description(self.fd)
+                self.pangolayout.set_text(sss, len(sss))
+                txx, tyy = self.pangolayout.get_pixel_size()
+                PangoCairo.show_layout(cr, self.pangolayout)
+
+                self.fill_day(aa, bb, ttt, xx + border, yy + border + tyy,
+                                        pitchx - 2*border, pitchy - 2*border - tyy)
+                &#39;&#39;&#39;
+                # Draw quarter ticks
+                cr.set_source_rgba(10/255, 10/255, 125/255)
+                tth = (pitchy - 2*border) / 4
+                for aaa in range(4):
+                    cr.move_to(xx +2, yy + tth * (aaa + 1))
+                    cr.line_to(xx+10, yy + tth * (aaa + 1))
+                &#39;&#39;&#39;
+                ww = pitchx; hh = pitchy
+
+                if not pad:
+                    if self.shx == aa and self.shy == bb:
+                        # Draw nav arrows
+                        self.cr.set_source_rgba(238/255, 255/255, 238/255)
+                        xxx =  xx + border/2 + 11 * pitchx/12
+                        yyy =  yy + border/2 + 5*pitchy/8
+                        www =  pitchx - border - 11*pitchx/12
+                        hhh =  pitchy - border - 5*pitchy/8
+                        #cr.rectangle(xxx, yyy, www, hhh)
+                        #cr.fill()
+
+                        # Draw triangles
+                        cr.set_line_width(1)
+                        self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                        self.tri_1 = [xxx, yyy, www, hhh/3]
+                        self.cr2.tri(self.tri_1)
+                        cr.fill()
+                        self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                        self.cr2.tri(self.tri_1)
+                        cr.stroke()
+
+                        # Draw triangles2
+                        self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                        self.tri_2 = [xxx, yyy + 2*hhh/3, www, hhh/3]
+                        self.cr2.tri2(self.tri_2)
+                        cr.fill()
+                        self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                        self.cr2.tri2(self.tri_2)
+                        cr.stroke()
+
+                        # Draw corners
+                        cr.set_source_rgba(10/255, 10/255, 125/255)
+                        cr.move_to(xx+2, yy+hh-2)
+                        cr.line_to(xx+2, yy+hh-hh/4)
+                        cr.move_to(xx+2, yy+hh - 2)
+                        cr.line_to(xx+ww/4, yy +hh- 2)
+
+                        cr.move_to(xx+ww-2, yy + 2)
+                        cr.line_to(xx+ww-2, yy + hh/4)
+                        cr.move_to(xx+ww-2, yy + 2)
+                        cr.line_to(xx+ww-ww/4, yy + 2)
+
+                        cr.stroke()
+
+    def pop_alarm(self, txt, arra):
+
+        &#39;&#39;&#39; Trigger alarms, if not done already &#39;&#39;&#39;
+
+        dddd = &#34;%02d:%02d&#34; % (arra[1], arra[2])
+        if txt[0] + dddd not in self.donearr:
+            self.donearr.append(txt[0] + dddd)
+        else:
+            return
+
+        #print(&#34;Popping alarm:&#34;, txt, arra)
+        self.mainwin.mywin.set_title(&#34;Python Calendar&#34;)
+        self.mainwin.logwin.append_logwin(&#34;Alarm at: %s %s\r&#34; % \
+            (dddd, txt[0]))
+
+        #print(&#34;Alarm triggered&#34;, dddd, arra)
+
+        if arra[3][0]:
+            pyala.notify_sys(txt[0], txt[1], dddd)
+        if arra[3][1]:
+            pyala.play_sound()
+        if arra[3][2]:
+            #pggui.message(&#34;\n&#34; + txt[0] + &#34;\n&#34;, title=&#34;Calendar Alarm&#34;)
+            #threading.Thread(target=alarm_it).start()
+            ddd = MsgDlg(&#34;Calendar Alarm at &#34; + dddd, txt[0], txt[1])
+        if arra[3][3]:
+            sys.stdout.write(&#39;\a&#39;)
+            sys.stdout.flush()
+        if arra[3][4]:
+            print(&#34;Email:&#34;)
+
+    def check_one(self, txt, tmpt, arra):
+
+        &#39;&#39;&#39; Check one alarm &#39;&#39;&#39;
+
+        if not arra[0]:
+            return
+
+        if self.config.debug &gt; 1:
+            print(&#34;check:&#34;, arra)
+        # Is it now?
+        if arra[1] == tmpt.hour:
+            if arra[2] == tmpt.minute:
+                self.pop_alarm(txt, arra)
+
+        # Is it in the future?
+        if  arra[1] &gt; tmpt.hour or \
+              arra[1] == tmpt.hour and arra[2] &gt; tmpt.minute:
+
+            if &#34;Next&#34; not in self.mainwin.mywin.get_title():
+                dddd = &#34;%02d:%02d&#34; % (arra[1], arra[2])
+                if txt[0] + dddd not in self.donenext:
+                    self.donenext.append(txt[0] + dddd)
+                    print(&#34;future:&#34;, dddd)
+                    self.mainwin.mywin.set_title(&#34;Next alarm: &#34; \
+                        +  &#34;&#39;&#34; + txt[0][:24] + &#34;&#39;&#34; + &#34; at &#34; + dddd)
+
+    def eval_alarm(self):
+
+        flag = False
+        tmpt = datetime.datetime.today()
+        if self.config.debug &gt; 3:
+            print(&#34;eval_alarm&#34;, tmpt.day, &#34;-&#34;, tmpt.month, &#34;-&#34;, tmpt.year,
+                                    tmpt.hour, tmpt.minute, tmpt.second)
+        for aa in self.monarr:
+            # Is it today?
+            if aa[1][0] == tmpt.day and aa[1][1] == tmpt.month  \
+                    and aa[1][2] == tmpt.year:
+                if self.config.debug &gt; 2:
+                    print(&#34;Today&#34;, aa[2])
+                # Check all three
+                self.check_one(aa[2], tmpt, aa[3][0])
+                self.check_one(aa[2], tmpt, aa[3][1])
+                self.check_one(aa[2], tmpt, aa[3][2])
+
+    def handler_tick(self):
+
+        if self.config.debug &gt; 4:
+            print(&#34;handler_tick&#34;)
+        self.eval_alarm()
+        return True
+
+        #try:
+        #    GLib.timeout_add(1000, handler_tick, main_class)
+        #except:
+        #    print(&#34;Exception in setting timer handler&#34;, sys.exc_info())</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>gi.repository.Gtk.DrawingArea</li>
+<li>gi.overrides.Gtk.Widget</li>
+<li>gi.repository.Gtk.Widget</li>
+<li>gi.repository.GObject.InitiallyUnowned</li>
+<li>gi.overrides.GObject.Object</li>
+<li>gi.repository.GObject.Object</li>
+<li>gi._gi.GObject</li>
+<li>gi.repository.Atk.ImplementorIface</li>
+<li>gi.repository.Gtk.Buildable</li>
+<li>gobject.GInterface</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="pycal.CalCanvas.area_button"><code class="name flex">
+<span>def <span class="ident">area_button</span></span>(<span>self, area, event)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def area_button(self, area, event):
+    self.mouevent = event
+    #self.mouse = Rectangle(event.x, event.y, 4, 4)
+    #print( &#34;Button&#34;, event.button, &#34;state&#34;, event.state, &#34; x =&#34;, event.x, &#34;y =&#34;, event.y)
+
+    mods = event.state &amp; Gtk.accelerator_get_default_mod_mask()
+
+    if(mods &amp; Gdk.ModifierType.MOD1_MASK):
+        #print(&#34;Modifier ALT&#34;,  event.state)
+        pass
+    if event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+        #print( &#34;Ctrl ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+        pass
+    elif  event.type == Gdk.EventType.BUTTON_PRESS:
+        #print(&#34;Single click&#34;, event.button)
+        if event.button == 1:
+            hit = pggui.Rectangle(event.x, event.y, 2, 2)
+
+            if self.tri_2 != []:
+                #print(&#34;Got tri2&#34;, self.tri_2)
+                rrr = pggui.Rectangle(self.tri_2)
+                if rrr.intersect(hit)[0]:
+                    #print(&#34;Click in tri 2&#34;)
+                    self.scrollday += 1
+                    self.invalidate()
+                    self.ign += 1
+                    return
+
+            if self.tri_1 != []:
+                #print(&#34;Got tri1&#34;, self.tri_1)
+                rrr = pggui.Rectangle(self.tri_1)
+                if rrr.intersect(hit)[0]:
+                    #print(&#34;Click in tri 1&#34;)
+                    if  self.scrollday &gt; 0:
+                        self.scrollday -= 1
+                    self.invalidate()
+                    self.ign += 1
+                    return
+
+            self.ign = 0
+            self.shx, self.shy = self.hit_test(event.x, event.y)
+
+        if event.button == 3:
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+            hx, hy = self.hit_test(event.x, event.y)
+            #print(&#34;hx, hY&#34;, hx, hy)
+            (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+            sdd = ttt.strftime(&#34;%a %d-%b-%Y&#34;)
+            warnings.simplefilter(&#34;ignore&#34;)
+            self.menu = pggui.Menu((&#34;Selection: %s&#34; % sdd, &#34;New Calendar Entry&#34;,
+                                        &#34;Edit entry&#34;, &#34;Delete Entry&#34;),
+                                            self.menucb, event)
+            warnings.simplefilter(&#34;default&#34;)
+
+        self.queue_draw()
+
+    elif  event.type == Gdk.EventType.BUTTON_RELEASE:
+        self.drag = None
+        self.resize = None
+        self.noop_down = False
+        #self.get_root_window().set_cursor(self.arrow)
+
+    elif  event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+
+        if self.ign:
+            self.ign -= 1
+            return
+
+        #print(&#34;DBL click&#34;, event.x, event.y)
+        if event.button == 1:
+            if self.popped:
+                try:    self.tt.destroy()
+                except: pass
+                self.popped = False
+
+            hx, hy = self.hit_test(event.x, event.y)
+            (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+            if not pad:
+                self.dlg = pycalent.CalEntry( \
+                            event.x, event.y, self, self.done_caldlg)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.area_motion"><code class="name flex">
+<span>def <span class="ident">area_motion</span></span>(<span>self, area, event)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def area_motion(self, area, event):
+    #print (&#34;motion event&#34;, event.state, event.x, event.y)
+    self.mouevent = event
+
+    &#39;&#39;&#39;if event.state &amp; Gdk.ModifierType.SHIFT_MASK:
+                print( &#34;Shift ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+            if event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+                print( &#34;Ctrl ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+            if event.state &amp; Gdk.ModifierType.MOD1_MASK :
+                print( &#34;Alt ButPress x =&#34;, event.x, &#34;y =&#34;, event.y)
+            &#39;&#39;&#39;
+
+    if self.popped:
+        try:
+            self.tt.destroy()
+        except:
+            #pgutils.put_exception(&#34;motion popped&#34;)
+            #print(sys.exc_info())
+            pass
+
+        self.popped = False
+    else:
+        self.fired += 1
+        GLib.timeout_add(600, self.keytime)
+
+    hx, hy = self.hit_test(int(event.x), int(event.y))
+    #print(&#34;hx&#34;, hx, self.old_hx, &#34;hy&#34;, hy,self.old_hy)
+    #print(&#34;Hit&#34;, hx, hy, self.xtext[hx + 7 * hy])
+
+    if (self.old_hx != hx or self.old_hy != hy):
+        #print(&#34;Delta&#34;, hx, hy)
+        self.scrollday = 0
+        self.queue_draw()
+
+    self.old_hx = hx; self.old_hy = hy</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.check_one"><code class="name flex">
+<span>def <span class="ident">check_one</span></span>(<span>self, txt, tmpt, arra)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check one alarm</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_one(self, txt, tmpt, arra):
+
+    &#39;&#39;&#39; Check one alarm &#39;&#39;&#39;
+
+    if not arra[0]:
+        return
+
+    if self.config.debug &gt; 1:
+        print(&#34;check:&#34;, arra)
+    # Is it now?
+    if arra[1] == tmpt.hour:
+        if arra[2] == tmpt.minute:
+            self.pop_alarm(txt, arra)
+
+    # Is it in the future?
+    if  arra[1] &gt; tmpt.hour or \
+          arra[1] == tmpt.hour and arra[2] &gt; tmpt.minute:
+
+        if &#34;Next&#34; not in self.mainwin.mywin.get_title():
+            dddd = &#34;%02d:%02d&#34; % (arra[1], arra[2])
+            if txt[0] + dddd not in self.donenext:
+                self.donenext.append(txt[0] + dddd)
+                print(&#34;future:&#34;, dddd)
+                self.mainwin.mywin.set_title(&#34;Next alarm: &#34; \
+                    +  &#34;&#39;&#34; + txt[0][:24] + &#34;&#39;&#34; + &#34; at &#34; + dddd)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.decode_text"><code class="name flex">
+<span>def <span class="ident">decode_text</span></span>(<span>self, txt)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode_text(self, txt):
+    strx = &#34;&#34;
+    txt2 = txt.encode(&#34;ascii&#34;, &#34;ignore&#34;)
+    for aa in txt2:
+        if ord(aa) &lt; 128:
+            strx += aa
+    return strx
+    #return strx.decode(&#34;cp437&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.dest_me"><code class="name flex">
+<span>def <span class="ident">dest_me</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dest_me(self):
+    print(&#34;Destroying ...&#34;)
+    #self.get_root_window().set_cursor(self.arrow)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.done_caldlg"><code class="name flex">
+<span>def <span class="ident">done_caldlg</span></span>(<span>self, res, cald)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Got data save it</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def done_caldlg(self, res, cald):
+
+    &#39;&#39;&#39;  Got data save it &#39;&#39;&#39;
+
+    if res != &#34;OK&#34;:         # Cancel pressed
+        return
+    if self.config.debug &gt; 2:
+        print(cald)
+
+    # Save to SQLite database
+    key = self.make_key(cald.xnowarr)
+
+    if self.config.debug &gt; 2:
+        print(&#34;put:&#34;, key, cald.xuuid, *cald.txtarr, cald.scope)
+    #if self.newx:
+    self.sql.put(key, cald.xuuid, *cald.txtarr, cald.scope)
+
+    arrz = []
+    for aa in cald.xalarr:
+        arrz.append(str(aa))
+    arry = []
+    for aa in cald.xscript:
+        arry.append(str(aa))
+    if self.config.debug &gt; 2:
+        print(&#34;put data:&#34;, cald.xuuid,  *arrz, *arry)
+    self.sql.putdata(cald.xuuid, *arrz, *arry)
+
+    self.doneala = []; self.donenext = []
+
+    self.invalidate()</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.draw_event"><code class="name flex">
+<span>def <span class="ident">draw_event</span></span>(<span>self, doc, cr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_event(self, doc, cr):
+
+    if self.freeze:
+        return
+
+    border = 4
+    #print (&#34;Painting .. &#34;, self.cnt)
+    self.cnt += 1
+
+    #ctx = self.get_style_context()
+    #fg_color = ctx.get_color(Gtk.StateFlags.NORMAL)
+    #bg_color = ctx.get_background_color(Gtk.StateFlags.NORMAL)
+
+    self.layout = PangoCairo.create_layout(cr)
+    self.rect = self.get_allocation()
+    self.cr = cr
+    self.cr2 = pggui.CairoHelper(cr)
+
+    # Paint white, ignore system BG
+    cr.set_source_rgba(*white_col)
+    #cr.rectangle( border, border, self.rect.width - border * 2, self.rect.height - border * 2);
+    cr.rectangle( 0, 0, self.rect.width, self.rect.height);
+    cr.fill()
+
+    self.head =  self.rect.height // 10
+    newheight = self.rect.height - self.head
+    pitchx = (self.rect.width) // 7;
+    pitchy = newheight // 6;
+
+    # Month, year
+    cr.set_source_rgba(*grey_col)
+    self.fd.set_family(&#34;Arial&#34;)
+    self.fd.set_size(self.rect.height / 30 * Pango.SCALE);
+    self.pangolayout.set_font_description(self.fd)
+
+    mmm = self.xdate.month - 1
+    hhh = monstr[mmm] + &#34;, &#34; + str(self.xdate.year)
+    self.pangolayout.set_text(hhh, len(hhh))
+    txx, tyy = self.pangolayout.get_pixel_size()
+    cr.move_to(self.rect.width/2 - txx/2, border)
+    PangoCairo.show_layout(cr, self.pangolayout)
+
+    # Weekdays
+    cr.set_source_rgba(*lgrey_col)
+    self.fd.set_size(self.rect.height / 35 * Pango.SCALE);
+    self.pangolayout.set_font_description(self.fd)
+    for aa in range(7):
+        xx = aa * pitchx
+        self.pangolayout.set_text(daystr[aa], len(daystr[aa]))
+        txx, tyy = self.pangolayout.get_pixel_size()
+        cr.move_to(xx + border + (pitchx/2 - txx/2), self.head - tyy - border)
+        PangoCairo.show_layout(cr, self.pangolayout)
+
+    # Horiz grid
+    cr.set_source_rgba(*lgrey_col)
+    cr.set_line_width(1)
+
+    for aa in range(8):
+        xx = aa * pitchx + self.rect.x
+        cr.move_to(xx, self.head)
+        cr.line_to(xx, self.rect.height)
+    cr.stroke()
+
+    # Vert grid
+    for aa in range(6):
+        yy = aa * pitchy
+        cr.move_to(self.rect.x, yy + self.head)
+        cr.line_to(self.rect.width, yy + self.head)
+    cr.stroke()
+
+    self.tri_2 = [] ; self.tri_1 = []
+    cr.set_source_rgba(*dblue_col)
+
+    for aa in range(7):
+        for bb in range(6):
+            # Init
+            #ttt = datetime.datetime.today(); nnn = 0; pad = 0
+            (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
+            xx = aa * pitchx;  yy = bb * pitchy + self.head
+
+            warnings.simplefilter(&#34;ignore&#34;)
+            xx2, yy2 = self.get_pointer()
+            warnings.simplefilter(&#34;default&#34;)
+            mx, my  = self.hit_test(xx, yy); hx, hy  = self.hit_test(xx2, yy2)
+
+            # Save it back to built array
+            self.darr[aa][bb] = ((nnn, ttt, pad, xx, yy))
+
+            nnn += 1
+            rrr, ggg, bbb = (255., 255., 255.)
+
+            if not pad:
+                if hx == mx and hy == my:
+                    #print(&#34;Mouse over day:&#34;, mx, my)
+                    if self.zdate == ttt:
+                        rrr, ggg, bbb = (200/255, 230/255, 200/255)
+                    elif self.shx == aa and self.shy == bb:
+                        # Selected
+                        rrr, ggg, bbb = (200/255, 220/255, 220/255)
+                    else:
+                        rrr, ggg, bbb = (240/255, 240/255, 240/255)
+
+                elif self.zdate == ttt:
+                    #print(&#34;Today&#34;, ttt)
+                    rrr, ggg, bbb = lgree_col
+                elif self.shx == aa and self.shy == bb:
+                    rrr, ggg, bbb = (215/255, 235/255, 235/255)
+                else:
+                    # Default
+                    rrr, ggg, bbb = white_col
+            else:
+                #if self.shx == aa and self.shy == bb:
+                #    self.cr.set_source_rgba(255/255, 235/255, 235/255)
+                #else:
+                rrr, ggg, bbb = (230/255, 230/255, 255/255)
+
+            self.cr.set_source_rgba(rrr, ggg, bbb)
+            cr.rectangle(xx + border/2, yy + border/2,
+                                pitchx - border, pitchy - border)
+            cr.fill()
+
+            # Paint upper left
+            cr.move_to(xx + border, yy)
+            sss = str(nnn) # + &#34;  &#34; + ttt.strftime(&#34;%m-%d-%y&#34;)
+            cr.set_source_rgba(100/255, 100/255, 255/255)
+            self.fd.set_family(&#34;Arial&#34;)
+            self.fd.set_size(12 * Pango.SCALE);
+            self.pangolayout.set_font_description(self.fd)
+            self.pangolayout.set_text(sss, len(sss))
+            txx, tyy = self.pangolayout.get_pixel_size()
+            PangoCairo.show_layout(cr, self.pangolayout)
+
+            self.fill_day(aa, bb, ttt, xx + border, yy + border + tyy,
+                                    pitchx - 2*border, pitchy - 2*border - tyy)
+            &#39;&#39;&#39;
+            # Draw quarter ticks
+            cr.set_source_rgba(10/255, 10/255, 125/255)
+            tth = (pitchy - 2*border) / 4
+            for aaa in range(4):
+                cr.move_to(xx +2, yy + tth * (aaa + 1))
+                cr.line_to(xx+10, yy + tth * (aaa + 1))
+            &#39;&#39;&#39;
+            ww = pitchx; hh = pitchy
+
+            if not pad:
+                if self.shx == aa and self.shy == bb:
+                    # Draw nav arrows
+                    self.cr.set_source_rgba(238/255, 255/255, 238/255)
+                    xxx =  xx + border/2 + 11 * pitchx/12
+                    yyy =  yy + border/2 + 5*pitchy/8
+                    www =  pitchx - border - 11*pitchx/12
+                    hhh =  pitchy - border - 5*pitchy/8
+                    #cr.rectangle(xxx, yyy, www, hhh)
+                    #cr.fill()
+
+                    # Draw triangles
+                    cr.set_line_width(1)
+                    self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                    self.tri_1 = [xxx, yyy, www, hhh/3]
+                    self.cr2.tri(self.tri_1)
+                    cr.fill()
+                    self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                    self.cr2.tri(self.tri_1)
+                    cr.stroke()
+
+                    # Draw triangles2
+                    self.cr.set_source_rgba(100/255, 255/255, 100/255)
+                    self.tri_2 = [xxx, yyy + 2*hhh/3, www, hhh/3]
+                    self.cr2.tri2(self.tri_2)
+                    cr.fill()
+                    self.cr.set_source_rgba(100/255, 200/255, 100/255)
+                    self.cr2.tri2(self.tri_2)
+                    cr.stroke()
+
+                    # Draw corners
+                    cr.set_source_rgba(10/255, 10/255, 125/255)
+                    cr.move_to(xx+2, yy+hh-2)
+                    cr.line_to(xx+2, yy+hh-hh/4)
+                    cr.move_to(xx+2, yy+hh - 2)
+                    cr.line_to(xx+ww/4, yy +hh- 2)
+
+                    cr.move_to(xx+ww-2, yy + 2)
+                    cr.line_to(xx+ww-2, yy + hh/4)
+                    cr.move_to(xx+ww-2, yy + 2)
+                    cr.line_to(xx+ww-ww/4, yy + 2)
+
+                    cr.stroke()</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.eval_alarm"><code class="name flex">
+<span>def <span class="ident">eval_alarm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def eval_alarm(self):
+
+    flag = False
+    tmpt = datetime.datetime.today()
+    if self.config.debug &gt; 3:
+        print(&#34;eval_alarm&#34;, tmpt.day, &#34;-&#34;, tmpt.month, &#34;-&#34;, tmpt.year,
+                                tmpt.hour, tmpt.minute, tmpt.second)
+    for aa in self.monarr:
+        # Is it today?
+        if aa[1][0] == tmpt.day and aa[1][1] == tmpt.month  \
+                and aa[1][2] == tmpt.year:
+            if self.config.debug &gt; 2:
+                print(&#34;Today&#34;, aa[2])
+            # Check all three
+            self.check_one(aa[2], tmpt, aa[3][0])
+            self.check_one(aa[2], tmpt, aa[3][1])
+            self.check_one(aa[2], tmpt, aa[3][2])</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.fill_day"><code class="name flex">
+<span>def <span class="ident">fill_day</span></span>(<span>self, aa, bb, ttt, xxx, yyy, www, hhh)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fill_day(self, aa, bb, ttt, xxx, yyy, www, hhh):
+
+    (nnn, ttt, pad, xx, yy) = self.darr[aa][bb]
+
+    if pad:
+        return
+
+    self.cr.rectangle(xxx, yyy, www, hhh)
+    self.cr.clip()
+
+    hhh2 = self.rect.height / 60
+    hhh2 = min(hhh2, 12)
+
+    self.cr.set_source_rgba(*grey_col)
+    self.fd.set_family(&#34;Arial&#34;)
+
+    self.fd.set_size(hhh2 * Pango.SCALE);
+    self.pangolayout.set_font_description(self.fd)
+    prog = yyy
+
+    arrd = self.get_daydat(ttt)
+    arrsd = sorted(arrd, key=lambda val: val[1][3] * 60 + val[1][4] )
+    if self.shx == aa and self.shy == bb:
+        tmpscroll = self.scrollday
+    else:
+        tmpscroll = 0
+
+    if len(arrsd):
+        try:
+            for sss in arrsd[tmpscroll:]:
+                #print(&#34;sss&#34;, sss[3][3], sss[3][4])
+                txt = &#34;%02d:%02d &#34; % (int(sss[1][3]), int(sss[1][4]))
+                if sss[2][0]:
+                    txt += str(sss[2][0])
+                else:
+                    txt += &#34;Empty Subject Line &#34; # + sss[0]
+                #print(&#34;printing&#34;, txt, &#34;len:&#34;, len(txt), &#34;ulen&#34;, len(txt.encode(&#34;UTF8&#34;)) )
+                if sys.version_info[0] &lt; 3:
+                    txt2 = self.decode_text(txt)
+                    print(&#34;ver 2&#34;, txt2)
+                    self.pangolayout.set_text(txt2, len(txt2))
+                else:
+                    self.pangolayout.set_text(txt, len(txt.encode(&#34;UTF8&#34;)) )
+
+                txx, tyy = self.pangolayout.get_pixel_size()
+                self.cr.move_to(xxx, prog)
+                prog += tyy
+                PangoCairo.show_layout(self.cr, self.pangolayout)
+
+        except:
+            #print(&#34;fill_day&#34;, sys.exc_info())
+            pgutils.put_exception(&#34;Fill_day&#34;)
+            pass
+
+    self.cr.new_path()
+    self.cr.reset_clip()</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.get_cal_data"><code class="name flex">
+<span>def <span class="ident">get_cal_data</span></span>(<span>self, arrx)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_cal_data(self, arrx):
+
+    #print(&#34;get_cal_data() arrx&#34;, arrx)
+    arr = []
+
+    # Blank the alarm fields
+    arr3 = [ False, 0, 0, [False, False, False, False, False]]
+    arr4 = [ False, 0, 0, [False, False, False, False, False]]
+    arr5 = [ False, 0, 0, [False, False, False, False, False]]
+
+    # Process rules for the month
+    for aa in arrx:
+        if aa[6]:
+            rr =  flatten(aa[6])
+            if &#34;FREQ=YEARLY&#34; in rr:
+                rule = get_rule_str(str(self.xdate.month), rr)
+                if rule:
+                    zdate = None
+                    #print(&#34;byday args:&#34;, rr, &#34;&#39;&#34; + rule + &#34;&#39;&#34;)
+                    roffs = int(rule[:-2])
+                    dd = 0; cnt = 0
+                    for cc in dayidx:
+                        if cc == rule[-2:]:
+                            dd = cnt
+                            break
+                        cnt += 1
+                    #print(&#34;day&#34;, roffs, &#34;num&#34;, rule[-2:], &#34;dd&#34;, dd)
+                    mr = monthrange(self.xdate.year, self.xdate.month)[1]
+                    if roffs &gt;= 0:
+                        for bb in range(1, mr + 1):
+                            zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                            #print(&#34;zdate&#34;, zdate, zdate.weekday())
+                            if zdate.weekday() == dd:
+                                #print (&#34;encountered&#34;, zdate, zdate.weekday())
+                                roffs -= 1
+                                if roffs == 0:
+                                    #print (&#34;Set&#34;, zdate, zdate.weekday(), aa[0])
+                                    break
+                    else:
+                        for bb in range(mr, 0, -1):
+                            zdate = datetime.datetime(self.xdate.year, self.xdate.month, bb)
+                            #print(&#34;zdate&#34;, zdate, zdate.weekday())
+                            if zdate.weekday() == dd:
+                                #print (&#34;encountered&#34;, zdate, zdate.weekday())
+                                roffs += 1
+                                if roffs == 0:
+                                    #print (&#34;Set&#34;, zdate, zdate.weekday(), aa[0])
+                                    break
+
+                    if zdate:
+                        carr = [&#34;&#34;, [ zdate.day, zdate.month, zdate.year,
+                                            zdate.hour, zdate.minute, 0 ],
+                               [flatten(aa[0]), &#34;&#34;, &#34;&#34;, flatten(aa[5]) ],
+                               [ arr3, arr4, arr5 ]  ]
+                        arr.append(carr)
+
+        try:
+            if self.xdate.year == aa[1].year and \
+                    self.xdate.month == aa[1].month:
+
+                #print(&#34;day arr&#34;, aa)
+                #print(aa[1].year, aa[1].month, aa[1].day, &#34;\nsum:&#34;,
+                #                flatten(aa[0]), &#34;\ndesc:&#34;, flatten(aa[5]) )
+
+                carr = [&#34;&#34;, [ aa[1].day, aa[1].month, aa[1].year,
+                                        aa[1].hour, aa[1].minute, 0 ],
+                           [flatten(aa[0]), &#34;&#34;, &#34;&#34;, flatten(aa[5]) ],
+                           [ arr3, arr4, arr5 ]  ]
+                arr.append(carr)
+
+        except:
+            print(&#34;Cannot parse:&#34;, sys.exc_info())
+            print( &#34;aa&#34;, aa)
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.get_daydat"><code class="name flex">
+<span>def <span class="ident">get_daydat</span></span>(<span>self, ddd)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_daydat(self, ddd):
+    arr = []
+    #print (&#34;get_daydat for&#34;, ddd)
+    # Get it for arr
+    for aa in self.monarr:
+        last = aa[1]
+        if int(last[0]) == ddd.day and \
+            int(last[1]) == ddd.month and \
+                int(last[2]) == ddd.year:
+            #print(&#34;Date match&#34;, last)
+            arr.append(aa)
+        else:
+            pass
+            #print(&#34;no match&#34;, last[0], last[1], last[2])
+            #print(&#34;with&#34;, ddd.day, ddd.month, ddd.year)
+
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.get_month_data"><code class="name flex">
+<span>def <span class="ident">get_month_data</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_month_data(self):
+
+    arr = []
+    if not self.sql:
+        return arr
+
+    # Get padded (OK) days
+    for aa in range(7):
+        lastd = self.darr[aa]
+        for bb in lastd:
+            if bb[2]:
+                continue
+            ddd = bb[1]
+            key = &#34;%02d-%02d-%02d %%&#34; % (ddd.day, ddd.month, ddd.year)
+            # Get it from the DB
+            arr2 = self.sql.get(key)
+            if not arr2:
+                continue
+            #print(&#34;sql.get key&#34;, key, &#34;got sql&#34;, arr2)
+            for aa in arr2:
+                #print(&#34;sql.got&#34;, aa)
+                ttt = aa[1].split(&#34; &#34;)
+                (dd, mm, yy) = ttt[0].split(&#34;-&#34;)
+                (HH, MM) = ttt[1].split(&#34;:&#34;)
+                dur = ttt[2]
+                arr3, arr4, arr5, arr6, arr7 = self.sql.getdata(aa[2])
+                #print(&#34;sql.getdata:&#34;, arr3, arr4, arr5, arr6, arr7)
+                defa = ( False, 0, 0, [False, False, False, False, False])
+                if arr3:
+                    arr3 = eval(arr3)
+                else:
+                    arr3 = defa[:]
+                if arr4:
+                    arr4 = eval(arr4)
+                else:
+                    arr4 = defa[:]
+                if arr5:
+                    arr5 = eval(arr5)
+                else:
+                    arr5 = defa[:]
+                if arr6:
+                    arr6 = eval(arr6)
+                else:
+                    arr6 = False
+
+                def unpackx(*arrx):
+                    res = arrx
+                    return res
+                carr = [aa[2],
+                            [int(dd), int(mm),
+                            int(yy), int(HH), int(MM), int(dur)],
+                            [*aa[3:]], [ arr3, arr4, arr5 ], arr6, arr7 ]
+                if self.config.debug &gt; 3:
+                     print(&#34;reading carr&#34;, carr)
+                arr.append(carr)
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.handler_tick"><code class="name flex">
+<span>def <span class="ident">handler_tick</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handler_tick(self):
+
+    if self.config.debug &gt; 4:
+        print(&#34;handler_tick&#34;)
+    self.eval_alarm()
+    return True
+
+    #try:
+    #    GLib.timeout_add(1000, handler_tick, main_class)
+    #except:
+    #    print(&#34;Exception in setting timer handler&#34;, sys.exc_info())</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.hit_test"><code class="name flex">
+<span>def <span class="ident">hit_test</span></span>(<span>self, px, py)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def hit_test(self, px, py):
+    newheight = self.rect.height - self.head
+    pitchx = (self.rect.width) // 7;
+    pitchy = newheight // 6;
+    py2 = int(py) - self.head
+    #print(&#34;px&#34;, px, &#34;pitchy&#34;, pitchy)
+    aa = 0; bb = 0
+    try: aa = int(px) // pitchx;
+    except: pass
+    try: bb =  py2 // pitchy;
+    except: pass
+    return aa, bb</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.invalidate"><code class="name flex">
+<span>def <span class="ident">invalidate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def invalidate(self):
+    #print(&#34;Invalidate calendar&#34;)
+    self.set_date(self.xdate)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.keypress"><code class="name flex">
+<span>def <span class="ident">keypress</span></span>(<span>self, win, event)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def keypress(self, win, event):
+
+    ret = False
+    #print (&#34;key&#34;, event.string, &#34;val&#34;, event.keyval, &#34;state&#34;, event.state)
+    #print(&#34;hw&#34;, event.hardware_keycode)
+
+    #if  event.state &amp; Gdk.ModifierType.SHIFT_MASK:
+    #    print(&#34;SHIFT&#34;)
+    #if  event.state &amp; Gdk.ModifierType.CONTROL_MASK:
+    #    print(&#34;CONTROL&#34;)
+    #if  event.state &amp; Gdk.ModifierType.MOD1_MASK:
+    #    print(&#34;ALT&#34;)
+
+    if event.keyval == Gdk.KEY_Up:
+        #print(&#34;Up&#34;)
+        ret = True
+    if event.keyval == Gdk.KEY_Down:
+        #print(&#34;Down&#34;)
+        ret = True
+    if event.keyval == Gdk.KEY_Left:
+        #print(&#34;Left&#34;)
+        ret = True
+    if event.keyval == Gdk.KEY_Right:
+        #print(&#34;Right&#34;)
+        ret = True
+
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.keytime"><code class="name flex">
+<span>def <span class="ident">keytime</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def keytime(self):
+    #print( &#34;keytime raw&#34;, time.time(), self.fired)
+    if self.dlg:
+        return
+
+    if self.fired ==  1:
+        if not self.popped:
+            mx, my = self.get_pointer()
+            #print(&#34;mx, my &#34;, mx, my)
+
+            # Is mouse in cal?
+            if mx &gt; 0 and my &gt; self.head and mx &lt; self.rect.width and my &lt; self.rect.height:
+                self.popped = True
+                hx, hy = self.hit_test(mx, my)
+                strx = &#34;%d %d \n&#34; % (hx, hy)
+                try:
+                    arr = self.xtext[hx][hy]
+                    for sss in arr:
+                        if len(sss) &gt; 36:
+                            sss = sss[:34] + &#34; ... &#34;
+                        strx += sss + &#34;\n&#34;
+
+                    self.tt = CalPopup(strx)
+
+                    # Calculate self absolute (screen) position
+                    posx, posy = self.mainwin.mywin.get_position()
+                    #print(&#34;posx, posy&#34;, posx, posy)
+
+                    self.tt.move(posx + mx, posy + my + self.head)
+                    #self.tt.move(posx + mx - 12, posy + my + self.head - 12)
+                    self.tt.show_all()
+                except:
+                    #print(sys.exc_info())
+                    #pgutils.put_exception(&#34;key_time&#34;)
+                    pass
+
+    self.fired -= 1</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.make_key"><code class="name flex">
+<span>def <span class="ident">make_key</span></span>(<span>self, sss)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_key(self, sss):
+    key = &#34;&#34;
+    for bb in range(3):
+        key += &#34;%02d-&#34; % (int(sss[bb]))
+    key = str.strip(key, &#34;-&#34;)
+    key += &#34; &#34;
+    for bb in range(2):
+        key += &#34;%02d:&#34; % (int(sss[bb+3]))
+    key = str.strip(key, &#34;:&#34;)
+    key += &#34; %02d&#34; % (int(sss[5]))
+    return key</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.menucb"><code class="name flex">
+<span>def <span class="ident">menucb</span></span>(<span>self, txt, cnt)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def menucb(self, txt, cnt):
+    #print (&#34; txt cnt&#34;, txt, txt)
+    xxx = self.menu.event.x;  yyy = self.menu.event.y
+
+    hx, hy = self.hit_test(xxx, yyy)
+    (nnn, ttt, pad, xx, yy) = self.darr[hx][hy]
+
+    if cnt == 1:
+        #print(&#34;New entry&#34;)
+        if self.popped:
+            try:    self.tt.destroy()
+            except: pass
+            self.popped = False
+        if not pad:
+            self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg, True)
+    if cnt == 2:
+        if self.popped:
+            try:    self.tt.destroy()
+            except: pass
+            self.popped = False
+        if self.config.debug &gt; 3:
+            print(&#34;Editing entry:&#34;,  nnn, &#34;-&#34;, ttt, &#34;-&#34;, pad, xx, yy)
+        if not pad:
+            self.dlg = pycalent.CalEntry(xxx, yyy, self, self.done_caldlg)
+
+    if cnt == 3:
+        # This was the font height on draw ...
+        hhh2 = self.rect.height / 60; hhh2 = min(hhh2, 12) + 6
+        xdarr = self.get_daydat(ttt)
+        xdarrs = sorted(xdarr, key=lambda val: val[1][3] * 60 + val[1][4] )
+        idx = int(((yyy - (hhh2 + 4)) - yy) // hhh2) + self.scrollday
+        #print(&#34;len&#34;, len(xdarrs), &#34;idx&#34;, idx)
+        msg = &#34;\n&#34;
+        if idx &gt;= len(xdarrs):
+            pggui.message(      &#34;\nNot pointing to valid Item or&#34;
+                                &#34;\nItem not in personal calendar.&#34;
+                                &#34;\nPlease select a deletable item.&#34;)
+            return
+        else:
+            xdat = xdarrs[idx]
+            if self.config.debug &gt; 3:
+                print(&#34;Deleting entry&#34;, xdat)
+            sdd = ttt.strftime(&#34;%a %d-%b-%Y&#34;)
+            sdd +=  &#34; %02d:%02d&#34; %  (xdat[1][3], xdat[1][4])
+            msg += &#34;%s\n\n%s ? &#34; % (sdd, xdat[2][0])
+            #msg += &#34;%s\n\n%s\n%s&#34; % (sdd, xdat[2][0], xdat[2][1])
+
+        warnings.simplefilter(&#34;ignore&#34;)
+        ret = pggui.yes_no(msg, title = &#34; Confirm Delete Item &#34;)
+        warnings.simplefilter(&#34;default&#34;)
+
+        if ret == Gtk.ResponseType.YES:
+            #print(&#34;deleting&#34;, xdat[0])
+            ret = self.sql.rmone(xdat[0])
+            #if not ret:
+            #    pggui.message(      &#34;\nCannot delete %s&#34; % xdat[2][0])
+            self.invalidate()
+
+    #if cnt == 4:
+    #    print(&#34;Editing day&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.pop_alarm"><code class="name flex">
+<span>def <span class="ident">pop_alarm</span></span>(<span>self, txt, arra)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Trigger alarms, if not done already</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pop_alarm(self, txt, arra):
+
+    &#39;&#39;&#39; Trigger alarms, if not done already &#39;&#39;&#39;
+
+    dddd = &#34;%02d:%02d&#34; % (arra[1], arra[2])
+    if txt[0] + dddd not in self.donearr:
+        self.donearr.append(txt[0] + dddd)
+    else:
+        return
+
+    #print(&#34;Popping alarm:&#34;, txt, arra)
+    self.mainwin.mywin.set_title(&#34;Python Calendar&#34;)
+    self.mainwin.logwin.append_logwin(&#34;Alarm at: %s %s\r&#34; % \
+        (dddd, txt[0]))
+
+    #print(&#34;Alarm triggered&#34;, dddd, arra)
+
+    if arra[3][0]:
+        pyala.notify_sys(txt[0], txt[1], dddd)
+    if arra[3][1]:
+        pyala.play_sound()
+    if arra[3][2]:
+        #pggui.message(&#34;\n&#34; + txt[0] + &#34;\n&#34;, title=&#34;Calendar Alarm&#34;)
+        #threading.Thread(target=alarm_it).start()
+        ddd = MsgDlg(&#34;Calendar Alarm at &#34; + dddd, txt[0], txt[1])
+    if arra[3][3]:
+        sys.stdout.write(&#39;\a&#39;)
+        sys.stdout.flush()
+    if arra[3][4]:
+        print(&#34;Email:&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.set_date"><code class="name flex">
+<span>def <span class="ident">set_date</span></span>(<span>self, dt)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_date(self, dt):
+
+    #print(&#34;set_date&#34;, dt)
+    #pycallog.logwin.append_logwin(&#34;Set new date on cal: %s\n&#34; % dt.ctime())
+
+    self.donearr = []
+    self.freeze = True
+    self.xdate = dt
+    self.__calc_curr()
+    self.freeze = False
+
+    self.monarr = self.get_month_data()
+
+    if self.moon:
+        self.monarr += self.get_cal_data(self.moonarr)
+
+    if self.holy:
+        self.monarr += self.get_cal_data(self.usarr)
+
+    self.queue_draw()</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.set_dbfile"><code class="name flex">
+<span>def <span class="ident">set_dbfile</span></span>(<span>self, dbfile, config)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_dbfile(self, dbfile, config):
+    self.dbfile = dbfile
+    try:
+        self.sql = pycalsql.CalSQLite(self.dbfile, config)
+    except:
+        print(&#34;Cannot make/open calendar database.&#34;)
+    self.monarr = self.get_month_data()</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.set_holfile"><code class="name flex">
+<span>def <span class="ident">set_holfile</span></span>(<span>self, holfile)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_holfile(self, holfile):
+    self.holarr = calfile.eval_file(holfile)
+    self.monarr += self.get_cal_data(self.holarr )</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.set_moonfile"><code class="name flex">
+<span>def <span class="ident">set_moonfile</span></span>(<span>self, moonfile)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_moonfile(self, moonfile):
+    self.moonarr = calfile.eval_file(moonfile)
+    self.monarr += self.get_cal_data(self.moonarr)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.set_usafile"><code class="name flex">
+<span>def <span class="ident">set_usafile</span></span>(<span>self, usafile)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_usafile(self, usafile):
+    self.usarr = calfile.eval_file(usafile, 0)
+    self.monarr += self.get_cal_data(self.usarr)</code></pre>
+</details>
+</dd>
+<dt id="pycal.CalCanvas.show_status"><code class="name flex">
+<span>def <span class="ident">show_status</span></span>(<span>self, strx)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_status(self, strx):
+    if self.statusbar:
+        self.statusbar.set_text(strx)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="pycal.lgree_col" href="#pycal.lgree_col">lgree_col</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pycal.CalCanvas" href="#pycal.CalCanvas">CalCanvas</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pycal.CalCanvas.area_button" href="#pycal.CalCanvas.area_button">area_button</a></code></li>
+<li><code><a title="pycal.CalCanvas.area_motion" href="#pycal.CalCanvas.area_motion">area_motion</a></code></li>
+<li><code><a title="pycal.CalCanvas.check_one" href="#pycal.CalCanvas.check_one">check_one</a></code></li>
+<li><code><a title="pycal.CalCanvas.decode_text" href="#pycal.CalCanvas.decode_text">decode_text</a></code></li>
+<li><code><a title="pycal.CalCanvas.dest_me" href="#pycal.CalCanvas.dest_me">dest_me</a></code></li>
+<li><code><a title="pycal.CalCanvas.done_caldlg" href="#pycal.CalCanvas.done_caldlg">done_caldlg</a></code></li>
+<li><code><a title="pycal.CalCanvas.draw_event" href="#pycal.CalCanvas.draw_event">draw_event</a></code></li>
+<li><code><a title="pycal.CalCanvas.eval_alarm" href="#pycal.CalCanvas.eval_alarm">eval_alarm</a></code></li>
+<li><code><a title="pycal.CalCanvas.fill_day" href="#pycal.CalCanvas.fill_day">fill_day</a></code></li>
+<li><code><a title="pycal.CalCanvas.get_cal_data" href="#pycal.CalCanvas.get_cal_data">get_cal_data</a></code></li>
+<li><code><a title="pycal.CalCanvas.get_daydat" href="#pycal.CalCanvas.get_daydat">get_daydat</a></code></li>
+<li><code><a title="pycal.CalCanvas.get_month_data" href="#pycal.CalCanvas.get_month_data">get_month_data</a></code></li>
+<li><code><a title="pycal.CalCanvas.handler_tick" href="#pycal.CalCanvas.handler_tick">handler_tick</a></code></li>
+<li><code><a title="pycal.CalCanvas.hit_test" href="#pycal.CalCanvas.hit_test">hit_test</a></code></li>
+<li><code><a title="pycal.CalCanvas.invalidate" href="#pycal.CalCanvas.invalidate">invalidate</a></code></li>
+<li><code><a title="pycal.CalCanvas.keypress" href="#pycal.CalCanvas.keypress">keypress</a></code></li>
+<li><code><a title="pycal.CalCanvas.keytime" href="#pycal.CalCanvas.keytime">keytime</a></code></li>
+<li><code><a title="pycal.CalCanvas.make_key" href="#pycal.CalCanvas.make_key">make_key</a></code></li>
+<li><code><a title="pycal.CalCanvas.menucb" href="#pycal.CalCanvas.menucb">menucb</a></code></li>
+<li><code><a title="pycal.CalCanvas.pop_alarm" href="#pycal.CalCanvas.pop_alarm">pop_alarm</a></code></li>
+<li><code><a title="pycal.CalCanvas.set_date" href="#pycal.CalCanvas.set_date">set_date</a></code></li>
+<li><code><a title="pycal.CalCanvas.set_dbfile" href="#pycal.CalCanvas.set_dbfile">set_dbfile</a></code></li>
+<li><code><a title="pycal.CalCanvas.set_holfile" href="#pycal.CalCanvas.set_holfile">set_holfile</a></code></li>
+<li><code><a title="pycal.CalCanvas.set_moonfile" href="#pycal.CalCanvas.set_moonfile">set_moonfile</a></code></li>
+<li><code><a title="pycal.CalCanvas.set_usafile" href="#pycal.CalCanvas.set_usafile">set_usafile</a></code></li>
+<li><code><a title="pycal.CalCanvas.show_status" href="#pycal.CalCanvas.show_status">show_status</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
