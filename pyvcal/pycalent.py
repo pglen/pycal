@@ -135,7 +135,6 @@ class CalEntry(Gtk.Window):
         hbox4.pack_start(pggui.Label(" "), 0, 0, 0)
 
         vbox.pack_start(self.ptab, 0, 0, 4)
-        #vbox.pack_start(pggui.xSpacer(), 0, 0, 0)
 
         vbox.pack_start(hbox5, 0, 0, 4)
 
@@ -175,6 +174,7 @@ class CalEntry(Gtk.Window):
         def change_ms2(val):
             #print("change_ms2")
             pass
+
         dtab = Gtk.Table(); #dtab.set_homogeneous(False)
         dtab.set_col_spacings(4); dtab.set_row_spacings(4)
         for aa in range(3):

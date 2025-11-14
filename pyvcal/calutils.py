@@ -66,6 +66,26 @@ def get_rule_str(mmm, rr):
     #print("get_rule_str()", mmm, rr, "out=", out)
     return out
 
+class FlyDlg(Gtk.Window):
+
+    def __init__(self, parent):
+        #GObject.GObject.__init__(self)
+        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
+        self.set_transient_for(parent)
+        self.add(Gtk.Label.new("\n\n      Press F11 to unfullscreen     \n\n") )
+        self.set_modal(True)
+        self.set_decorated(False)
+        self.set_default_size(300, 200)
+        self.set_keep_above(True)
+        self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#8f8f8f"))
+        #print("FlyDlg opened")
+        self.show_all()
+
+        GLib.timeout_add(2000, self.keytime)
+
+    def keytime(self):
+        self.destroy()
+
 class CalPopup(Gtk.Window):
 
     def __init__(self, strx):
@@ -73,6 +93,7 @@ class CalPopup(Gtk.Window):
         self.set_accept_focus(False); self.set_decorated(False)
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.connect("button-press-event", self.area_button)
+        #self.connect("button-press-event", self.area_button)
 
         self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#cfcfcf"))
 
@@ -134,11 +155,15 @@ class MsgDlg(Gtk.Window):
         #self.set_decorated(False)
         #self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.connect("key-press-event", self.keypress)
+        self.connect("button-press-event", self.area_button)
         self.show_all()
 
     def keypress(self, win, key):
         #print("key", key.keyval)
         if key.keyval == Gdk.KEY_Escape:
             self.destroy()
+
+    def area_button(self, win, butt):
+        self.destroy()
 
 # EOF

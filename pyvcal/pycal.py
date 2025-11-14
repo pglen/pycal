@@ -49,20 +49,20 @@ class CalCanvas(Gtk.DrawingArea):
         self.config = config
         self.mouevent = self.dlg = None
         self.xtext = self.darr = self.monarr = self.coll = []
+        self.moonarr = [] ;  self.usarr = []
+        self.donearr = self.donenext = []
         self.old_hx = 0; self.old_hy = 0; self.fired = 0;
         self.popped = self.cnt = 0
-        self.shx, self.shy = (-1, -1)
+        self.shx = -1 ;  self.shy = -1
         self.drag = self.resize = None
         self.dragcoord = (0,0)
         self.size2 = (0,0)
         self.noop_down = False
         self.sql = None
-        self.moonarr = []
-        self.usarr = []
-        self.donearr = self.donenext = []
         self.moon = True
         self.holy = True
-        self.defc = True
+        self.personal = True
+        self.work = True
         self.scrollday = 0
         self.ign = 0
 
@@ -242,11 +242,19 @@ class CalCanvas(Gtk.DrawingArea):
                 #print("sql.get key", key, "got sql", arr2)
                 for aa in arr2:
                     #print("sql.got", aa)
+                    # Skip unchecked items
+                    if not self.work:
+                        if aa[7] == "Work":
+                            continue
+                    if not self.personal:
+                        if aa[7] == "Personal":
+                            continue
                     ttt = aa[1].split(" ")
                     (dd, mm, yy) = ttt[0].split("-")
                     (HH, MM) = ttt[1].split(":")
                     dur = ttt[2]
                     arr3, arr4, arr5, arr6, arr7 = self.sql.getdata(aa[2])
+
                     #print("sql.getdata:", arr3, arr4, arr5, arr6, arr7)
                     defa = ( False, 0, 0, [False, False, False, False, False])
                     if arr3:

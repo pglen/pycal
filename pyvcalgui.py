@@ -26,29 +26,12 @@ VERSION = "1.0.3"
 from pyvcal import calutils
 anchordir = os.path.dirname(os.path.realpath(calutils.__file__))
 sys.path.append(anchordir)
-from pyvcal import pyala, pycal, pycallog, calfile, comline
+from pyvcal import pyala, pycal, pycallog, calfile, comline, calutils
 
 from pyvguicom import pgutils
 moddir = os.path.dirname(os.path.realpath(pgutils.__file__))
 sys.path.append(moddir)
 from pyvguicom import pggui, pgsimp, pgbox
-
-class flydlg(Gtk.Window):
-
-    def __init__(self, parent):
-        #GObject.GObject.__init__(self)
-        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
-        self.set_transient_for(parent)
-        self.add(Gtk.Label.new("\n\n      Press F11 to unfullscreen     \n\n") )
-        self.set_modal(True)
-        self.set_decorated(False)
-        self.set_keep_above(True)
-        self.show_all()
-
-        GLib.timeout_add(2000, self.keytime)
-
-    def keytime(self):
-        self.destroy()
 
 # ------------------------------------------------------------------------
 #  Define Application Main Window claass
@@ -127,8 +110,12 @@ class MainWindow():
         self.cal.holy = butt.get_active()
         self.cal.invalidate()
 
-    def def_toggle(self, butt):
-        self.cal.defc = butt.get_active()
+    def personal_toggle(self, butt):
+        self.cal.personal = butt.get_active()
+        self.cal.invalidate()
+
+    def work_toggle(self, butt):
+        self.cal.work = butt.get_active()
         self.cal.invalidate()
 
     def keypress(self, win, event):
@@ -149,8 +136,8 @@ class MainWindow():
                 self.mywin.unfullscreen()
             else:
                 self.mywin.fullscreen()
-                if not self.got_warn:
-                    flydlg(self.mywin)
+                if 1: #not self.got_warn:
+                    calutils.FlyDlg(self.mywin)
                     self.got_warn = True
             self.fullscreen = not self.fullscreen
         return False
@@ -170,13 +157,15 @@ class MainWindow():
         hbox.pack_start(self.menu, 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.check = Gtk.CheckButton.new_with_label("Moon"); self.check.set_active(True)
+        self.check = Gtk.CheckButton.new_with_label("Moon");
+        self.check.set_active(True)
         self.check.connect("toggled", self.moon_toggle)
         hbox.pack_start(self.check, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        self.check2 = Gtk.CheckButton.new_with_label("Holiday"); self.check2.set_active(True)
+        self.check2 = Gtk.CheckButton.new_with_label("Holiday");
+        self.check2.set_active(True)
         self.check2.connect("toggled", self.holy_toggle)
         hbox.pack_start(self.check2, 0, 0, 0)
 
@@ -213,21 +202,17 @@ class MainWindow():
 
         hbox.pack_start(Gtk.Label.new(" "), 1, 1, 0)
 
-        #hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-        #self.check3a = Gtk.CheckButton.new_with_label("Default   ");
-        #self.check3a.set_active(True)
-        #hbox.pack_start(self.check3a, 0, 0, 0)
-        #hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
-
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
         self.check3 = Gtk.CheckButton.new_with_label("Personal");
         self.check3.set_active(True)
+        self.check3.connect("toggled", self.personal_toggle)
         hbox.pack_start(self.check3, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
         self.check4 = Gtk.CheckButton.new_with_label("Work");
         self.check4.set_active(True)
+        self.check4.connect("toggled", self.work_toggle)
         hbox.pack_start(self.check4, 0, 0, 0)
         hbox.pack_start(Gtk.Label.new(" "), 0, 0, 0)
 

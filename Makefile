@@ -39,13 +39,25 @@ local-uninstall:
 pack:
 	@./pack.sh
 
+# Auto Checkin
+ifeq ("$(AUTOCHECK)","")
+    AUTOCHECK=autocheck
+endif
+
+test:
+	@echo "AUTOCHECK =" $(AUTOCHECK)
+	@echo "MODPATH = " $(MODPATH)
+
 git:
 	git add .
-	git commit -m autocheck
+	git commit -m $(AUTOCHECK)
 	git push
 	#git push local
 
-PPP=PYTHONPATH=pyvcal:./:../pyvguicom/pyvguicom python3 -W ignore::DeprecationWarning `which pdoc` --force --html
+# Get path to pyvguicom
+MODPATH=$(shell python getmodpath.py pyvguicom)
+QQQ=$(shell which pdoc)
+PPP=PYTHONPATH=pyvcal:./:$(MODPATH) python3 -W ignore::DeprecationWarning $(QQQ) --force --html
 
 docs:
 	@${PPP} -o pyvcal/docs/ pyvcalgui.py
